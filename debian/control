@@ -12,19 +12,17 @@ Homepage: http://www.enlightenment.org
 Package: libeina0
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: Enlightenment Foundation Library providing Optimized data types
+Description: Enlightenment Foundation Library providing optimized data types
  Eina is a multi-platform library that provides optimized data types and a few
  tools. It supports the following data types:
- Containers:
-  o Array: an array
-  o Hash Table: a hash table
-  o Inlined List: an list with functions inlined
-  o List: a single-linked list
-  o Red-Black Tree: a tree
+  o Array
+  o Hash Table
+  o Double-linked list
+  o Red-black tree
+  o Shared string
   o Access Content types
     + Accessor: can access items of a container randomly
     + Iterator: can access items of a container sequentially
- Stringshare.
  .
  This package contains headers and static libraries for development with
  libeina.
@@ -36,16 +34,14 @@ Depends: libeina0 (= ${binary:Version})
 Description: Development files for libeina
  Eina is a multi-platform library that provides optimized data types and a few
  tools. It supports the following data types:
- Containers:
-  o Array: an array
-  o Hash Table: a hash table
-  o Inlined List: an list with functions inlined
-  o List: a single-linked list
-  o Red-Black Tree: a tree
+  o Array
+  o Hash Table
+  o Double-linked list
+  o Red-black tree
+  o Shared string
   o Access Content types
     + Accessor: can access items of a container randomly
     + Iterator: can access items of a container sequentially
- Stringshare.
  .
  This package contains headers and static libraries for development with
  libeina.
@@ -58,16 +54,14 @@ Priority: extra
 Description: debugging symbols for use with libeina
  Eina is a multi-platform library that provides optimized data types and a few
  tools. It supports the following data types:
- Containers:
-  o Array: an array
-  o Hash Table: a hash table
-  o Inlined List: an list with functions inlined
-  o List: a single-linked list
-  o Red-Black Tree: a tree
+  o Array
+  o Hash Table
+  o Double-linked list
+  o Red-black tree
+  o Shared string
   o Access Content types
     + Accessor: can access items of a container randomly
     + Iterator: can access items of a container sequentially
- Stringshare.
  .
  This package contains unstripped shared libraries. It is provided primarily
  to provide a backtrace with names in a debugger, this makes it somewhat easier

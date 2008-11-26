@@ -1,5 +1,5 @@
-eina (0.0.1-1) UNRELEASED; urgency=low
+eina (0.0.1~svn20081126-1) UNRELEASED; urgency=low
 
-  * Initial Release
+  * Initial Release (Closes: #506916)
 
- -- Albin Tonnerre <albin.tonnerre@gmail.com>  Wed, 06 Aug 2008 21:14:27 +0200
+ -- Albin Tonnerre <albin.tonnerre@gmail.com>  Wed, 26 Nov 2008 15:25:52 +0100
