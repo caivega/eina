@@ -3,7 +3,7 @@ Section: libs
 Priority: optional
 Maintainer:  Debian Pkg-e Team <pkg-e-devel@lists.alioth.debian.org>
 Uploaders: Albin Tonnerre <albin.tonnerre@gmail.com>, Jan Lübbe <jluebbe@debian.org>
-Build-Depends: dpkg-dev (>= 1.14.8), debhelper (>= 6), cdbs
+Build-Depends: dpkg-dev (>= 1.14.8), debhelper (>= 6), cdbs, doxygen
 Standards-Version: 3.8.0
 Vcs-Git: git://git.debian.org/pkg-e/libs/eina.git
 Vcs-Browser: http://git.debian.org/?p=pkg-e/libs/eina.git
@@ -11,7 +11,7 @@ Homepage: http://www.enlightenment.org
 
 Package: libeina0
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Enlightenment Foundation Library providing optimized data types
  Eina is a multi-platform library that provides optimized data types and a few
  tools. It supports the following data types:
@@ -30,7 +30,8 @@ Description: Enlightenment Foundation Library providing optimized data types
 Package: libeina-dev
 Section: libdevel
 Architecture: any
-Depends: libeina0 (= ${binary:Version})
+Depends: ${misc:Depends}, libeina0 (= ${binary:Version})
+Recommends: libeina-doc
 Description: Development files for libeina
  Eina is a multi-platform library that provides optimized data types and a few
  tools. It supports the following data types:
@@ -46,10 +47,30 @@ Description: Development files for libeina
  This package contains headers and static libraries for development with
  libeina.
 
+Package: libeina-doc
+Architecture: all
+Depends: ${misc:Depends}
+Enhances: libeina-dev
+Section: doc
+Description: Documentation for use with libeina
+ Eina is a multi-platform library that provides optimized data types and a few
+ tools. It supports the following data types:
+  o Array
+  o Hash Table
+  o Double-linked list
+  o Red-black tree
+  o Shared string
+  o Access Content types
+    + Accessor: can access items of a container randomly
+    + Iterator: can access items of a container sequentially
+ .
+ This package contains documentation for libeina.
+
+
 Package: libeina-dbg
 Architecture: any
 Section: libdevel
-Depends: libeina0 (= ${binary:Version})
+Depends: ${misc:Depends}, libeina0 (= ${binary:Version})
 Priority: extra
 Description: debugging symbols for use with libeina
  Eina is a multi-platform library that provides optimized data types and a few
