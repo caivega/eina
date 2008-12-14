@@ -1,5 +1,8 @@
-eina (0.0.1~svn20081120-1) UNRELEASED; urgency=low
+eina (0.0.1~svn20081120-1) experimental; urgency=low
 
   * Initial Release (Closes: #506916)
+  * debian/patches/{01-fix-library-soname,02-reapply-autofoo}: Use release
+    instead of version-info to create the library SONAME, to prevent things
+    from breaking when the ABI changes.
 
- -- Albin Tonnerre <albin.tonnerre@gmail.com>  Wed, 26 Nov 2008 15:25:52 +0100
+ -- Albin Tonnerre <albin.tonnerre@gmail.com>  Thu, 11 Dec 2008 20:52:23 +0100
