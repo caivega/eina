@@ -1,3 +1,10 @@
+eina (0.0.1~svn20081120-2) experimental; urgency=low
+
+  * Remove version number from -dev package name since it's not really useful
+  * [lintian] Fix W: copyright-with-old-dh-make-debian-copyright
+
+ -- Albin Tonnerre <albin.tonnerre@gmail.com>  Tue, 06 Jan 2009 22:11:01 +0100
+
 eina (0.0.1~svn20081120-1) experimental; urgency=low
 
   * Initial Release (Closes: #506916)

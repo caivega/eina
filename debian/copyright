@@ -19,7 +19,7 @@ Upstream Authors:
 	Arnaud de Turckheim "quarium" <quarium@gmail.com>
 	Alexandre "diaxen" Becoulet <diaxen@free.fr>
 
-Copyright: (C) 2008 Upstream Authors
+Copyright: Copyright (C) 2008 Upstream Authors
 
 License:
     This package is free software; you can redistribute it and/or
@@ -81,5 +81,5 @@ Additional copyrights and licenses:
        IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
        CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-The Debian packaging is (C) 2008, Debian Pkg-e Team <pkg-e-devel@lists.alioth.debian.org>
+The Debian packaging is Copyright (C) 2008, Debian Pkg-e Team <pkg-e-devel@lists.alioth.debian.org>
 and is licensed under the GPL, see `/usr/share/common-licenses/GPL'.

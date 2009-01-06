@@ -29,13 +29,11 @@ Description: Enlightenment Foundation Library providing optimized data types
  This package contains headers and static libraries for development with
  libeina.
 
-Package: libeina-0.0.1a-dev
+Package: libeina-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends}, libeina-0.0.1a (= ${binary:Version}), pkg-config
 Recommends: libeina-doc
-Provides: libeina-dev
-Conflicts: libeina-dev
 Description: Development files for libeina
  Eina is a multi-platform library that provides optimized data types and a few
  tools. It supports the following data types:
