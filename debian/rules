@@ -5,7 +5,7 @@ include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/rules/simple-patchsys.mk
 
 CFLAGS += -fvisibility=hidden -O3
-DEB_MAKE_ENVVARS += DEBIAN_MINOR='a'
+DEB_MAKE_ENVVARS += DEBIAN_MINOR='b'
 
 build/libeina-doc::
 	$(MAKE) doc

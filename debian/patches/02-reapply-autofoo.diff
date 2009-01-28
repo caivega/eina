@@ -124,10 +124,10 @@ index 23e5f25..d3c5b40 100644
  `configure' Invocation
  ======================
 diff --git a/Makefile.in b/Makefile.in
-index da0358b..8a45c24 100644
+index 2066c99..8f8c2b3 100644
 --- a/Makefile.in
 +++ b/Makefile.in
-@@ -145,6 +145,7 @@ LIBS = @LIBS@
+@@ -146,6 +146,7 @@ LIBS = @LIBS@
  LIBTOOL = @LIBTOOL@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
@@ -135,7 +135,7 @@ index da0358b..8a45c24 100644
  MAKEINFO = @MAKEINFO@
  MKDIR_P = @MKDIR_P@
  MODULE_ARCH = @MODULE_ARCH@
-@@ -250,7 +251,7 @@ all: config.h
+@@ -251,7 +252,7 @@ all: config.h
  .SUFFIXES:
  am--refresh:
  	@:
@@ -144,7 +144,7 @@ index da0358b..8a45c24 100644
  	@for dep in $?; do \
  	  case '$(am__configure_deps)' in \
  	    *$$dep*) \
-@@ -277,9 +278,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+@@ -278,9 +279,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
  $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
  	$(SHELL) ./config.status --recheck
  
@@ -156,7 +156,7 @@ index da0358b..8a45c24 100644
  	cd $(srcdir) && $(ACLOCAL) $(ACLOCAL_AMFLAGS)
  
  config.h: stamp-h1
-@@ -291,7 +292,7 @@ config.h: stamp-h1
+@@ -292,7 +293,7 @@ config.h: stamp-h1
  stamp-h1: $(srcdir)/config.h.in $(top_builddir)/config.status
  	@rm -f stamp-h1
  	cd $(top_builddir) && $(SHELL) ./config.status config.h
@@ -206,7 +206,7 @@ index 877dc49..c9dade9 100644
  
  # Copyright (C) 2001, 2002, 2003, 2005  Free Software Foundation, Inc.
 diff --git a/configure b/configure
-index 671c8dd..b262f38 100755
+index 7b2743c..5d9ddff 100755
 --- a/configure
 +++ b/configure
 @@ -848,6 +848,9 @@ AMDEPBACKSLASH
@@ -219,7 +219,7 @@ index 671c8dd..b262f38 100755
  SED
  GREP
  EGREP
-@@ -1526,6 +1529,8 @@ Optional Features:
+@@ -1529,6 +1532,8 @@ Optional Features:
    --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
    --disable-dependency-tracking  speeds up one-time build
    --enable-dependency-tracking   do not reject slow dependency extractors
@@ -228,7 +228,7 @@ index 671c8dd..b262f38 100755
    --enable-shared[=PKGS]  build shared libraries [default=yes]
    --enable-static[=PKGS]  build static libraries [default=yes]
    --enable-fast-install[=PKGS]
-@@ -3769,6 +3774,28 @@ fi
+@@ -3774,6 +3779,28 @@ fi
  
  
  
@@ -257,118 +257,118 @@ index 671c8dd..b262f38 100755
  ac_config_headers="$ac_config_headers config.h"
  
  
-@@ -4498,7 +4525,7 @@ ia64-*-hpux*)
+@@ -4503,7 +4530,7 @@ ia64-*-hpux*)
    ;;
  *-*-irix6*)
    # Find out which ABI we are using.
--  echo '#line 4501 "configure"' > conftest.$ac_ext
-+  echo '#line 4528 "configure"' > conftest.$ac_ext
+-  echo '#line 4506 "configure"' > conftest.$ac_ext
++  echo '#line 4533 "configure"' > conftest.$ac_ext
    if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
    (eval $ac_compile) 2>&5
    ac_status=$?
-@@ -6878,11 +6905,11 @@ else
+@@ -6883,11 +6910,11 @@ else
     -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
     -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
     -e 's:$: $lt_compiler_flag:'`
--   (eval echo "\"\$as_me:6881: $lt_compile\"" >&5)
-+   (eval echo "\"\$as_me:6908: $lt_compile\"" >&5)
+-   (eval echo "\"\$as_me:6886: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:6913: $lt_compile\"" >&5)
     (eval "$lt_compile" 2>conftest.err)
     ac_status=$?
     cat conftest.err >&5
--   echo "$as_me:6885: \$? = $ac_status" >&5
-+   echo "$as_me:6912: \$? = $ac_status" >&5
+-   echo "$as_me:6890: \$? = $ac_status" >&5
++   echo "$as_me:6917: \$? = $ac_status" >&5
     if (exit $ac_status) && test -s "$ac_outfile"; then
       # The compiler can only warn and ignore the option if not recognized
       # So say no if there are warnings other than the usual output.
-@@ -7168,11 +7195,11 @@ else
+@@ -7173,11 +7200,11 @@ else
     -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
     -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
     -e 's:$: $lt_compiler_flag:'`
--   (eval echo "\"\$as_me:7171: $lt_compile\"" >&5)
-+   (eval echo "\"\$as_me:7198: $lt_compile\"" >&5)
+-   (eval echo "\"\$as_me:7176: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:7203: $lt_compile\"" >&5)
     (eval "$lt_compile" 2>conftest.err)
     ac_status=$?
     cat conftest.err >&5
--   echo "$as_me:7175: \$? = $ac_status" >&5
-+   echo "$as_me:7202: \$? = $ac_status" >&5
+-   echo "$as_me:7180: \$? = $ac_status" >&5
++   echo "$as_me:7207: \$? = $ac_status" >&5
     if (exit $ac_status) && test -s "$ac_outfile"; then
       # The compiler can only warn and ignore the option if not recognized
       # So say no if there are warnings other than the usual output.
-@@ -7272,11 +7299,11 @@ else
+@@ -7277,11 +7304,11 @@ else
     -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
     -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
     -e 's:$: $lt_compiler_flag:'`
--   (eval echo "\"\$as_me:7275: $lt_compile\"" >&5)
-+   (eval echo "\"\$as_me:7302: $lt_compile\"" >&5)
+-   (eval echo "\"\$as_me:7280: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:7307: $lt_compile\"" >&5)
     (eval "$lt_compile" 2>out/conftest.err)
     ac_status=$?
     cat out/conftest.err >&5
--   echo "$as_me:7279: \$? = $ac_status" >&5
-+   echo "$as_me:7306: \$? = $ac_status" >&5
+-   echo "$as_me:7284: \$? = $ac_status" >&5
++   echo "$as_me:7311: \$? = $ac_status" >&5
     if (exit $ac_status) && test -s out/conftest2.$ac_objext
     then
       # The compiler can only warn and ignore the option if not recognized
-@@ -9649,7 +9676,7 @@ else
+@@ -9654,7 +9681,7 @@ else
    lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
    lt_status=$lt_dlunknown
    cat > conftest.$ac_ext <<EOF
--#line 9652 "configure"
-+#line 9679 "configure"
+-#line 9657 "configure"
++#line 9684 "configure"
  #include "confdefs.h"
  
  #if HAVE_DLFCN_H
-@@ -9749,7 +9776,7 @@ else
+@@ -9754,7 +9781,7 @@ else
    lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
    lt_status=$lt_dlunknown
    cat > conftest.$ac_ext <<EOF
--#line 9752 "configure"
-+#line 9779 "configure"
+-#line 9757 "configure"
++#line 9784 "configure"
  #include "confdefs.h"
  
  #if HAVE_DLFCN_H
-@@ -10549,11 +10576,11 @@ else
+@@ -10554,11 +10581,11 @@ else
     -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
     -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
     -e 's:$: $lt_compiler_flag:'`
--   (eval echo "\"\$as_me:10552: $lt_compile\"" >&5)
-+   (eval echo "\"\$as_me:10579: $lt_compile\"" >&5)
+-   (eval echo "\"\$as_me:10557: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:10584: $lt_compile\"" >&5)
     (eval "$lt_compile" 2>conftest.err)
     ac_status=$?
     cat conftest.err >&5
--   echo "$as_me:10556: \$? = $ac_status" >&5
-+   echo "$as_me:10583: \$? = $ac_status" >&5
+-   echo "$as_me:10561: \$? = $ac_status" >&5
++   echo "$as_me:10588: \$? = $ac_status" >&5
     if (exit $ac_status) && test -s "$ac_outfile"; then
       # The compiler can only warn and ignore the option if not recognized
       # So say no if there are warnings other than the usual output.
-@@ -10839,11 +10866,11 @@ else
+@@ -10844,11 +10871,11 @@ else
     -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
     -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
     -e 's:$: $lt_compiler_flag:'`
--   (eval echo "\"\$as_me:10842: $lt_compile\"" >&5)
-+   (eval echo "\"\$as_me:10869: $lt_compile\"" >&5)
+-   (eval echo "\"\$as_me:10847: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:10874: $lt_compile\"" >&5)
     (eval "$lt_compile" 2>conftest.err)
     ac_status=$?
     cat conftest.err >&5
--   echo "$as_me:10846: \$? = $ac_status" >&5
-+   echo "$as_me:10873: \$? = $ac_status" >&5
+-   echo "$as_me:10851: \$? = $ac_status" >&5
++   echo "$as_me:10878: \$? = $ac_status" >&5
     if (exit $ac_status) && test -s "$ac_outfile"; then
       # The compiler can only warn and ignore the option if not recognized
       # So say no if there are warnings other than the usual output.
-@@ -10943,11 +10970,11 @@ else
+@@ -10948,11 +10975,11 @@ else
     -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
     -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
     -e 's:$: $lt_compiler_flag:'`
--   (eval echo "\"\$as_me:10946: $lt_compile\"" >&5)
-+   (eval echo "\"\$as_me:10973: $lt_compile\"" >&5)
+-   (eval echo "\"\$as_me:10951: $lt_compile\"" >&5)
++   (eval echo "\"\$as_me:10978: $lt_compile\"" >&5)
     (eval "$lt_compile" 2>out/conftest.err)
     ac_status=$?
     cat out/conftest.err >&5
--   echo "$as_me:10950: \$? = $ac_status" >&5
-+   echo "$as_me:10977: \$? = $ac_status" >&5
+-   echo "$as_me:10955: \$? = $ac_status" >&5
++   echo "$as_me:10982: \$? = $ac_status" >&5
     if (exit $ac_status) && test -s out/conftest2.$ac_objext
     then
       # The compiler can only warn and ignore the option if not recognized
-@@ -18472,6 +18499,13 @@ echo "$as_me: error: conditional \"am__fastdepCC\" was never defined.
+@@ -18513,6 +18540,13 @@ echo "$as_me: error: conditional \"am__fastdepCC\" was never defined.
  Usually this means the macro was only invoked conditionally." >&2;}
     { (exit 1); exit 1; }; }
  fi
@@ -379,10 +379,10 @@ index 671c8dd..b262f38 100755
 +Usually this means the macro was only invoked conditionally." >&2;}
 +   { (exit 1); exit 1; }; }
 +fi
- if test -z "${EINA_STATIC_BUILD_CHAINED_POOL_TRUE}" && test -z "${EINA_STATIC_BUILD_CHAINED_POOL_FALSE}"; then
-   { { echo "$as_me:$LINENO: error: conditional \"EINA_STATIC_BUILD_CHAINED_POOL\" was never defined.
+ if test -z "${SAFETY_CHECKS_TRUE}" && test -z "${SAFETY_CHECKS_FALSE}"; then
+   { { echo "$as_me:$LINENO: error: conditional \"SAFETY_CHECKS\" was never defined.
  Usually this means the macro was only invoked conditionally." >&5
-@@ -19200,6 +19234,9 @@ AMDEPBACKSLASH!$AMDEPBACKSLASH$ac_delim
+@@ -19248,6 +19282,9 @@ AMDEPBACKSLASH!$AMDEPBACKSLASH$ac_delim
  CCDEPMODE!$CCDEPMODE$ac_delim
  am__fastdepCC_TRUE!$am__fastdepCC_TRUE$ac_delim
  am__fastdepCC_FALSE!$am__fastdepCC_FALSE$ac_delim
@@ -392,7 +392,7 @@ index 671c8dd..b262f38 100755
  SED!$SED$ac_delim
  GREP!$GREP$ac_delim
  EGREP!$EGREP$ac_delim
-@@ -19211,9 +19248,6 @@ DSYMUTIL!$DSYMUTIL$ac_delim
+@@ -19259,9 +19296,6 @@ DSYMUTIL!$DSYMUTIL$ac_delim
  NMEDIT!$NMEDIT$ac_delim
  DLLTOOL!$DLLTOOL$ac_delim
  AS!$AS$ac_delim
@@ -402,7 +402,7 @@ index 671c8dd..b262f38 100755
  _ACEOF
  
    if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
-@@ -19255,6 +19289,9 @@ _ACEOF
+@@ -19303,6 +19337,9 @@ _ACEOF
  ac_delim='%!_!# '
  for ac_last_try in false false false false false :; do
    cat >conf$$subs.sed <<_ACEOF
@@ -412,20 +412,20 @@ index 671c8dd..b262f38 100755
  VMAJ!$VMAJ$ac_delim
  version_info!$version_info$ac_delim
  MODULE_ARCH!$MODULE_ARCH$ac_delim
-@@ -19317,7 +19354,7 @@ LIBOBJS!$LIBOBJS$ac_delim
+@@ -19368,7 +19405,7 @@ LIBOBJS!$LIBOBJS$ac_delim
  LTLIBOBJS!$LTLIBOBJS$ac_delim
  _ACEOF
  
--  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 60; then
-+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 63; then
+-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 63; then
++  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 66; then
      break
    elif $ac_last_try; then
      { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
 diff --git a/doc/Makefile.in b/doc/Makefile.in
-index 7a6e2fa..dadaadc 100644
+index baa583d..57befe7 100644
 --- a/doc/Makefile.in
 +++ b/doc/Makefile.in
-@@ -107,6 +107,7 @@ LIBS = @LIBS@
+@@ -108,6 +108,7 @@ LIBS = @LIBS@
  LIBTOOL = @LIBTOOL@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
@@ -433,7 +433,7 @@ index 7a6e2fa..dadaadc 100644
  MAKEINFO = @MAKEINFO@
  MKDIR_P = @MKDIR_P@
  MODULE_ARCH = @MODULE_ARCH@
-@@ -186,7 +187,7 @@ EXTRA_DIST = Doxyfile
+@@ -187,7 +188,7 @@ EXTRA_DIST = Doxyfile
  all: all-am
  
  .SUFFIXES:
@@ -442,7 +442,7 @@ index 7a6e2fa..dadaadc 100644
  	@for dep in $?; do \
  	  case '$(am__configure_deps)' in \
  	    *$$dep*) \
-@@ -211,9 +212,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+@@ -212,9 +213,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
  $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
  
@@ -455,10 +455,10 @@ index 7a6e2fa..dadaadc 100644
  
  mostlyclean-libtool:
 diff --git a/src/Makefile.in b/src/Makefile.in
-index 44ad5a7..8d493b1 100644
+index 1134eb5..f8e986e 100644
 --- a/src/Makefile.in
 +++ b/src/Makefile.in
-@@ -119,6 +119,7 @@ LIBS = @LIBS@
+@@ -120,6 +120,7 @@ LIBS = @LIBS@
  LIBTOOL = @LIBTOOL@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
@@ -466,7 +466,7 @@ index 44ad5a7..8d493b1 100644
  MAKEINFO = @MAKEINFO@
  MKDIR_P = @MKDIR_P@
  MODULE_ARCH = @MODULE_ARCH@
-@@ -198,7 +199,7 @@ MAINTAINERCLEANFILES = Makefile.in
+@@ -199,7 +200,7 @@ MAINTAINERCLEANFILES = Makefile.in
  all: all-recursive
  
  .SUFFIXES:
@@ -475,7 +475,7 @@ index 44ad5a7..8d493b1 100644
  	@for dep in $?; do \
  	  case '$(am__configure_deps)' in \
  	    *$$dep*) \
-@@ -223,9 +224,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+@@ -224,9 +225,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
  $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
  
@@ -488,9 +488,81 @@ index 44ad5a7..8d493b1 100644
  
  mostlyclean-libtool:
 diff --git a/src/include/Makefile.in b/src/include/Makefile.in
-index 2051806..32da390 100644
+index 5771e4a..7a42c35 100644
 --- a/src/include/Makefile.in
 +++ b/src/include/Makefile.in
+@@ -123,6 +123,7 @@ LIBS = @LIBS@
+ LIBTOOL = @LIBTOOL@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
++MAINT = @MAINT@
+ MAKEINFO = @MAKEINFO@
+ MKDIR_P = @MKDIR_P@
+ MODULE_ARCH = @MODULE_ARCH@
+@@ -241,7 +242,7 @@ eina_private.h
+ all: all-am
+ 
+ .SUFFIXES:
+-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
++$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+ 	@for dep in $?; do \
+ 	  case '$(am__configure_deps)' in \
+ 	    *$$dep*) \
+@@ -266,9 +267,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+ $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+ 
+-$(top_srcdir)/configure:  $(am__configure_deps)
++$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
++$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+ eina_config.h: $(top_builddir)/config.status $(srcdir)/eina_config.h.in
+ 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+diff --git a/src/lib/Makefile.in b/src/lib/Makefile.in
+index f40ad6f..fa0480d 100644
+--- a/src/lib/Makefile.in
++++ b/src/lib/Makefile.in
+@@ -166,6 +166,7 @@ LIBS = @LIBS@
+ LIBTOOL = @LIBTOOL@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
++MAINT = @MAINT@
+ MAKEINFO = @MAKEINFO@
+ MKDIR_P = @MKDIR_P@
+ MODULE_ARCH = @MODULE_ARCH@
+@@ -259,12 +260,12 @@ libeina_la_SOURCES = eina_error.c eina_hash.c eina_lalloc.c \
+ 	eina_stringshare.c eina_cpu.c eina_tiler.c $(am__append_1) \
+ 	$(am__append_2) $(am__append_3) $(am__append_4)
+ libeina_la_LIBADD = @EINA_LIBS@ @dlopen_libs@
+-libeina_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -version-info @version_info@
++libeina_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -release @PACKAGE_VERSION@$(DEBIAN_MINOR)
+ all: all-am
+ 
+ .SUFFIXES:
+ .SUFFIXES: .c .lo .o .obj
+-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
++$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+ 	@for dep in $?; do \
+ 	  case '$(am__configure_deps)' in \
+ 	    *$$dep*) \
+@@ -289,9 +290,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+ $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+ 
+-$(top_srcdir)/configure:  $(am__configure_deps)
++$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
++$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+ install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+ 	@$(NORMAL_INSTALL)
+diff --git a/src/modules/Makefile.in b/src/modules/Makefile.in
+index 6561fbe..1d92992 100644
+--- a/src/modules/Makefile.in
++++ b/src/modules/Makefile.in
 @@ -120,6 +120,7 @@ LIBS = @LIBS@
  LIBTOOL = @LIBTOOL@
  LN_S = @LN_S@
@@ -499,10 +571,76 @@ index 2051806..32da390 100644
  MAKEINFO = @MAKEINFO@
  MKDIR_P = @MKDIR_P@
  MODULE_ARCH = @MODULE_ARCH@
-@@ -236,7 +237,7 @@ eina_private.h
- all: all-am
+@@ -201,7 +202,7 @@ Makefile.in
+ all: all-recursive
  
  .SUFFIXES:
+-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
++$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+ 	@for dep in $?; do \
+ 	  case '$(am__configure_deps)' in \
+ 	    *$$dep*) \
+@@ -226,9 +227,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+ $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+ 
+-$(top_srcdir)/configure:  $(am__configure_deps)
++$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
++$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+ 
+ mostlyclean-libtool:
+diff --git a/src/modules/mp/Makefile.in b/src/modules/mp/Makefile.in
+index 5ddaa3f..3dcf070 100644
+--- a/src/modules/mp/Makefile.in
++++ b/src/modules/mp/Makefile.in
+@@ -120,6 +120,7 @@ LIBS = @LIBS@
+ LIBTOOL = @LIBTOOL@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
++MAINT = @MAINT@
+ MAKEINFO = @MAKEINFO@
+ MKDIR_P = @MKDIR_P@
+ MODULE_ARCH = @MODULE_ARCH@
+@@ -201,7 +202,7 @@ Makefile.in
+ all: all-recursive
+ 
+ .SUFFIXES:
+-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
++$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+ 	@for dep in $?; do \
+ 	  case '$(am__configure_deps)' in \
+ 	    *$$dep*) \
+@@ -226,9 +227,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+ $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+ 
+-$(top_srcdir)/configure:  $(am__configure_deps)
++$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
++$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+ 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+ 
+ mostlyclean-libtool:
+diff --git a/src/modules/mp/chained_pool/Makefile.in b/src/modules/mp/chained_pool/Makefile.in
+index 78e8caf..6b4d112 100644
+--- a/src/modules/mp/chained_pool/Makefile.in
++++ b/src/modules/mp/chained_pool/Makefile.in
+@@ -143,6 +143,7 @@ LIBS = @LIBS@
+ LIBTOOL = @LIBTOOL@
+ LN_S = @LN_S@
+ LTLIBOBJS = @LTLIBOBJS@
++MAINT = @MAINT@
+ MAKEINFO = @MAKEINFO@
+ MKDIR_P = @MKDIR_P@
+ MODULE_ARCH = @MODULE_ARCH@
+@@ -236,7 +237,7 @@ all: all-am
+ 
+ .SUFFIXES:
+ .SUFFIXES: .c .lo .o .obj
 -$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 +$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
  	@for dep in $?; do \
@@ -518,13 +656,13 @@ index 2051806..32da390 100644
 -$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 +$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- eina_config.h: $(top_builddir)/config.status $(srcdir)/eina_config.h.in
- 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-diff --git a/src/lib/Makefile.in b/src/lib/Makefile.in
-index e0bfe54..12d8e09 100644
---- a/src/lib/Makefile.in
-+++ b/src/lib/Makefile.in
-@@ -164,6 +164,7 @@ LIBS = @LIBS@
+ install-controllerLTLIBRARIES: $(controller_LTLIBRARIES)
+ 	@$(NORMAL_INSTALL)
+diff --git a/src/modules/mp/ememoa_fixed/Makefile.in b/src/modules/mp/ememoa_fixed/Makefile.in
+index 3e7fce1..8078ec5 100644
+--- a/src/modules/mp/ememoa_fixed/Makefile.in
++++ b/src/modules/mp/ememoa_fixed/Makefile.in
+@@ -142,6 +142,7 @@ LIBS = @LIBS@
  LIBTOOL = @LIBTOOL@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
@@ -532,13 +670,7 @@ index e0bfe54..12d8e09 100644
  MAKEINFO = @MAKEINFO@
  MKDIR_P = @MKDIR_P@
  MODULE_ARCH = @MODULE_ARCH@
-@@ -256,12 +257,12 @@ libeina_la_SOURCES = eina_error.c eina_hash.c eina_lalloc.c \
- 	eina_stringshare.c $(am__append_1) $(am__append_2) \
- 	$(am__append_3) $(am__append_4)
- libeina_la_LIBADD = @EINA_LIBS@ @dlopen_libs@
--libeina_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -version-info @version_info@
-+libeina_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -release @PACKAGE_VERSION@$(DEBIAN_MINOR)
- all: all-am
+@@ -238,7 +239,7 @@ all: all-am
  
  .SUFFIXES:
  .SUFFIXES: .c .lo .o .obj
@@ -547,7 +679,7 @@ index e0bfe54..12d8e09 100644
  	@for dep in $?; do \
  	  case '$(am__configure_deps)' in \
  	    *$$dep*) \
-@@ -286,9 +287,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+@@ -263,9 +264,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
  $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
  
@@ -557,13 +689,13 @@ index e0bfe54..12d8e09 100644
 -$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 +$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- install-libLTLIBRARIES: $(lib_LTLIBRARIES)
+ install-controllerLTLIBRARIES: $(controller_LTLIBRARIES)
  	@$(NORMAL_INSTALL)
-diff --git a/src/modules/Makefile.in b/src/modules/Makefile.in
-index e324721..376c9eb 100644
---- a/src/modules/Makefile.in
-+++ b/src/modules/Makefile.in
-@@ -119,6 +119,7 @@ LIBS = @LIBS@
+diff --git a/src/modules/mp/ememoa_unknown/Makefile.in b/src/modules/mp/ememoa_unknown/Makefile.in
+index a13b102..48022d4 100644
+--- a/src/modules/mp/ememoa_unknown/Makefile.in
++++ b/src/modules/mp/ememoa_unknown/Makefile.in
+@@ -142,6 +142,7 @@ LIBS = @LIBS@
  LIBTOOL = @LIBTOOL@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
@@ -571,16 +703,16 @@ index e324721..376c9eb 100644
  MAKEINFO = @MAKEINFO@
  MKDIR_P = @MKDIR_P@
  MODULE_ARCH = @MODULE_ARCH@
-@@ -200,7 +201,7 @@ Makefile.in
- all: all-recursive
+@@ -238,7 +239,7 @@ all: all-am
  
  .SUFFIXES:
+ .SUFFIXES: .c .lo .o .obj
 -$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 +$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
  	@for dep in $?; do \
  	  case '$(am__configure_deps)' in \
  	    *$$dep*) \
-@@ -225,9 +226,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+@@ -263,9 +264,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
  $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
  
@@ -590,45 +722,12 @@ index e324721..376c9eb 100644
 -$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 +$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- 
- mostlyclean-libtool:
-diff --git a/src/modules/mp/Makefile.in b/src/modules/mp/Makefile.in
-index d472cc9..96f0246 100644
---- a/src/modules/mp/Makefile.in
-+++ b/src/modules/mp/Makefile.in
-@@ -119,6 +119,7 @@ LIBS = @LIBS@
- LIBTOOL = @LIBTOOL@
- LN_S = @LN_S@
- LTLIBOBJS = @LTLIBOBJS@
-+MAINT = @MAINT@
- MAKEINFO = @MAKEINFO@
- MKDIR_P = @MKDIR_P@
- MODULE_ARCH = @MODULE_ARCH@
-@@ -200,7 +201,7 @@ Makefile.in
- all: all-recursive
- 
- .SUFFIXES:
--$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
-+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
- 	@for dep in $?; do \
- 	  case '$(am__configure_deps)' in \
- 	    *$$dep*) \
-@@ -225,9 +226,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
- $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- 
--$(top_srcdir)/configure:  $(am__configure_deps)
-+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
--$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
-+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- 
- mostlyclean-libtool:
-diff --git a/src/modules/mp/chained_pool/Makefile.in b/src/modules/mp/chained_pool/Makefile.in
-index 039f6cc..fcdc02f 100644
---- a/src/modules/mp/chained_pool/Makefile.in
-+++ b/src/modules/mp/chained_pool/Makefile.in
+ install-controllerLTLIBRARIES: $(controller_LTLIBRARIES)
+ 	@$(NORMAL_INSTALL)
+diff --git a/src/modules/mp/fixed_bitmap/Makefile.in b/src/modules/mp/fixed_bitmap/Makefile.in
+index d270758..cd371f9 100644
+--- a/src/modules/mp/fixed_bitmap/Makefile.in
++++ b/src/modules/mp/fixed_bitmap/Makefile.in
 @@ -142,6 +142,7 @@ LIBS = @LIBS@
  LIBTOOL = @LIBTOOL@
  LN_S = @LN_S@
@@ -658,110 +757,11 @@ index 039f6cc..fcdc02f 100644
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
  install-controllerLTLIBRARIES: $(controller_LTLIBRARIES)
  	@$(NORMAL_INSTALL)
-diff --git a/src/modules/mp/ememoa_fixed/Makefile.in b/src/modules/mp/ememoa_fixed/Makefile.in
-index 4060a0b..6832fab 100644
---- a/src/modules/mp/ememoa_fixed/Makefile.in
-+++ b/src/modules/mp/ememoa_fixed/Makefile.in
-@@ -141,6 +141,7 @@ LIBS = @LIBS@
- LIBTOOL = @LIBTOOL@
- LN_S = @LN_S@
- LTLIBOBJS = @LTLIBOBJS@
-+MAINT = @MAINT@
- MAKEINFO = @MAKEINFO@
- MKDIR_P = @MKDIR_P@
- MODULE_ARCH = @MODULE_ARCH@
-@@ -237,7 +238,7 @@ all: all-am
- 
- .SUFFIXES:
- .SUFFIXES: .c .lo .o .obj
--$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
-+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
- 	@for dep in $?; do \
- 	  case '$(am__configure_deps)' in \
- 	    *$$dep*) \
-@@ -262,9 +263,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
- $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- 
--$(top_srcdir)/configure:  $(am__configure_deps)
-+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
--$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
-+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- install-controllerLTLIBRARIES: $(controller_LTLIBRARIES)
- 	@$(NORMAL_INSTALL)
-diff --git a/src/modules/mp/ememoa_unknown/Makefile.in b/src/modules/mp/ememoa_unknown/Makefile.in
-index aed508b..84a8f35 100644
---- a/src/modules/mp/ememoa_unknown/Makefile.in
-+++ b/src/modules/mp/ememoa_unknown/Makefile.in
-@@ -141,6 +141,7 @@ LIBS = @LIBS@
- LIBTOOL = @LIBTOOL@
- LN_S = @LN_S@
- LTLIBOBJS = @LTLIBOBJS@
-+MAINT = @MAINT@
- MAKEINFO = @MAKEINFO@
- MKDIR_P = @MKDIR_P@
- MODULE_ARCH = @MODULE_ARCH@
-@@ -237,7 +238,7 @@ all: all-am
- 
- .SUFFIXES:
- .SUFFIXES: .c .lo .o .obj
--$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
-+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
- 	@for dep in $?; do \
- 	  case '$(am__configure_deps)' in \
- 	    *$$dep*) \
-@@ -262,9 +263,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
- $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- 
--$(top_srcdir)/configure:  $(am__configure_deps)
-+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
--$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
-+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- install-controllerLTLIBRARIES: $(controller_LTLIBRARIES)
- 	@$(NORMAL_INSTALL)
-diff --git a/src/modules/mp/fixed_bitmap/Makefile.in b/src/modules/mp/fixed_bitmap/Makefile.in
-index 684cab9..494db03 100644
---- a/src/modules/mp/fixed_bitmap/Makefile.in
-+++ b/src/modules/mp/fixed_bitmap/Makefile.in
-@@ -141,6 +141,7 @@ LIBS = @LIBS@
- LIBTOOL = @LIBTOOL@
- LN_S = @LN_S@
- LTLIBOBJS = @LTLIBOBJS@
-+MAINT = @MAINT@
- MAKEINFO = @MAKEINFO@
- MKDIR_P = @MKDIR_P@
- MODULE_ARCH = @MODULE_ARCH@
-@@ -234,7 +235,7 @@ all: all-am
- 
- .SUFFIXES:
- .SUFFIXES: .c .lo .o .obj
--$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
-+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
- 	@for dep in $?; do \
- 	  case '$(am__configure_deps)' in \
- 	    *$$dep*) \
-@@ -259,9 +260,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
- $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- 
--$(top_srcdir)/configure:  $(am__configure_deps)
-+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
--$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
-+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
- 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
- install-controllerLTLIBRARIES: $(controller_LTLIBRARIES)
- 	@$(NORMAL_INSTALL)
 diff --git a/src/modules/mp/pass_through/Makefile.in b/src/modules/mp/pass_through/Makefile.in
-index b23c5ae..5b3e96a 100644
+index 50f5b15..d5c043f 100644
 --- a/src/modules/mp/pass_through/Makefile.in
 +++ b/src/modules/mp/pass_through/Makefile.in
-@@ -141,6 +141,7 @@ LIBS = @LIBS@
+@@ -142,6 +142,7 @@ LIBS = @LIBS@
  LIBTOOL = @LIBTOOL@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
@@ -769,7 +769,7 @@ index b23c5ae..5b3e96a 100644
  MAKEINFO = @MAKEINFO@
  MKDIR_P = @MKDIR_P@
  MODULE_ARCH = @MODULE_ARCH@
-@@ -236,7 +237,7 @@ all: all-am
+@@ -237,7 +238,7 @@ all: all-am
  
  .SUFFIXES:
  .SUFFIXES: .c .lo .o .obj
@@ -778,7 +778,7 @@ index b23c5ae..5b3e96a 100644
  	@for dep in $?; do \
  	  case '$(am__configure_deps)' in \
  	    *$$dep*) \
-@@ -261,9 +262,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+@@ -262,9 +263,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
  $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
  
@@ -791,10 +791,10 @@ index b23c5ae..5b3e96a 100644
  install-controllerLTLIBRARIES: $(controller_LTLIBRARIES)
  	@$(NORMAL_INSTALL)
 diff --git a/src/tests/Makefile.in b/src/tests/Makefile.in
-index ed6dfa0..83fc897 100644
+index c754722..424aafc 100644
 --- a/src/tests/Makefile.in
 +++ b/src/tests/Makefile.in
-@@ -200,6 +200,7 @@ LIBS = @LIBS@
+@@ -201,6 +201,7 @@ LIBS = @LIBS@
  LIBTOOL = @LIBTOOL@
  LN_S = @LN_S@
  LTLIBOBJS = @LTLIBOBJS@
@@ -802,7 +802,7 @@ index ed6dfa0..83fc897 100644
  MAKEINFO = @MAKEINFO@
  MKDIR_P = @MKDIR_P@
  MODULE_ARCH = @MODULE_ARCH@
-@@ -331,7 +332,7 @@ all: all-am
+@@ -332,7 +333,7 @@ all: all-am
  
  .SUFFIXES:
  .SUFFIXES: .c .lo .o .obj
@@ -811,7 +811,7 @@ index ed6dfa0..83fc897 100644
  	@for dep in $?; do \
  	  case '$(am__configure_deps)' in \
  	    *$$dep*) \
-@@ -356,9 +357,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+@@ -357,9 +358,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
  $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
  	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
  

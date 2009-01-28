@@ -1,3 +1,12 @@
+eina (0.0.1~svn20090128-1) experimental; urgency=low
+
+  * New SVN snapshot
+    - libeina-0.0.1a is now libeina-0.0.1b, due to API break
+    - refresh patches
+  * Remove a part concerning libeina-dev from the description of libeina-0.0.1b
+
+ -- Albin Tonnerre <albin.tonnerre@gmail.com>  Wed, 28 Jan 2009 23:28:36 +0100
+
 eina (0.0.1~svn20081120-2) experimental; urgency=low
 
   * Remove version number from -dev package name since it's not really useful
