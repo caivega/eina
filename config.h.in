@@ -29,6 +29,9 @@
 /* Use by the test suite to try ememoa mempool */
 #undef EINA_EMEMOA_SUPPORT
 
+/* disable safety checks for NULL pointers and like. */
+#undef EINA_SAFETY_CHECKS
+
 /* Set to 1 if chained pool is statically built */
 #undef EINA_STATIC_BUILD_CHAINED_POOL
 

@@ -1,5 +1,5 @@
 /* EINA - EFL data type library
- * Copyright (C) 2008 Cedric Bail
+ * Copyright (C) 2007-2008 Jorge Luis Zapata Muga
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,22 +16,21 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EINA_CONFIG_H_
-#define EINA_CONFIG_H_
+#ifndef EINA_TILER_H_
+#define EINA_TILER_H_
 
-#undef EINA_MAGIC_DEBUG
-#if @EINA_MAGIC_DEBUG@
-#define EINA_MAGIC_DEBUG
-#endif
+#include "eina_types.h"
+#include "eina_iterator.h"
+#include "eina_rectangle.h"
 
-#undef EINA_DEFAULT_MEMPOOL
-#if @EINA_DEFAULT_MEMPOOL@
-#define EINA_DEFAULT_MEMPOOL
-#endif
+typedef struct _Eina_Tiler Eina_Tiler;
 
-#undef EINA_SAFETY_CHECKS
-#if @EINA_SAFETY_CHECKS@
-#define EINA_SAFETY_CHECKS
-#endif
+EAPI Eina_Tiler *eina_tiler_new(int w, int h);
+EAPI void eina_tiler_del(Eina_Tiler *t);
+EAPI void eina_tiler_tile_size_set(Eina_Tiler *t, int w, int h);
+EAPI Eina_Bool eina_tiler_rect_add(Eina_Tiler *t, Eina_Rectangle *r);
+EAPI void eina_tiler_rect_del(Eina_Tiler *t, Eina_Rectangle *r);
+EAPI void eina_tiler_clear(Eina_Tiler *t);
+EAPI Eina_Iterator * eina_tiler_iterator_new(const Eina_Tiler *t);
 
-#endif /* EINA_CONFIG_H_ */
+#endif /* EINA_TILER_H_ */

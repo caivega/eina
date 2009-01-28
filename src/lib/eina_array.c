@@ -23,8 +23,49 @@
 /**
  * @page tutorial_array_page Array Tutorial
  *
- * to be written...
+ * The Array data type is allow the storage of data like a C array.
+ * It is designed such that the access to its element is very fast.
+ * But the addition or removal can be done only at the end of the
+ * array. To add or remove an element at any location, the Eina
+ * @ref Eina_List_Group is the correct container is the correct one.
  *
+ * @section tutorial_error_basic_usage Basic Usage
+ *
+ * The first thing to do when using arrays is to initialize the array
+ * module with eina_array_init() and, when no more arrays are used, the
+ * module is shut down with eina_array_shutdown(). So a basic program
+ * would look like that:
+ *
+ * @code
+ * #include <stdlib.h>
+ * #include <stdio.h>
+ *
+ * #include <eina_array.h>
+ *
+ * int main(void)
+ * {
+ *    if (!eina_array_init())
+ *    {
+ *        printf ("Error during the initialization of eina_error module\n");
+ *        return EXIT_FAILURE;
+ *    }
+ *
+ *    eina_array_shutdown();
+ *
+ *    return EXIT_SUCCESS;
+ * }
+ * @endcode
+ *
+ * All program using any module of eina must be compiled with the
+ * following command:
+ *
+ * @code
+ * gcc -Wall -o my_exe my_source.c `pkg-config --cflags --libs eina`
+ * @endcode
+ *
+ * Then, an array must created with eina_array_new().
+ *
+ * To be continued
  */
 
 #ifdef HAVE_CONFIG_H
@@ -35,10 +76,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "eina_types.h"
 #include "eina_error.h"
 #include "eina_array.h"
 #include "eina_inline_array.x"
 #include "eina_private.h"
+#include "eina_safety_checks.h"
 
 /*============================================================================*
  *                                  Local                                     *
@@ -72,23 +115,29 @@ struct _Eina_Iterator_Array
 {
    Eina_Iterator iterator;
 
-   EINA_MAGIC;
-
    const Eina_Array *array;
    unsigned int index;
+
+   EINA_MAGIC
 };
 
 typedef struct _Eina_Accessor_Array Eina_Accessor_Array;
 struct _Eina_Accessor_Array
 {
    Eina_Accessor accessor;
-
-   EINA_MAGIC;
-
    const Eina_Array *array;
+   EINA_MAGIC
 };
 
 static int _eina_array_init_count = 0;
+
+static void eina_array_iterator_free(Eina_Iterator_Array *it) EINA_ARG_NONNULL(1);
+static Eina_Array *eina_array_iterator_get_container(Eina_Iterator_Array *it) EINA_ARG_NONNULL(1);
+static Eina_Bool eina_array_iterator_next(Eina_Iterator_Array *it, void **data) EINA_ARG_NONNULL(1);
+
+static Eina_Bool eina_array_accessor_get_at(Eina_Accessor_Array *it, unsigned int index, void **data) EINA_ARG_NONNULL(1);
+static Eina_Array *eina_array_accessor_get_container(Eina_Accessor_Array *it) EINA_ARG_NONNULL(1);
+static void eina_array_accessor_free(Eina_Accessor_Array *it) EINA_ARG_NONNULL(1);
 
 static Eina_Bool
 eina_array_iterator_next(Eina_Iterator_Array *it, void **data)
@@ -150,6 +199,7 @@ eina_array_grow(Eina_Array *array)
    unsigned int total;
 
    EINA_MAGIC_CHECK_ARRAY(array);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(array, EINA_FALSE);
 
    total = array->total + array->step;
    eina_error_set(0);
@@ -182,6 +232,12 @@ eina_array_grow(Eina_Array *array)
  * @addtogroup Eina_Array_Group Array
  *
  * @brief These functions provide array management.
+ *
+ * The Array data type in Eina is designed to have a very fast access to
+ * its data (compared to the Eina @ref Eina_List_Group). On the other hand,
+ * data can be added or removed only at the end of the array. To insert
+ * data at any place, he Eina @ref Eina_List_Group is the correct container
+ * to use.
  *
  * To use the array data type, eina_array_init() must be called before
  * any other array functions. When no more array function is used,
@@ -320,6 +376,7 @@ eina_array_free(Eina_Array *array)
    eina_array_flush(array);
 
    EINA_MAGIC_CHECK_ARRAY(array);
+   EINA_SAFETY_ON_NULL_RETURN(array);
    MAGIC_FREE(array);
 }
 
@@ -336,6 +393,7 @@ eina_array_free(Eina_Array *array)
 EAPI void
 eina_array_step_set(Eina_Array *array, unsigned int step)
 {
+  EINA_SAFETY_ON_NULL_RETURN(array);
   array->data = NULL;
   array->total = 0;
   array->count = 0;
@@ -356,6 +414,7 @@ EAPI void
 eina_array_clean(Eina_Array *array)
 {
    EINA_MAGIC_CHECK_ARRAY(array);
+   EINA_SAFETY_ON_NULL_RETURN(array);
    array->count = 0;
 }
 
@@ -373,10 +432,12 @@ EAPI void
 eina_array_flush(Eina_Array *array)
 {
    EINA_MAGIC_CHECK_ARRAY(array);
+   EINA_SAFETY_ON_NULL_RETURN(array);
    array->count = 0;
    array->total = 0;
 
-   if (array->data) free(array->data);
+   if (!array->data) return;
+   free(array->data);
    array->data = NULL;
 }
 
@@ -407,6 +468,9 @@ eina_array_remove(Eina_Array *array, Eina_Bool (*keep)(void *data, void *gdata),
    unsigned int i;
 
    EINA_MAGIC_CHECK_ARRAY(array);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(array, EINA_FALSE);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(keep, EINA_FALSE);
+
    if (array->total == 0) return EINA_TRUE;
 
    for (i = 0; i < array->count; ++i)
@@ -494,7 +558,9 @@ eina_array_iterator_new(const Eina_Array *array)
 {
    Eina_Iterator_Array *it;
 
-   if (!array) return NULL;
+   EINA_MAGIC_CHECK_ARRAY(array);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(array, NULL);
+
    if (eina_array_count_get(array) <= 0) return NULL;
 
    eina_error_set(0);
@@ -533,7 +599,8 @@ eina_array_accessor_new(const Eina_Array *array)
 {
    Eina_Accessor_Array *it;
 
-   if (!array) return NULL;
+   EINA_MAGIC_CHECK_ARRAY(array);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(array, NULL);
 
    eina_error_set(0);
    it = calloc(1, sizeof (Eina_Accessor_Array));

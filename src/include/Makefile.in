@@ -33,8 +33,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = src/include
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
-	$(srcdir)/eina_config.h.in
+DIST_COMMON = $(dist_installed_headers_DATA) \
+	$(dist_installed_mainheader_DATA) $(srcdir)/Makefile.am \
+	$(srcdir)/Makefile.in $(srcdir)/eina_config.h.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_attribute.m4 \
 	$(top_srcdir)/m4/efl_benchmark.m4 \
@@ -57,9 +58,10 @@ am__vpath_adj = case $$p in \
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(installed_headersdir)" \
 	"$(DESTDIR)$(installed_mainheaderdir)"
-installed_headersDATA_INSTALL = $(INSTALL_DATA)
-installed_mainheaderDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(installed_headers_DATA) $(installed_mainheader_DATA)
+dist_installed_headersDATA_INSTALL = $(INSTALL_DATA)
+dist_installed_mainheaderDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(dist_installed_headers_DATA) \
+	$(dist_installed_mainheader_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 ALLOCA = @ALLOCA@
@@ -99,6 +101,7 @@ EINA_CFLAGS = @EINA_CFLAGS@
 EINA_DEFAULT_MEMPOOL = @EINA_DEFAULT_MEMPOOL@
 EINA_LIBS = @EINA_LIBS@
 EINA_MAGIC_DEBUG = @EINA_MAGIC_DEBUG@
+EINA_SAFETY_CHECKS = @EINA_SAFETY_CHECKS@
 EMEMOA_CFLAGS = @EMEMOA_CFLAGS@
 EMEMOA_LIBS = @EMEMOA_LIBS@
 EVAS_CFLAGS = @EVAS_CFLAGS@
@@ -196,6 +199,7 @@ top_srcdir = @top_srcdir@
 version_info = @version_info@
 MAINTAINERCLEANFILES = Makefile.in
 EINAHEADERS = \
+eina_safety_checks.h \
 eina_error.h \
 eina_f16p16.h \
 eina_hash.h \
@@ -221,16 +225,17 @@ eina_benchmark.h \
 eina_inline_rbtree.x \
 eina_inline_mempool.x \
 eina_inline_rectangle.x \
-eina_iterator.h
+eina_iterator.h \
+eina_main.h \
+eina_cpu.h \
+eina_tiler.h
 
-installed_mainheaderdir = $(prefix)/include/eina-@VMAJ@
-installed_mainheader_DATA = Eina.h eina_config.h
-installed_headersdir = $(prefix)/include/eina-@VMAJ@/eina
-installed_headers_DATA = $(EINAHEADERS)
+installed_mainheaderdir = $(includedir)/eina-@VMAJ@
+dist_installed_mainheader_DATA = Eina.h eina_config.h
+installed_headersdir = $(includedir)/eina-@VMAJ@/eina
+dist_installed_headers_DATA = $(EINAHEADERS)
 EXTRA_DIST = \
-Eina.h \
 eina_config.h.in \
-$(EINAHEADERS) \
 eina_private.h
 
 all: all-am
@@ -273,36 +278,36 @@ mostlyclean-libtool:
 
 clean-libtool:
 	-rm -rf .libs _libs
-install-installed_headersDATA: $(installed_headers_DATA)
+install-dist_installed_headersDATA: $(dist_installed_headers_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(installed_headersdir)" || $(MKDIR_P) "$(DESTDIR)$(installed_headersdir)"
-	@list='$(installed_headers_DATA)'; for p in $$list; do \
+	@list='$(dist_installed_headers_DATA)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(installed_headersDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(installed_headersdir)/$$f'"; \
-	  $(installed_headersDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(installed_headersdir)/$$f"; \
+	  echo " $(dist_installed_headersDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(installed_headersdir)/$$f'"; \
+	  $(dist_installed_headersDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(installed_headersdir)/$$f"; \
 	done
 
-uninstall-installed_headersDATA:
+uninstall-dist_installed_headersDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(installed_headers_DATA)'; for p in $$list; do \
+	@list='$(dist_installed_headers_DATA)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
 	  echo " rm -f '$(DESTDIR)$(installed_headersdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(installed_headersdir)/$$f"; \
 	done
-install-installed_mainheaderDATA: $(installed_mainheader_DATA)
+install-dist_installed_mainheaderDATA: $(dist_installed_mainheader_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(installed_mainheaderdir)" || $(MKDIR_P) "$(DESTDIR)$(installed_mainheaderdir)"
-	@list='$(installed_mainheader_DATA)'; for p in $$list; do \
+	@list='$(dist_installed_mainheader_DATA)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(installed_mainheaderDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(installed_mainheaderdir)/$$f'"; \
-	  $(installed_mainheaderDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(installed_mainheaderdir)/$$f"; \
+	  echo " $(dist_installed_mainheaderDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(installed_mainheaderdir)/$$f'"; \
+	  $(dist_installed_mainheaderDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(installed_mainheaderdir)/$$f"; \
 	done
 
-uninstall-installed_mainheaderDATA:
+uninstall-dist_installed_mainheaderDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(installed_mainheader_DATA)'; for p in $$list; do \
+	@list='$(dist_installed_mainheader_DATA)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
 	  echo " rm -f '$(DESTDIR)$(installed_mainheaderdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(installed_mainheaderdir)/$$f"; \
@@ -390,8 +395,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-installed_headersDATA \
-	install-installed_mainheaderDATA
+install-data-am: install-dist_installed_headersDATA \
+	install-dist_installed_mainheaderDATA
 
 install-dvi: install-dvi-am
 
@@ -425,24 +430,25 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-installed_headersDATA \
-	uninstall-installed_mainheaderDATA
+uninstall-am: uninstall-dist_installed_headersDATA \
+	uninstall-dist_installed_mainheaderDATA
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-libtool \
 	distclean distclean-generic distclean-libtool distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-installed_headersDATA \
-	install-installed_mainheaderDATA install-man install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-installed_headersDATA \
-	uninstall-installed_mainheaderDATA
+	install-data install-data-am \
+	install-dist_installed_headersDATA \
+	install-dist_installed_mainheaderDATA install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	uninstall uninstall-am uninstall-dist_installed_headersDATA \
+	uninstall-dist_installed_mainheaderDATA
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

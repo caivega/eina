@@ -20,6 +20,7 @@
 # include "config.h"
 #endif
 
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "eina_counter.h"
@@ -41,6 +42,7 @@ END_TEST
 START_TEST(eina_counter_simple)
 {
    Eina_Counter *cnt;
+   char *dump;
    int i;
 
    eina_counter_init();
@@ -62,7 +64,12 @@ START_TEST(eina_counter_simple)
 
    eina_counter_stop(cnt, i);
 
-   eina_counter_dump(cnt, stderr);
+   dump = eina_counter_dump(cnt);
+   fail_if(!dump);
+
+   fprintf(stderr, "%s", dump);
+
+   free(dump);
 
    eina_counter_delete(cnt);
 
@@ -73,6 +80,7 @@ END_TEST
 START_TEST(eina_counter_break)
 {
    Eina_Counter *cnt;
+   char *dump;
 
    eina_counter_init();
 
@@ -83,7 +91,10 @@ START_TEST(eina_counter_break)
 
    eina_counter_delete(cnt);
 
-   eina_counter_dump(NULL, stderr);
+   dump = eina_counter_dump(NULL);
+   fail_if(dump);
+
+   free(dump);
 
    eina_counter_shutdown();
 }

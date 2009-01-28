@@ -25,8 +25,29 @@
 
 #include <stdlib.h>
 
-#include "eina_iterator.h"
 #include "eina_private.h"
+
+#include "eina_iterator.h"
+#include "eina_safety_checks.h"
+
+/*============================================================================*
+ *                                  Local                                     *
+ *============================================================================*/
+
+/**
+ * @cond LOCAL
+ */
+
+#define EINA_MAGIC_CHECK_ITERATOR(d)				\
+  do {								\
+    if (!EINA_MAGIC_CHECK(d, EINA_MAGIC_ITERATOR))		\
+      EINA_MAGIC_FAIL(d, EINA_MAGIC_ITERATOR);			\
+  } while(0);
+
+/**
+ * @endcond
+ */
+
 
 /*============================================================================*
  *                                 Global                                     *
@@ -72,7 +93,10 @@
 EAPI void
 eina_iterator_free(Eina_Iterator *iterator)
 {
-   if (iterator) iterator->free(iterator);
+   EINA_MAGIC_CHECK_ITERATOR(iterator);
+   EINA_SAFETY_ON_NULL_RETURN(iterator);
+   EINA_SAFETY_ON_NULL_RETURN(iterator->free);
+   iterator->free(iterator);
 }
 
 /**
@@ -87,7 +111,9 @@ eina_iterator_free(Eina_Iterator *iterator)
 EAPI void *
 eina_iterator_container_get(Eina_Iterator *iterator)
 {
-   if (!iterator) return NULL;
+   EINA_MAGIC_CHECK_ITERATOR(iterator);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(iterator, NULL);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(iterator->get_container, NULL);
    return iterator->get_container(iterator);
 }
 
@@ -107,6 +133,10 @@ EAPI Eina_Bool
 eina_iterator_next(Eina_Iterator *iterator, void **data)
 {
    if (!iterator) return EINA_FALSE;
+   EINA_MAGIC_CHECK_ITERATOR(iterator);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(iterator, EINA_FALSE);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(iterator->next, EINA_FALSE);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(data, EINA_FALSE);
    return iterator->next(iterator, data);
 }
 
@@ -127,10 +157,14 @@ eina_iterator_foreach(Eina_Iterator *iterator,
 		      Eina_Each cb,
 		      const void *fdata)
 {
-   void *container;
+   const void *container;
    void *data;
 
-   if (!iterator) return ;
+   EINA_MAGIC_CHECK_ITERATOR(iterator);
+   EINA_SAFETY_ON_NULL_RETURN(iterator);
+   EINA_SAFETY_ON_NULL_RETURN(iterator->get_container);
+   EINA_SAFETY_ON_NULL_RETURN(iterator->next);
+   EINA_SAFETY_ON_NULL_RETURN(cb);
 
    container = iterator->get_container(iterator);
    while (iterator->next(iterator, &data) == EINA_TRUE) {

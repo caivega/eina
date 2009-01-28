@@ -29,10 +29,12 @@
 #include "eina_hash.h"
 #include "eina_module.h"
 #include "eina_private.h"
+#include "eina_safety_checks.h"
 
 /*============================================================================*
  *                                  Local                                     *
  *============================================================================*/
+
 static Eina_Hash *_backends;
 static Eina_Array *_modules;
 static int _init_count = 0;
@@ -42,7 +44,7 @@ _new_from_buffer(const char *name, const char *context, const char *options, va_
 {
 	Eina_Mempool_Backend *be;
 	Eina_Mempool *mp;
-	
+
 	Eina_Error err = EINA_ERROR_NOT_MEMPOOL_MODULE;
 
 	eina_error_set(0);
@@ -94,6 +96,7 @@ void fixed_bitmap_shutdown(void);
 /*============================================================================*
  *                                 Global                                     *
  *============================================================================*/
+
 EAPI Eina_Bool eina_mempool_register(Eina_Mempool_Backend *be)
 {
 	return eina_hash_add(_backends, be->name, be);
@@ -103,6 +106,7 @@ EAPI void eina_mempool_unregister(Eina_Mempool_Backend *be)
 {
 	eina_hash_del(_backends, be->name, be);
 }
+
 /*============================================================================*
  *                                   API                                      *
  *============================================================================*/
@@ -194,7 +198,7 @@ eina_mempool_shutdown(void)
 }
 
 /**
- * 
+ *
  */
 EAPI Eina_Mempool *
 eina_mempool_new(const char *name, const char *context, const char *options, ...)
@@ -202,7 +206,7 @@ eina_mempool_new(const char *name, const char *context, const char *options, ...
 	Eina_Mempool *mp;
 	va_list args;
 
-	if (!name) return NULL;
+	EINA_SAFETY_ON_NULL_RETURN_VAL(name, NULL);
 
 	va_start(args, options);
 	mp = _new_from_buffer(name, context, options, args);
@@ -212,28 +216,26 @@ eina_mempool_new(const char *name, const char *context, const char *options, ...
 }
 
 /**
- * 
+ *
  */
 EAPI void eina_mempool_delete(Eina_Mempool *mp)
 {
-	if (!mp) return ;
-
+        EINA_SAFETY_ON_NULL_RETURN(mp);
+	EINA_SAFETY_ON_NULL_RETURN(mp->backend.shutdown);
 	mp->backend.shutdown(mp->backend_data);
 	free(mp);
 }
 
 EAPI void eina_mempool_gc(Eina_Mempool *mp)
 {
-	assert(mp);
-	assert(mp->backend.garbage_collect);
-
+        EINA_SAFETY_ON_NULL_RETURN(mp);
+        EINA_SAFETY_ON_NULL_RETURN(mp->backend.garbage_collect);
 	mp->backend.garbage_collect(mp->backend_data);
 }
 
 EAPI void eina_mempool_statistics(Eina_Mempool *mp)
 {
-	assert(mp);
-	assert(mp->backend.statistics);
-
+        EINA_SAFETY_ON_NULL_RETURN(mp);
+        EINA_SAFETY_ON_NULL_RETURN(mp->backend.statistics);
 	mp->backend.statistics(mp->backend_data);
 }
