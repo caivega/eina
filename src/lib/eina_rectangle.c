@@ -26,6 +26,7 @@
 #include "eina_magic.h"
 #include "eina_inlist.h"
 #include "eina_private.h"
+#include "eina_safety_checks.h"
 
 /*============================================================================*
  *                                  Local                                     *
@@ -42,22 +43,20 @@ typedef struct _Eina_Rectangle_Alloc Eina_Rectangle_Alloc;
 
 struct _Eina_Rectangle_Pool
 {
-   EINA_MAGIC;
-
    Eina_Inlist *head;
    void *data;
 
    unsigned int references;
    int w;
    int h;
+   EINA_MAGIC
 };
 
 struct _Eina_Rectangle_Alloc
 {
    EINA_INLIST;
-   EINA_MAGIC;
-
    Eina_Rectangle_Pool *pool;
+   EINA_MAGIC
 };
 
 #define EINA_MAGIC_CHECK_RECTANGLE_POOL(d)		       \
@@ -104,7 +103,6 @@ _eina_rectangle_pool_find(Eina_Rectangle_Alloc *head, int poolw, int poolh, int 
 	Eina_Bool t2 = EINA_TRUE;
 	Eina_Bool t3 = EINA_TRUE;
 	Eina_Bool t4 = EINA_TRUE;
-	Eina_Bool intersects;
 
 	if ((rect->x + rect->w + w) > poolw) t1 = EINA_FALSE;
 	if ((rect->y + h) > poolh) t1 = EINA_FALSE;
@@ -115,9 +113,9 @@ _eina_rectangle_pool_find(Eina_Rectangle_Alloc *head, int poolw, int poolh, int 
 	if ((rect->x + w) > poolw) t4 = EINA_FALSE;
 	if ((rect->y - h) < 0) t4 = EINA_FALSE;
 
-	intersects = EINA_FALSE;
 	if (t1)
 	  {
+	     Eina_Bool intersects;
 	     /* 1. try here:
 	      * +----++--+
 	      * |AAAA||??|
@@ -130,9 +128,9 @@ _eina_rectangle_pool_find(Eina_Rectangle_Alloc *head, int poolw, int poolh, int 
 
 	     if (!intersects) goto on_intersect;
 	  }
-	intersects = EINA_FALSE;
 	if (t2)
 	  {
+	     Eina_Bool intersects;
 	     /* 2. try here:
 	      * +----+
 	      * |AAAA|
@@ -148,9 +146,9 @@ _eina_rectangle_pool_find(Eina_Rectangle_Alloc *head, int poolw, int poolh, int 
 
 	     if (!intersects) goto on_intersect;
 	  }
-	intersects = EINA_FALSE;
 	if (t3)
 	  {
+	     Eina_Bool intersects;
 	     /* 3. try here:
 	      * +--++----+
 	      * |??||AAAA|
@@ -163,9 +161,9 @@ _eina_rectangle_pool_find(Eina_Rectangle_Alloc *head, int poolw, int poolh, int 
 
 	     if (!intersects) goto on_intersect;
 	  }
-	intersects = EINA_FALSE;
 	if (t4)
 	  {
+	     Eina_Bool intersects;
 	     /* 2. try here:
 	      * +--+
 	      * |??|
@@ -226,7 +224,7 @@ eina_rectangle_pool_delete(Eina_Rectangle_Pool *pool)
 {
    Eina_Rectangle_Alloc *del;
 
-   if (!pool) return ;
+   EINA_SAFETY_ON_NULL_RETURN(pool);
    while (pool->head)
      {
 	del = (Eina_Rectangle_Alloc*) pool->head;
@@ -242,7 +240,7 @@ eina_rectangle_pool_delete(Eina_Rectangle_Pool *pool)
 EAPI int
 eina_rectangle_pool_count(Eina_Rectangle_Pool *pool)
 {
-   if (!pool) return 0;
+   EINA_SAFETY_ON_NULL_RETURN_VAL(pool, 0);
    return pool->references;
 }
 
@@ -255,7 +253,8 @@ eina_rectangle_pool_request(Eina_Rectangle_Pool *pool, int w, int h)
    int x;
    int y;
 
-   if (!pool) return NULL;
+   EINA_SAFETY_ON_NULL_RETURN_VAL(pool, NULL);
+
    if (w > pool->w || h > pool->h) return NULL;
 
    test = _eina_rectangle_pool_find((Eina_Rectangle_Alloc*) pool->head, pool->w, pool->h, w, h, &x, &y);
@@ -282,6 +281,8 @@ eina_rectangle_pool_release(Eina_Rectangle *rect)
 {
    Eina_Rectangle_Alloc *era = ((Eina_Rectangle_Alloc *) rect) - 1;
 
+   EINA_SAFETY_ON_NULL_RETURN(rect);
+
    EINA_MAGIC_CHECK_RECTANGLE_ALLOC(era);
    EINA_MAGIC_CHECK_RECTANGLE_POOL(era->pool);
 
@@ -296,7 +297,7 @@ eina_rectangle_pool_get(Eina_Rectangle *rect)
 {
    Eina_Rectangle_Alloc *era = ((Eina_Rectangle_Alloc *) rect) - 1;
 
-   if (!rect) return NULL;
+   EINA_SAFETY_ON_NULL_RETURN_VAL(rect, NULL);
 
    EINA_MAGIC_CHECK_RECTANGLE_ALLOC(era);
    EINA_MAGIC_CHECK_RECTANGLE_POOL(era->pool);
@@ -307,9 +308,8 @@ eina_rectangle_pool_get(Eina_Rectangle *rect)
 EAPI void
 eina_rectangle_pool_data_set(Eina_Rectangle_Pool *pool, const void *data)
 {
-   if (!pool) return ;
-
    EINA_MAGIC_CHECK_RECTANGLE_POOL(pool);
+   EINA_SAFETY_ON_NULL_RETURN(pool);
 
    pool->data = (void*) data;
 }
@@ -317,9 +317,8 @@ eina_rectangle_pool_data_set(Eina_Rectangle_Pool *pool, const void *data)
 EAPI void *
 eina_rectangle_pool_data_get(Eina_Rectangle_Pool *pool)
 {
-   if (!pool) return NULL;
-
    EINA_MAGIC_CHECK_RECTANGLE_POOL(pool);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(pool, NULL);
 
    return pool->data;
 }
@@ -330,6 +329,7 @@ eina_rectangle_pool_geometry_get(Eina_Rectangle_Pool *pool, int *w, int *h)
    if (!pool) return EINA_FALSE;
 
    EINA_MAGIC_CHECK_RECTANGLE_POOL(pool);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(pool, EINA_FALSE);
 
    if (w) *w = pool->w;
    if (h) *h = pool->h;

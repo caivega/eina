@@ -60,6 +60,7 @@ void *alloca (size_t);
 
 #include "eina_file.h"
 #include "eina_private.h"
+#include "eina_safety_checks.h"
 
 /*============================================================================*
  *                                 Global                                     *
@@ -118,7 +119,9 @@ eina_file_dir_list(const char *dir, Eina_Bool recursive, Eina_File_Dir_List_Cb c
 	struct dirent *de;
 	DIR *d;
 
-	if (!cb) return EINA_FALSE;
+	EINA_SAFETY_ON_NULL_RETURN_VAL(cb, EINA_FALSE);
+	EINA_SAFETY_ON_NULL_RETURN_VAL(dir, EINA_FALSE);
+	EINA_SAFETY_ON_TRUE_RETURN_VAL(dir[0] == '\0', EINA_FALSE);
 
 	d = opendir(dir);
 	if (!d) return EINA_FALSE;
@@ -138,8 +141,9 @@ eina_file_dir_list(const char *dir, Eina_Bool recursive, Eina_File_Dir_List_Cb c
 			strcpy(path, dir);
 			strcat(path, "/");
 			strcat(path, de->d_name);
-
+#ifndef sun
 			if (de->d_type == DT_UNKNOWN) {
+#endif
 				struct stat st;
 
 				if (stat(path, &st))
@@ -147,9 +151,11 @@ eina_file_dir_list(const char *dir, Eina_Bool recursive, Eina_File_Dir_List_Cb c
 
 				if (!S_ISDIR(st.st_mode))
 					continue ;
+#ifndef sun
 			} else if (de->d_type != DT_DIR) {
 				continue ;
 			}
+#endif
 
 			eina_file_dir_list(path, recursive, cb, data);
 		}
@@ -161,10 +167,11 @@ eina_file_dir_list(const char *dir, Eina_Bool recursive, Eina_File_Dir_List_Cb c
 	HANDLE          hSearch;
 	char           *new_dir;
 	TCHAR          *tdir;
-	int             length_dir;
+	size_t          length_dir;
 
-	if (!cb) return EINA_FALSE;
-	if (!dir || (*dir == '\0')) return EINA_FALSE;
+	EINA_SAFETY_ON_NULL_RETURN_VAL(cb, EINA_FALSE);
+	EINA_SAFETY_ON_NULL_RETURN_VAL(dir, EINA_FALSE);
+	EINA_SAFETY_ON_TRUE_RETURN_VAL(dir[0] == '\0', EINA_FALSE);
 
 	length_dir = strlen(dir);
 	new_dir = (char *)alloca(length_dir + 5);
@@ -243,9 +250,9 @@ eina_file_split(char *path)
 {
 	Eina_Array *ea;
 	char *current;
-	int length;
+	size_t length;
 
-	if (!path) return NULL;
+	EINA_SAFETY_ON_NULL_RETURN_VAL(path, NULL);
 
 	ea = eina_array_new(16);
 

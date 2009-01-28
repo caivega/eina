@@ -16,29 +16,11 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EINA_SUITE_H_
-#define EINA_SUITE_H_
+#ifndef EINA_MAIN_H_
+#define EINA_MAIN_H_
 
-#include <check.h>
+EAPI int eina_init(void);
 
-void eina_test_stringshare(TCase *tc);
-void eina_test_array(TCase *tc);
-void eina_test_error(TCase *tc);
-void eina_test_magic(TCase *tc);
-void eina_test_inlist(TCase *tc);
-void eina_test_lalloc(TCase *tc);
-void eina_test_main(TCase *tc);
-void eina_test_counter(TCase *tc);
-void eina_test_hash(TCase *tc);
-void eina_test_list(TCase *tc);
-void eina_test_iterator(TCase *tc);
-void eina_test_accessor(TCase *tc);
-void eina_test_module(TCase *tc);
-void eina_test_convert(TCase *tc);
-void eina_test_rbtree(TCase *tc);
-void eina_test_file(TCase *tc);
-void eina_test_benchmark(TCase *tc);
-void eina_test_mempool(TCase *tc);
-void eina_test_rectangle(TCase *tc);
+EAPI int eina_shutdown(void);
 
-#endif /* EINA_SUITE_H_ */
+#endif /* EINA_MAIN_H_ */

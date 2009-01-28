@@ -9,4 +9,4 @@ Requires:
 Version: 0.0.1
 Libs: -L${exec_prefix}/lib -leina
 Libs.private: -ldl
-Cflags: -I${prefix}/include/eina-0 -I${prefix}/include/eina-0/eina
+Cflags: -I${includedir}/eina-0 -I${includedir}/eina-0/eina

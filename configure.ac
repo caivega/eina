@@ -62,6 +62,27 @@ if test "x${enable_magic_debug}" = "xyes" ; then
 fi
 AC_SUBST(EINA_MAGIC_DEBUG)
 
+# Safety checks (avoid crashes on wrong api usage)
+want_safety_checks="yes"
+AC_MSG_CHECKING(whether to do safety checking on api parameters)
+AC_ARG_ENABLE(safety-checks,
+  AC_HELP_STRING(
+    [--disable-safety-checks],
+    [disable safety checks for NULL pointers and like. [[default=enabled]]]
+  ),
+  [ want_safety_checks="$enableval" ]
+)
+AC_MSG_RESULT($want_safety_checks)
+
+AM_CONDITIONAL(SAFETY_CHECKS, test "x$want_safety_checks" = "xyes")
+if test "x$want_safety_checks" = "xyes"; then
+  AC_DEFINE(EINA_SAFETY_CHECKS, 1, [disable safety checks for NULL pointers and like.])
+  EINA_SAFETY_CHECKS=1
+else
+  EINA_SAFETY_CHECKS=0
+fi
+AC_SUBST(EINA_SAFETY_CHECKS)
+
 # Choose best memory pool
 AC_ARG_ENABLE([default-mempool],
    [AC_HELP_STRING([--enable-default-mempool], [Default memory allocator could be faster for some computer])],
@@ -196,7 +217,7 @@ AM_CONDITIONAL(EINA_HAVE_ECORE, test "x${have_ecore}" = "xyes")
 # Check if we want to benchmark on real data
 enable_benchmark_e17="no"
 AC_ARG_ENABLE([e17],
-   [AC_HELP_STRING([--enable-e17], [disable heavy benchmark @<:@default=no@:>@])],
+   [AC_HELP_STRING([--enable-e17], [enable heavy benchmark @<:@default=no@:>@])],
    [
     if test "x${enableval}" = "xyes" ; then
        enable_benchmark_e17="yes"
@@ -276,6 +297,9 @@ case "${host_os}" in
    ;;
    *bsd*)
       EINA_LIBS="${EINA_LIBS} -lrt -lm"
+   ;;
+   *darwin*)
+      EINA_LIBS="${EINA_LIBS} -lm"
    ;;
    *)
       EINA_LIBS="${EINA_LIBS} -ldl -lrt -lm"

@@ -80,6 +80,7 @@
 #include "eina_error.h"
 #include "eina_private.h"
 #include "eina_magic.h"
+#include "eina_safety_checks.h"
 
 /*============================================================================*
  *                                  Local                                     *
@@ -112,14 +113,14 @@ struct _Eina_Stringshare
 {
    Eina_Stringshare_Head *buckets[EINA_STRINGSHARE_BUCKETS];
 
-   EINA_MAGIC;
+   EINA_MAGIC
 };
 
 struct _Eina_Stringshare_Node
 {
    Eina_Stringshare_Node *next;
 
-   EINA_MAGIC;
+   EINA_MAGIC
 
    unsigned short         length;
    unsigned short         references;
@@ -129,7 +130,7 @@ struct _Eina_Stringshare_Node
 struct _Eina_Stringshare_Head
 {
    EINA_RBTREE;
-   EINA_MAGIC;
+   EINA_MAGIC
 
    int                    hash;
 
@@ -419,7 +420,7 @@ _eina_stringshare_small_bucket_resize(Eina_Stringshare_Small_Bucket *bucket, int
 {
    void *tmp;
 
-   tmp = realloc(bucket->strings, size * sizeof(bucket->strings[0]));
+   tmp = realloc((void*)bucket->strings, size * sizeof(bucket->strings[0]));
    if (!tmp)
      {
 	eina_error_set(EINA_ERROR_OUT_OF_MEMORY);
@@ -481,7 +482,7 @@ _eina_stringshare_small_bucket_insert_at(Eina_Stringshare_Small_Bucket **p_bucke
    todo = bucket->count - index;
    if (todo > 0)
      {
-	memmove(bucket->strings + off, bucket->strings + index,
+       memmove((void *)(bucket->strings + off), bucket->strings + index,
 		todo * sizeof(bucket->strings[0]));
 	memmove(bucket->lengths + off, bucket->lengths + index,
 		todo * sizeof(bucket->lengths[0]));
@@ -513,7 +514,7 @@ _eina_stringshare_small_bucket_remove_at(Eina_Stringshare_Small_Bucket **p_bucke
 
    if (bucket->count == 1)
      {
-	free(bucket->strings);
+	free((void *)bucket->strings);
 	free(bucket->lengths);
 	free(bucket->references);
 	free(bucket);
@@ -528,7 +529,7 @@ _eina_stringshare_small_bucket_remove_at(Eina_Stringshare_Small_Bucket **p_bucke
    off = index + 1;
    todo = bucket->count - index;
 
-   memmove(bucket->strings + index, bucket->strings + off,
+   memmove((void *)(bucket->strings + index), bucket->strings + off,
 	   todo * sizeof(bucket->strings[0]));
    memmove(bucket->lengths + index, bucket->lengths + off,
 	   todo * sizeof(bucket->lengths[0]));
@@ -616,7 +617,7 @@ _eina_stringshare_small_shutdown(void)
 	for (; s < s_end; s++)
 	  free(*s);
 
-	free(bucket->strings);
+	free((void *)bucket->strings);
 	free(bucket->lengths);
 	free(bucket->references);
 	free(bucket);
@@ -636,8 +637,8 @@ _eina_stringshare_node_init(Eina_Stringshare_Node *node, const char *str, int sl
 static Eina_Stringshare_Head *
 _eina_stringshare_head_alloc(int slen)
 {
-   Eina_Stringshare_Head *head;
-   const unsigned int head_size = (char *)head->builtin_node.str - (char *)head;
+   Eina_Stringshare_Head *head, t;
+   const size_t head_size = (char *)&(t.builtin_node.str) - (char *)&t;
 
    head = malloc(head_size + slen);
    if (!head)
@@ -749,8 +750,8 @@ _eina_stringshare_find_hash(Eina_Stringshare_Head *bucket, int hash)
 static Eina_Stringshare_Node *
 _eina_stringshare_node_alloc(int slen)
 {
-   Eina_Stringshare_Node *node;
-   const unsigned int node_size = (char *)node->str - (char *)node;
+   Eina_Stringshare_Node *node, t;
+   const size_t node_size = (char *)&(t.str) - (char *)&t;
 
    node = malloc(node_size + slen);
    if (!node)
@@ -906,7 +907,7 @@ eina_stringshare_add(const char *str)
    else if (str[1] == '\0') slen = 1;
    else if (str[2] == '\0') slen = 2;
    else if (str[3] == '\0') slen = 3;
-   else                     slen = 3 + strlen(str + 3);
+   else                     slen = 3 + (int)strlen(str + 3);
 
    _eina_stringshare_population_add(slen);
 
@@ -953,8 +954,8 @@ eina_stringshare_add(const char *str)
 static Eina_Stringshare_Node *
 _eina_stringshare_node_from_str(const char *str)
 {
-   Eina_Stringshare_Node *node;
-   const unsigned int offset = (char *)node->str - (char *)node;
+   Eina_Stringshare_Node *node, t;
+   const size_t offset = (char *)&(t.str) - (char *)&t;
 
    node = (Eina_Stringshare_Node *)(str - offset);
    EINA_MAGIC_CHECK_STRINGSHARE_NODE(node);
@@ -1112,7 +1113,7 @@ eina_stringshare_strlen(const char *str)
    if (str[3] == '\0') return 3;
 
    node = _eina_stringshare_node_from_str(str);
-   return node->length;
+   return node->length - 1;
 }
 
 struct dumpinfo

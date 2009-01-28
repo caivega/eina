@@ -1,5 +1,5 @@
 /* EINA - EFL data type library
- * Copyright (C) 2008 Cedric Bail
+ * Copyright (C) 2007-2008 Jorge Luis Zapata Muga
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -16,22 +16,23 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef EINA_CONFIG_H_
-#define EINA_CONFIG_H_
+#ifndef EINA_CPU_H_
+#define EINA_CPU_H_
 
-#undef EINA_MAGIC_DEBUG
-#if @EINA_MAGIC_DEBUG@
-#define EINA_MAGIC_DEBUG
-#endif
+#include "eina_types.h"
 
-#undef EINA_DEFAULT_MEMPOOL
-#if @EINA_DEFAULT_MEMPOOL@
-#define EINA_DEFAULT_MEMPOOL
-#endif
+typedef enum _Eina_Cpu_Features
+{
+	EINA_CPU_MMX     = 0x00000001,
+	EINA_CPU_SSE     = 0x00000002,
+	EINA_CPU_SSE2    = 0x00000004,
+	EINA_CPU_SSE3    = 0x00000008,
+	/* TODO 3DNow! */
+	EINA_CPU_ALTIVEC = 0x00000010,
+	EINA_CPU_VIS     = 0x00000020,
+	EINA_CPU_NEON    = 0x00000040,
+} Eina_Cpu_Features;
 
-#undef EINA_SAFETY_CHECKS
-#if @EINA_SAFETY_CHECKS@
-#define EINA_SAFETY_CHECKS
-#endif
+EAPI Eina_Cpu_Features eina_cpu_features_get(void);
 
-#endif /* EINA_CONFIG_H_ */
+#endif /* EINA_CPU_H_ */

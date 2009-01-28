@@ -45,11 +45,99 @@
 # endif
 #endif
 
-#if HAVE___ATTRIBUTE__
-# define __UNUSED__ __attribute__((unused))
-#else
-# define __UNUSED__
+#ifdef EINA_WARN_UNUSED_RESULT
+# undef EINA_WARN_UNUSED_RESULT
 #endif
+#ifdef EINA_ARG_NONNULL
+# undef EINA_ARG_NONNULL
+#endif
+#ifdef EINA_MALLOC
+# undef EINA_MALLOC
+#endif
+#ifdef EINA_PURE
+# undef EINA_PURE
+#endif
+#ifdef EINA_PRINTF
+# undef EINA_PRINTF
+#endif
+#ifdef EINA_SCANF
+# undef EINA_SCANF
+#endif
+#ifdef EINA_FORMAT
+# undef EINA_FORMAT
+#endif
+#ifdef EINA_CONST
+# undef EINA_CONST
+#endif
+#ifdef EINA_UNLIKELY
+# undef EINA_UNLIKELY
+#endif
+#ifdef EINA_LIKELY
+# undef EINA_LIKELY
+#endif
+
+#ifdef HAVE___ATTRIBUTE__
+# ifdef __GNUC__
+#  if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
+#   define EINA_WARN_UNUSED_RESULT __attribute__ ((warn_unused_result))
+#  else
+#   define EINA_WARN_UNUSED_RESULT
+#  endif
+
+#  if (!defined(EINA_SAFETY_CHECKS)) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
+#   define EINA_ARG_NONNULL(idx, ...) __attribute__ ((nonnull(idx, ## __VA_ARGS__)))
+#  else
+#   define EINA_ARG_NONNULL(idx, ...)
+#  endif
+
+#  if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96)
+#   define EINA_MALLOC __attribute__ ((malloc))
+#   define EINA_PURE __attribute__ ((pure))
+#  else
+#   define EINA_MALLOC
+#   define EINA_PURE
+#  endif
+
+#  if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
+#   define EINA_PRINTF(fmt, arg)  __attribute__((format (printf, fmt, arg)))
+#   define EINA_SCANF(fmt, arg)  __attribute__((format (scanf, fmt, arg)))
+#   define EINA_FORMAT(fmt) __attribute__((format_arg(fmt)))
+#   define EINA_CONST __attribute__((const))
+#   define EINA_UNLIKELY(exp) __builtin_expect((exp), 0)
+#   define EINA_LIKELY(exp) __builtin_expect((exp), 1)
+#  else
+#   define EINA_PRINTF(fmt, arg)
+#   define EINA_SCANF(fmt, arg)
+#   define EINA_FORMAT(fmt)
+#   define EINA_CONST
+#   define EINA_UNLIKELY(exp) exp
+#   define EINA_LIKELY(exp) exp
+#  endif
+# else /* no __GNUC__ */
+#  define EINA_WARN_UNUSED_RESULT
+#  define EINA_ARG_NONNULL(idx, ...)
+#  define EINA_MALLOC
+#  define EINA_PURE
+#  define EINA_PRINTF(fmt, arg)
+#  define EINA_SCANF(fmt, arg)
+#  define EINA_FORMAT(fmt)
+#  define EINA_CONST
+#  define EINA_UNLIKELY(exp) exp
+#  define EINA_LIKELY(exp) exp
+# endif
+#else /* no HAVE___ATTRIBUTE__ */
+# define EINA_WARN_UNUSED_RESULT
+# define EINA_ARG_NONNULL(idx, ...)
+# define EINA_MALLOC
+# define EINA_PURE
+# define EINA_PRINTF(fmt, arg)
+# define EINA_SCANF(fmt, arg)
+# define EINA_FORMAT(fmt)
+# define EINA_CONST
+# define EINA_UNLIKELY(exp) exp
+# define EINA_LIKELY(exp) exp
+#endif
+
 
 /* remove this TRUE/FALSE redifinitions */
 

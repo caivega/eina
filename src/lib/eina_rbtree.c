@@ -27,6 +27,7 @@
 #include "eina_rbtree.h"
 #include "eina_array.h"
 #include "eina_private.h"
+#include "eina_safety_checks.h"
 
 /*============================================================================*
  *                                  Local                                     *
@@ -161,8 +162,6 @@ _eina_rbtree_iterator_build(const Eina_Rbtree *root, unsigned char mask)
    Eina_Iterator_Rbtree_List *first;
    Eina_Iterator_Rbtree *it;
 
-   if (!root) return NULL;
-
    it = calloc(1, sizeof (Eina_Iterator_Rbtree));
    if (!it) return NULL;
 
@@ -178,6 +177,8 @@ _eina_rbtree_iterator_build(const Eina_Rbtree *root, unsigned char mask)
    it->iterator.next = FUNC_ITERATOR_NEXT(_eina_rbtree_iterator_next);
    it->iterator.get_container = FUNC_ITERATOR_GET_CONTAINER(_eina_rbtree_iterator_get_content);
    it->iterator.free = FUNC_ITERATOR_FREE(_eina_rbtree_iterator_free);
+
+   EINA_MAGIC_SET(&it->iterator, EINA_MAGIC_ITERATOR);
 
    return &it->iterator;
 
@@ -246,6 +247,9 @@ eina_rbtree_inline_insert(Eina_Rbtree *root, Eina_Rbtree *node, Eina_Rbtree_Cmp_
    Eina_Rbtree *g, *t;  /* Grandparent & parent */
    Eina_Rbtree *p, *q;  /* Iterator & parent */
    Eina_Rbtree_Direction dir, last;
+
+   EINA_SAFETY_ON_NULL_RETURN_VAL(node, root);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(cmp, root);
 
    if (!node) return root;
 
@@ -322,9 +326,12 @@ EAPI Eina_Rbtree *
 eina_rbtree_inline_remove(Eina_Rbtree *root, Eina_Rbtree *node, Eina_Rbtree_Cmp_Node_Cb cmp, const void *data)
 {
    Eina_Rbtree head;
-   Eina_Rbtree *q, *p, *g;
+   Eina_Rbtree *q, *p;
    Eina_Rbtree *f = NULL;
    Eina_Rbtree_Direction dir;
+
+   EINA_SAFETY_ON_NULL_RETURN_VAL(node, root);
+   EINA_SAFETY_ON_NULL_RETURN_VAL(cmp, root);
 
    if (!root || !node) return root;
 
@@ -332,13 +339,14 @@ eina_rbtree_inline_remove(Eina_Rbtree *root, Eina_Rbtree *node, Eina_Rbtree_Cmp_
 
    dir = EINA_RBTREE_RIGHT;
    q = &head;
-   g = p = NULL;
+   p = NULL;
    q->son[EINA_RBTREE_RIGHT] = root;
 
    /* Search and push a red down */
    while (q->son[dir] != NULL)
      {
 	Eina_Rbtree_Direction last = dir;
+	Eina_Rbtree *g;
 
 	/* Update helpers */
 	g = p; p = q;
@@ -451,6 +459,8 @@ EAPI void
 eina_rbtree_delete(Eina_Rbtree *root, Eina_Rbtree_Free_Cb func, void *data)
 {
    if (!root) return ;
+
+   EINA_SAFETY_ON_NULL_RETURN(func);
 
    eina_rbtree_delete(root->son[0], func, data);
    eina_rbtree_delete(root->son[1], func, data);

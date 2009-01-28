@@ -20,17 +20,17 @@
 #define EINA_CONFIG_H_
 
 #undef EINA_MAGIC_DEBUG
-#if @EINA_MAGIC_DEBUG@
+#if 1
 #define EINA_MAGIC_DEBUG
 #endif
 
 #undef EINA_DEFAULT_MEMPOOL
-#if @EINA_DEFAULT_MEMPOOL@
+#if 0
 #define EINA_DEFAULT_MEMPOOL
 #endif
 
 #undef EINA_SAFETY_CHECKS
-#if @EINA_SAFETY_CHECKS@
+#if 1
 #define EINA_SAFETY_CHECKS
 #endif
 

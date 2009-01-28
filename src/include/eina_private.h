@@ -23,13 +23,15 @@
 
 #include "eina_config.h"
 
+#if HAVE___ATTRIBUTE__
+# define __UNUSED__ __attribute__((unused))
+#else
+# define __UNUSED__
+#endif
+
 #include "eina_magic.h"
 #include "eina_iterator.h"
 #include "eina_accessor.h"
-
-#ifndef PATH_MAX
-# define PATH_MAX 4096
-#endif
 
 #ifndef MIN
 # define MIN(x, y) (((x) > (y)) ? (y) : (x))
@@ -50,9 +52,6 @@
 #define READBUFSIZ 65536
 
 /* eina magic types */
-#define EINA_MAGIC_ITERATOR 0x98761233
-#define EINA_MAGIC_ACCESSOR 0x98761232
-
 #define EINA_MAGIC_STRINGSHARE 0x98761234
 #define EINA_MAGIC_STRINGSHARE_NODE 0x98761235
 #define EINA_MAGIC_STRINGSHARE_HEAD 0x98761236
@@ -65,6 +64,12 @@
 #define EINA_MAGIC_ARRAY 0x9876123b
 #define EINA_MAGIC_ARRAY_ITERATOR 0x9876123c
 #define EINA_MAGIC_ARRAY_ACCESSOR 0x9876123d
+
+#define EINA_MAGIC_HASH 0x9876123e
+#define EINA_MAGIC_HASH_ITERATOR 0x9876123f
+
+#define EINA_MAGIC_TILER 0x98761240
+#define EINA_MAGIC_TILER_ITERATOR 0x98761241
 
 /* undef the following, we want out version */
 #undef FREE
@@ -94,44 +99,11 @@
 
 #define MAGIC_FREE(ptr)					\
   do {							\
-     EINA_MAGIC_SET(ptr, EINA_MAGIC_NONE);		\
-     FREE(ptr);						\
+     if (ptr) {						\
+	EINA_MAGIC_SET(ptr, EINA_MAGIC_NONE);		\
+	FREE(ptr);					\
+     }							\
   } while(0);
-
-/* Iterator/accessor private type */
-typedef Eina_Bool (*Eina_Iterator_Next_Callback)(Eina_Iterator *it, void **data);
-typedef void *(*Eina_Iterator_Get_Container_Callback)(Eina_Iterator *it);
-typedef void (*Eina_Iterator_Free_Callback)(Eina_Iterator *it);
-
-#define FUNC_ITERATOR_NEXT(Function) ((Eina_Iterator_Next_Callback)Function)
-#define FUNC_ITERATOR_GET_CONTAINER(Function) ((Eina_Iterator_Get_Container_Callback)Function)
-#define FUNC_ITERATOR_FREE(Function) ((Eina_Iterator_Free_Callback)Function)
-
-typedef Eina_Bool (*Eina_Accessor_Get_At_Callback)(Eina_Accessor *it, unsigned int index, void **data);
-typedef void *(*Eina_Accessor_Get_Container_Callback)(Eina_Accessor *it);
-typedef void (*Eina_Accessor_Free_Callback)(Eina_Accessor *it);
-
-#define FUNC_ACCESSOR_GET_AT(Function) ((Eina_Accessor_Get_At_Callback)Function)
-#define FUNC_ACCESSOR_GET_CONTAINER(Function) ((Eina_Accessor_Get_Container_Callback)Function)
-#define FUNC_ACCESSOR_FREE(Function) ((Eina_Accessor_Free_Callback)Function)
-
-struct _Eina_Iterator
-{
-   EINA_MAGIC;
-
-   Eina_Iterator_Next_Callback          next;
-   Eina_Iterator_Get_Container_Callback get_container;
-   Eina_Iterator_Free_Callback          free;
-};
-
-struct _Eina_Accessor
-{
-   EINA_MAGIC;
-
-   Eina_Accessor_Get_At_Callback        get_at;
-   Eina_Accessor_Get_Container_Callback	get_container;
-   Eina_Accessor_Free_Callback          free;
-};
 
 #endif /* EINA_PRIVATE_H_ */
 
