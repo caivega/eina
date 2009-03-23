@@ -244,6 +244,19 @@ eina_list_iterator_next(Eina_Iterator_List *it, void **data)
    return EINA_TRUE;
 }
 
+static Eina_Bool
+eina_list_iterator_prev(Eina_Iterator_List *it, void **data)
+{
+   EINA_MAGIC_CHECK_LIST_ITERATOR(it);
+
+   if (it->current == NULL) return EINA_FALSE;
+   if (data) *data = eina_list_data_get(it->current);
+
+   it->current = eina_list_prev(it->current);
+
+   return EINA_TRUE;
+}
+
 static Eina_List *
 eina_list_iterator_get_container(Eina_Iterator_List *it)
 {
@@ -816,17 +829,11 @@ EAPI Eina_List *
 eina_list_remove(Eina_List *list, const void *data)
 {
    Eina_List *l;
-   void *list_data;
 
    if (list) EINA_MAGIC_CHECK_LIST(list);
 
-   EINA_LIST_FOREACH(list, l, list_data)
-     {
-         if (list_data == data)
+   l = eina_list_data_find_list(list, data);
              return eina_list_remove_list(list, l);
-     }
-
-   return list;
 }
 
 /**
@@ -878,12 +885,11 @@ eina_list_remove_list(Eina_List *list, Eina_List *remove_list)
      }
    else
      return_l = remove_list->next;
-   if (remove_list == list->accounting->last)
+   if (remove_list == remove_list->accounting->last)
      {
        EINA_MAGIC_CHECK_LIST(list);
        list->accounting->last = remove_list->prev;
      }
-
    _eina_list_mempool_list_free(remove_list);
    return return_l;
 }
@@ -1232,11 +1238,17 @@ static inline unsigned int eina_list_count(const Eina_List *list);
  * @brief Reverse all the elements in the list.
  *
  * @param list The list to reverse.
- * @return The list after it has been reversed.
+ * @return The list head after it has been reversed.
  *
  * This function reverses the order of all elements in @p list, so the
  * last member is now first, and so on. If @p list is @c NULL, this
  * functon returns @c NULL.
+ *
+ * @note @b in-place: this will change the given list, so you should
+ * now point to the new list head that is returned by this function.
+ *
+ * @see eina_list_reverse_clone()
+ * @see eina_list_iterator_reversed_new()
  */
 EAPI Eina_List *
 eina_list_reverse(Eina_List *list)
@@ -1265,19 +1277,89 @@ eina_list_reverse(Eina_List *list)
 }
 
 /**
+ * @brief Clone (copy) all the elements in the list in reverse order.
+ *
+ * @param list The list to reverse.
+ * @return The new list that has been reversed.
+ *
+ * This function reverses the order of all elements in @p list, so the
+ * last member is now first, and so on. If @p list is @c NULL, this
+ * functon returns @c NULL. This returns a copy of the given list.
+ *
+ * @note @b copy: this will copy the list and you should then
+ * eina_list_free() when it is not required anymore.
+ *
+ * @see eina_list_reverse()
+ * @see eina_list_clone()
+ */
+EAPI Eina_List *
+eina_list_reverse_clone(const Eina_List *list)
+{
+   const Eina_List *l;
+   Eina_List *clone;
+   void *data;
+
+   if (!list) return NULL;
+
+   EINA_MAGIC_CHECK_LIST(list);
+
+   clone = NULL;
+   EINA_LIST_FOREACH(list, l, data)
+     clone = eina_list_prepend(clone, data);
+
+   return clone;
+}
+
+/**
+ * @brief Clone (copy) all the elements in the list in exact order.
+ *
+ * @param list The list to clone.
+ * @return The new list that has been cloned.
+ *
+ * This function clone in order of all elements in @p list. If @p list
+ * is @c NULL, this functon returns @c NULL. This returns a copy of
+ * the given list.
+ *
+ * @note @b copy: this will copy the list and you should then
+ * eina_list_free() when it is not required anymore.
+ *
+ * @see eina_list_reverse_clone()
+ */
+EAPI Eina_List *
+eina_list_clone(const Eina_List *list)
+{
+   const Eina_List *l;
+   Eina_List *clone;
+   void *data;
+
+   if (!list) return NULL;
+
+   EINA_MAGIC_CHECK_LIST(list);
+
+   clone = NULL;
+   EINA_LIST_FOREACH(list, l, data)
+     clone = eina_list_append(clone, data);
+
+   return clone;
+}
+
+/**
  * @brief Sort a list according to the ordering func will return.
  *
  * @param list The list handle to sort.
  * @param size The length of the list to sort.
  * @param func A function pointer that can handle comparing the list data
  * nodes.
- * @return A new sorted list.
+ * @return the new head of list.
  *
  * This function sorts @p list. @p size if the number of the first
  * element to sort. If @p size is 0 or greater than the number of
  * elements in @p list, all the elemnts are sorted. @p func is used to
  * compare two elements of @p list. If @p list or @p func are @c NULL,
  * this function returns @c NULL.
+ *
+ * @note @b in-place: this will change the given list, so you should
+ * now point to the new list head that is returned by this function.
  *
  * Example:
  * @code
@@ -1508,9 +1590,10 @@ eina_list_sorted_merge(Eina_List *left, Eina_List *right, Eina_Compare_Cb func)
    return ret;
 }
 
-EAPI void *
-eina_list_search_sorted(const Eina_List *list, Eina_Compare_Cb func, const void *data)
+EAPI Eina_List *
+eina_list_search_sorted_near_list(const Eina_List *list, Eina_Compare_Cb func, const void *data)
 {
+   const Eina_List *ct;
    void *d;
    unsigned int inf, sup, cur, tmp;
    int part;
@@ -1518,12 +1601,15 @@ eina_list_search_sorted(const Eina_List *list, Eina_Compare_Cb func, const void 
    inf = 0;
    sup = eina_list_count(list) ;
    cur = sup >> 1;
-   d = eina_list_nth(list, cur);
+   ct = eina_list_nth_list(list, cur);
+   d = eina_list_data_get(ct);
 
    while ((part = func(d, data)))
      {
-       if (inf == sup)
-          return NULL;
+       if (inf == sup
+	   || (part < 0 && inf == cur)
+	   || (part > 0 && sup == cur))
+	 return (Eina_List*) ct;
        if (part < 0)
           inf = (sup + inf) >> 1;
        else
@@ -1531,18 +1617,39 @@ eina_list_search_sorted(const Eina_List *list, Eina_Compare_Cb func, const void 
        /* Faster to move directly from where we are to the new position than using eina_list_nth_list. */
        tmp = (sup + inf) >> 1;
        if (tmp < cur)
-	 for (; cur != tmp; cur--, d = eina_list_prev(d))
+	 for (; cur != tmp; cur--, ct = eina_list_prev(ct))
 	   ;
        else
-	 for (; cur != tmp; cur++, d = eina_list_next(d))
+	 for (; cur != tmp; cur++, ct = eina_list_next(ct))
 	   ;
+       d = eina_list_data_get(ct);
      }
 
-   return d;
+   return (Eina_List*) ct;
+}
+
+EAPI Eina_List *
+eina_list_search_sorted_list(const Eina_List *list, Eina_Compare_Cb func, const void *data)
+{
+   Eina_List *lnear;
+   void      *d;
+
+   lnear = eina_list_search_sorted_near_list(list, func, data);
+   if (!lnear) return NULL;
+   d = eina_list_data_get(lnear);
+   if (!func(d, data))
+     return lnear;
+   return NULL;
 }
 
 EAPI void *
-eina_list_search_unsorted(const Eina_List *list, Eina_Compare_Cb func, const void *data)
+eina_list_search_sorted(const Eina_List *list, Eina_Compare_Cb func, const void *data)
+{
+   return eina_list_data_get(eina_list_search_sorted_list(list, func, data));
+}
+
+EAPI Eina_List *
+eina_list_search_unsorted_list(const Eina_List *list, Eina_Compare_Cb func, const void *data)
 {
    const Eina_List *l;
    void *d;
@@ -1550,9 +1657,15 @@ eina_list_search_unsorted(const Eina_List *list, Eina_Compare_Cb func, const voi
    EINA_LIST_FOREACH(list, l, d)
      {
        if (!func(d, data))
-        return d;
+	 return (Eina_List*) l;
      }
    return NULL;
+}
+
+EAPI void *
+eina_list_search_unsorted(const Eina_List *list, Eina_Compare_Cb func, const void *data)
+{
+   return eina_list_data_get(eina_list_search_unsorted_list(list, func, data));
 }
 
 
@@ -1562,11 +1675,19 @@ eina_list_search_unsorted(const Eina_List *list, Eina_Compare_Cb func, const voi
  * @param list The list.
  * @return A new iterator.
  *
- * This function returns a newly allocated iterator associated to
- * @p list. If @p list is @c NULL or the count member of @p list is
- * less or equal than 0, this function returns NULL. If the memory can
- * not be allocated, NULL is returned and #EINA_ERROR_OUT_OF_MEMORY is
- * set. Otherwise, a valid iterator is returned.
+ * This function returns a newly allocated iterator associated to @p
+ * list. If @p list is @c NULL or the count member of @p list is less
+ * or equal than 0, this function still returns a valid iterator that
+ * will always return false on eina_iterator_next(), thus keeping API
+ * sane.
+ *
+ * If the memory can not be allocated, NULL is returned and
+ * #EINA_ERROR_OUT_OF_MEMORY is set. Otherwise, a valid iterator is
+ * returned.
+ *
+ * @warning if the list structure changes then the iterator becomes
+ *    invalid! That is, if you add or remove nodes this iterator
+ *    behavior is undefined and your program may crash!
  */
 EAPI Eina_Iterator *
 eina_list_iterator_new(const Eina_List *list)
@@ -1587,6 +1708,53 @@ eina_list_iterator_new(const Eina_List *list)
    it->current = list;
 
    it->iterator.next = FUNC_ITERATOR_NEXT(eina_list_iterator_next);
+   it->iterator.get_container = FUNC_ITERATOR_GET_CONTAINER(eina_list_iterator_get_container);
+   it->iterator.free = FUNC_ITERATOR_FREE(eina_list_iterator_free);
+
+   return &it->iterator;
+}
+
+/**
+ * @brief Returned a new reversed iterator asociated to a list.
+ *
+ * @param list The list.
+ * @return A new iterator.
+ *
+ * This function returns a newly allocated iterator associated to @p
+ * list. If @p list is @c NULL or the count member of @p list is less
+ * or equal than 0, this function still returns a valid iterator that
+ * will always return false on eina_iterator_next(), thus keeping API
+ * sane.
+ *
+ * Unlike eina_list_iterator_new(), this will walk the list backwards.
+ *
+ * If the memory can not be allocated, NULL is returned and
+ * #EINA_ERROR_OUT_OF_MEMORY is set. Otherwise, a valid iterator is
+ * returned.
+ *
+ * @warning if the list structure changes then the iterator becomes
+ *    invalid! That is, if you add or remove nodes this iterator
+ *    behavior is undefined and your program may crash!
+ */
+EAPI Eina_Iterator *
+eina_list_iterator_reversed_new(const Eina_List *list)
+{
+   Eina_Iterator_List *it;
+
+   eina_error_set(0);
+   it = calloc(1, sizeof (Eina_Iterator_List));
+   if (!it) {
+      eina_error_set(EINA_ERROR_OUT_OF_MEMORY);
+      return NULL;
+   }
+
+   EINA_MAGIC_SET(it, EINA_MAGIC_LIST_ITERATOR);
+   EINA_MAGIC_SET(&it->iterator, EINA_MAGIC_ITERATOR);
+
+   it->head = eina_list_last(list);
+   it->current = it->head;
+
+   it->iterator.next = FUNC_ITERATOR_NEXT(eina_list_iterator_prev);
    it->iterator.get_container = FUNC_ITERATOR_GET_CONTAINER(eina_list_iterator_get_container);
    it->iterator.free = FUNC_ITERATOR_FREE(eina_list_iterator_free);
 

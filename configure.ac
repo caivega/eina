@@ -3,7 +3,8 @@ rm -f config.cache
 
 AC_INIT([eina], [0.0.1], [enlightenment-devel@lists.sourceforge.net])
 AC_PREREQ([2.60])
-AC_CONFIG_SRCDIR(configure.ac)
+AC_CONFIG_SRCDIR([configure.ac])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_ISC_POSIX
@@ -280,7 +281,13 @@ if test "x$enable_coverage" = "xyes" ; then
 fi
 
 if ! test "${VMIC}" = "x" ; then
-   EINA_CFLAGS="${EINA_CFLAGS} -Wall -W -Wextra" # -Werror
+   EINA_CFLAGS="${EINA_CFLAGS} -Wall -W" # -Werror
+fi
+
+GCC_MAJOR_VERSION=`$CC -dumpversion | sed "s/\..*//"`
+
+if test "$GCC_MAJOR_VERSION" = "3" ; then
+   EINA_CFLAGS="${EINA_CFLAGS} -fno-strict-aliasing"
 fi
 
 AC_SUBST(EINA_CFLAGS)
@@ -295,11 +302,17 @@ case "${host_os}" in
       EINA_LIBS="${EINA_LIBS} -ldl ${EVIL_LIBS} -lm"
       lt_enable_auto_import="-Wl,--enable-auto-import"
    ;;
+   *openbsd*)
+      EINA_LIBS="${EINA_LIBS} -lm"
+   ;;
    *bsd*)
       EINA_LIBS="${EINA_LIBS} -lrt -lm"
    ;;
    *darwin*)
       EINA_LIBS="${EINA_LIBS} -lm"
+   ;;
+   *cygwin*)
+      EINA_LIBS="${EINA_LIBS} -ldl -lm"
    ;;
    *)
       EINA_LIBS="${EINA_LIBS} -ldl -lrt -lm"
