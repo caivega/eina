@@ -1,3 +1,13 @@
+eina (0.0.1~svn20090323-1) experimental; urgency=low
+
+  * New SVN snapshot
+    - refresh patches
+  * Update Standards-Version, no change required
+  * make the packaging copyright point to /usr/share/common-licenses/GPL-2
+    instead of /GPL
+
+ -- Albin Tonnerre <albin.tonnerre@gmail.com>  Mon, 23 Mar 2009 18:38:19 +0100
+
 eina (0.0.1~svn20090128-1) experimental; urgency=low
 
   * New SVN snapshot

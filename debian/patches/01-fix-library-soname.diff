@@ -20,6 +20,6 @@ index 3391569..de86f84 100644
  libeina_la_LIBADD = @EINA_LIBS@ @dlopen_libs@
 -libeina_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -version-info @version_info@
 +libeina_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -release @PACKAGE_VERSION@$(DEBIAN_MINOR)
- 
+ libeina_la_CFLAGS = @EINA_CFLAGS@
+
  clean-local:
- 	rm -rf *.gcno
