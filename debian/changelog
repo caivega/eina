@@ -2,6 +2,7 @@ eina (0.0.1~svn20090323-1) experimental; urgency=low
 
   * New SVN snapshot
     - refresh patches
+    - Bump shlibs
   * Update Standards-Version, no change required
   * make the packaging copyright point to /usr/share/common-licenses/GPL-2
     instead of /GPL
