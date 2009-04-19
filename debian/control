@@ -68,7 +68,7 @@ Description: Documentation for use with libeina
 
 Package: libeina-dbg
 Architecture: any
-Section: libdevel
+Section: debug
 Depends: ${misc:Depends}, libeina-svn-00 (= ${binary:Version})
 Priority: extra
 Description: debugging symbols for use with libeina

@@ -1,3 +1,13 @@
+eina (0.0.1~svn???????) UNRELEASED; urgency=low
+
+  * New SVN snapshot
+    - Drop patches, no longer needed
+    - Package renaming due to upstream SONAME change.
+      + Update shlibs and .install files
+  * Move libeina-dbg to the new debug section
+
+ -- Albin Tonnerre <albin.tonnerre@gmail.com>  Sun, 19 Apr 2009 11:45:06 +0200
+
 eina (0.0.1~svn20090323-1) experimental; urgency=low
 
   * New SVN snapshot
