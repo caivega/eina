@@ -6,7 +6,7 @@ includedir=${prefix}/include
 Name: Eina
 Description: A Library that implements fast data types and miscellaneous tools
 Requires:
-Version: 0.0.2.060
+Version: 0.0.2.061
 Libs: -L${exec_prefix}/lib -leina
 Libs.private: -ldl
 Cflags: -I${includedir}/eina-0 -I${includedir}/eina-0/eina
