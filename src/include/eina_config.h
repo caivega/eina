@@ -19,19 +19,19 @@
 #ifndef EINA_CONFIG_H_
 #define EINA_CONFIG_H_
 
-#undef EINA_MAGIC_DEBUG
-#if 1
+#ifdef EINA_MAGIC_DEBUG
+# undef EINA_MAGIC_DEBUG
+#endif
 #define EINA_MAGIC_DEBUG
+
+#ifdef EINA_DEFAULT_MEMPOOL
+# undef EINA_DEFAULT_MEMPOOL
 #endif
 
-#undef EINA_DEFAULT_MEMPOOL
-#if 0
-#define EINA_DEFAULT_MEMPOOL
-#endif
 
-#undef EINA_SAFETY_CHECKS
-#if 1
+#ifdef EINA_SAFETY_CHECKS
+# undef EINA_SAFETY_CHECKS
+#endif
 #define EINA_SAFETY_CHECKS
-#endif
 
 #endif /* EINA_CONFIG_H_ */
