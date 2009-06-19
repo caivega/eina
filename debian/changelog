@@ -1,3 +1,11 @@
+eina (0.0.2.061-1) UNRELEASED; urgency=low
+
+  * New upstream snapshot
+    - Re-add patches to fix library soname, upstream changed it with no reason
+  * Update shlibs, as new symbols were added
+
+ -- Albin Tonnerre <albin.tonnerre@gmail.com>  Fri, 19 Jun 2009 11:11:38 +0200
+
 eina (0.0.2.060-1) experimental; urgency=low
 
   * New SVN snapshot
