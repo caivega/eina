@@ -1,11 +1,12 @@
-eina (0.0.2.061-1) UNRELEASED; urgency=low
+eina (0.0.2.061-1) unstable; urgency=low
 
   * New upstream snapshot
     - Re-add patches to fix library soname, upstream changed it with no reason
   * Update shlibs, as new symbols were added
   * Update Standards-Version to 3.8.2, no change required
+  * Upload to unstable
 
- -- Albin Tonnerre <albin.tonnerre@gmail.com>  Fri, 19 Jun 2009 11:11:38 +0200
+ -- Albin Tonnerre <albin.tonnerre@gmail.com>  Sat, 20 Jun 2009 17:20:35 +0200
 
 eina (0.0.2.060-1) experimental; urgency=low
 
