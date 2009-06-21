@@ -1,7 +1,9 @@
 eina (0.0.2.061-1) unstable; urgency=low
 
   * New upstream snapshot
-    - Re-add patches to fix library soname, upstream changed it with no reason
+    - Re-add patches to fix library soname. Upstream bumps the SONAME on every
+      new snapshot, but no API/ABI changes happened between 0.0.2.060 and
+      0.0.2.061, so let's use the SONAME currently used in the archive
   * Update shlibs, as new symbols were added
   * Update Standards-Version to 3.8.2, no change required
   * Upload to unstable
