@@ -5,7 +5,8 @@ AM_CPPFLAGS = \
 -I$(top_builddir)/src/include \
 -DPACKAGE_BIN_DIR=\"$(bindir)\" \
 -DPACKAGE_LIB_DIR=\"$(libdir)\" \
--DPACKAGE_DATA_DIR=\"$(datadir)/$(PACKAGE)\"
+-DPACKAGE_DATA_DIR=\"$(datadir)/$(PACKAGE)\" \
+@EINA_CPPFLAGS@
 
 lib_LTLIBRARIES = libeina.la
 
@@ -51,9 +52,15 @@ libeina_la_SOURCES += $(top_srcdir)/src/modules/mp/ememoa_unknown/eina_ememoa_un
 
 endif
 
+if EINA_STATIC_BUILD_FIXED_BITMAP
+
+libeina_la_SOURCES += $(top_srcdir)/src/modules/mp/fixed_bitmap/eina_fixed_bitmap.c
+
+endif
+
 if EINA_STATIC_BUILD_PASS_THROUGH
 
-libeina_la_SOURCES += $(top_srcdir)/src/modules/mp/pass_through/pass_through.c
+libeina_la_SOURCES += $(top_srcdir)/src/modules/mp/pass_through/eina_pass_through.c
 
 endif
 
