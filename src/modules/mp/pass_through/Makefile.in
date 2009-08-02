@@ -40,10 +40,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_attribute.m4 \
 	$(top_srcdir)/m4/efl_coverage.m4 $(top_srcdir)/m4/efl_cpu.m4 \
 	$(top_srcdir)/m4/efl_doxygen.m4 \
 	$(top_srcdir)/m4/efl_pthread.m4 $(top_srcdir)/m4/efl_tests.m4 \
-	$(top_srcdir)/m4/eina_check.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/eina_bench.m4 $(top_srcdir)/m4/eina_check.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -58,16 +58,16 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(controllerdir)"
 controllerLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(controller_LTLIBRARIES)
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@pass_through_la_DEPENDENCIES = $(top_builddir)/src/lib/libeina.la
-am__pass_through_la_SOURCES_DIST = pass_through.c
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@am_pass_through_la_OBJECTS = pass_through_la-pass_through.lo
-pass_through_la_OBJECTS = $(am_pass_through_la_OBJECTS)
-pass_through_la_LINK = $(LIBTOOL) --tag=CC \
-	$(pass_through_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link \
-	$(CCLD) $(AM_CFLAGS) $(CFLAGS) $(pass_through_la_LDFLAGS) \
-	$(LDFLAGS) -o $@
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@am_pass_through_la_rpath =  \
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@	-rpath $(controllerdir)
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@eina_pass_through_la_DEPENDENCIES = $(top_builddir)/src/lib/libeina.la
+am__eina_pass_through_la_SOURCES_DIST = eina_pass_through.c
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@am_eina_pass_through_la_OBJECTS = eina_pass_through_la-eina_pass_through.lo
+eina_pass_through_la_OBJECTS = $(am_eina_pass_through_la_OBJECTS)
+eina_pass_through_la_LINK = $(LIBTOOL) --tag=CC \
+	$(eina_pass_through_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(eina_pass_through_la_LDFLAGS) $(LDFLAGS) -o $@
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@am_eina_pass_through_la_rpath = -rpath \
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@	$(controllerdir)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -80,8 +80,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(pass_through_la_SOURCES)
-DIST_SOURCES = $(am__pass_through_la_SOURCES_DIST)
+SOURCES = $(eina_pass_through_la_SOURCES)
+DIST_SOURCES = $(am__eina_pass_through_la_SOURCES_DIST)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -122,6 +122,7 @@ EINA_CFLAGS = @EINA_CFLAGS@
 EINA_CONFIGURE_DEFAULT_MEMPOOL = @EINA_CONFIGURE_DEFAULT_MEMPOOL@
 EINA_CONFIGURE_MAGIC_DEBUG = @EINA_CONFIGURE_MAGIC_DEBUG@
 EINA_CONFIGURE_SAFETY_CHECKS = @EINA_CONFIGURE_SAFETY_CHECKS@
+EINA_CPPFLAGS = @EINA_CPPFLAGS@
 EINA_LIBS = @EINA_LIBS@
 EMEMOA_CFLAGS = @EMEMOA_CFLAGS@
 EMEMOA_LIBS = @EMEMOA_LIBS@
@@ -229,23 +230,22 @@ target_alias = @target_alias@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 version_info = @version_info@
-MAINTAINERCLEANFILES = \
-Makefile.in
-
+MAINTAINERCLEANFILES = Makefile.in
 AM_CPPFLAGS = \
 -I. \
 -I$(top_srcdir)/src/include \
 -I$(top_builddir)/src/include \
+@EINA_CPPFLAGS@ \
 @EINA_CFLAGS@
 
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@controllerdir = $(libdir)/eina/mp
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@controller_LTLIBRARIES = pass_through.la
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@pass_through_la_SOURCES = \
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@pass_through.c
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@controllerdir = $(libdir)/eina/mp
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@controller_LTLIBRARIES = eina_pass_through.la
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@eina_pass_through_la_SOURCES = \
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@eina_pass_through.c
 
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@pass_through_la_LIBADD = $(top_builddir)/src/lib/libeina.la @EINA_LIBS@
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@pass_through_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -module -avoid-version
-@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@pass_through_la_LIBTOOLFLAGS = --tag=disable-static
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@eina_pass_through_la_LIBADD = $(top_builddir)/src/lib/libeina.la @EINA_LIBS@
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@eina_pass_through_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -module -avoid-version
+@EINA_BUILD_PASS_THROUGH_TRUE@@EINA_STATIC_BUILD_PASS_THROUGH_FALSE@eina_pass_through_la_LIBTOOLFLAGS = --tag=disable-static
 all: all-am
 
 .SUFFIXES:
@@ -306,8 +306,8 @@ clean-controllerLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-pass_through.la: $(pass_through_la_OBJECTS) $(pass_through_la_DEPENDENCIES) 
-	$(pass_through_la_LINK) $(am_pass_through_la_rpath) $(pass_through_la_OBJECTS) $(pass_through_la_LIBADD) $(LIBS)
+eina_pass_through.la: $(eina_pass_through_la_OBJECTS) $(eina_pass_through_la_DEPENDENCIES) 
+	$(eina_pass_through_la_LINK) $(am_eina_pass_through_la_rpath) $(eina_pass_through_la_OBJECTS) $(eina_pass_through_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -315,7 +315,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pass_through_la-pass_through.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eina_pass_through_la-eina_pass_through.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -338,12 +338,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-pass_through_la-pass_through.lo: pass_through.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(pass_through_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pass_through_la-pass_through.lo -MD -MP -MF $(DEPDIR)/pass_through_la-pass_through.Tpo -c -o pass_through_la-pass_through.lo `test -f 'pass_through.c' || echo '$(srcdir)/'`pass_through.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/pass_through_la-pass_through.Tpo $(DEPDIR)/pass_through_la-pass_through.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pass_through.c' object='pass_through_la-pass_through.lo' libtool=yes @AMDEPBACKSLASH@
+eina_pass_through_la-eina_pass_through.lo: eina_pass_through.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(eina_pass_through_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT eina_pass_through_la-eina_pass_through.lo -MD -MP -MF $(DEPDIR)/eina_pass_through_la-eina_pass_through.Tpo -c -o eina_pass_through_la-eina_pass_through.lo `test -f 'eina_pass_through.c' || echo '$(srcdir)/'`eina_pass_through.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/eina_pass_through_la-eina_pass_through.Tpo $(DEPDIR)/eina_pass_through_la-eina_pass_through.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='eina_pass_through.c' object='eina_pass_through_la-eina_pass_through.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(pass_through_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pass_through_la-pass_through.lo `test -f 'pass_through.c' || echo '$(srcdir)/'`pass_through.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(eina_pass_through_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o eina_pass_through_la-eina_pass_through.lo `test -f 'eina_pass_through.c' || echo '$(srcdir)/'`eina_pass_through.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

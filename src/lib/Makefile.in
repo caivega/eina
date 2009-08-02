@@ -35,7 +35,8 @@ host_triplet = @host@
 @EINA_STATIC_BUILD_CHAINED_POOL_TRUE@am__append_1 = $(top_srcdir)/src/modules/mp/chained_pool/eina_chained_mempool.c
 @EINA_STATIC_BUILD_EMEMOA_FIXED_TRUE@am__append_2 = $(top_srcdir)/src/modules/mp/ememoa_fixed/eina_ememoa_fixed.c
 @EINA_STATIC_BUILD_EMEMOA_UNKNOWN_TRUE@am__append_3 = $(top_srcdir)/src/modules/mp/ememoa_unknown/eina_ememoa_unknown.c
-@EINA_STATIC_BUILD_PASS_THROUGH_TRUE@am__append_4 = $(top_srcdir)/src/modules/mp/pass_through/pass_through.c
+@EINA_STATIC_BUILD_FIXED_BITMAP_TRUE@am__append_4 = $(top_srcdir)/src/modules/mp/fixed_bitmap/eina_fixed_bitmap.c
+@EINA_STATIC_BUILD_PASS_THROUGH_TRUE@am__append_5 = $(top_srcdir)/src/modules/mp/pass_through/eina_pass_through.c
 subdir = src/lib
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -44,10 +45,10 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_attribute.m4 \
 	$(top_srcdir)/m4/efl_coverage.m4 $(top_srcdir)/m4/efl_cpu.m4 \
 	$(top_srcdir)/m4/efl_doxygen.m4 \
 	$(top_srcdir)/m4/efl_pthread.m4 $(top_srcdir)/m4/efl_tests.m4 \
-	$(top_srcdir)/m4/eina_check.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/eina_bench.m4 $(top_srcdir)/m4/eina_check.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -72,11 +73,13 @@ am__libeina_la_SOURCES_DIST = eina_error.c eina_hash.c eina_lalloc.c \
 	$(top_srcdir)/src/modules/mp/chained_pool/eina_chained_mempool.c \
 	$(top_srcdir)/src/modules/mp/ememoa_fixed/eina_ememoa_fixed.c \
 	$(top_srcdir)/src/modules/mp/ememoa_unknown/eina_ememoa_unknown.c \
-	$(top_srcdir)/src/modules/mp/pass_through/pass_through.c
+	$(top_srcdir)/src/modules/mp/fixed_bitmap/eina_fixed_bitmap.c \
+	$(top_srcdir)/src/modules/mp/pass_through/eina_pass_through.c
 @EINA_STATIC_BUILD_CHAINED_POOL_TRUE@am__objects_1 = libeina_la-eina_chained_mempool.lo
 @EINA_STATIC_BUILD_EMEMOA_FIXED_TRUE@am__objects_2 = libeina_la-eina_ememoa_fixed.lo
 @EINA_STATIC_BUILD_EMEMOA_UNKNOWN_TRUE@am__objects_3 = libeina_la-eina_ememoa_unknown.lo
-@EINA_STATIC_BUILD_PASS_THROUGH_TRUE@am__objects_4 = libeina_la-pass_through.lo
+@EINA_STATIC_BUILD_FIXED_BITMAP_TRUE@am__objects_4 = libeina_la-eina_fixed_bitmap.lo
+@EINA_STATIC_BUILD_PASS_THROUGH_TRUE@am__objects_5 = libeina_la-eina_pass_through.lo
 am_libeina_la_OBJECTS = libeina_la-eina_error.lo \
 	libeina_la-eina_hash.lo libeina_la-eina_lalloc.lo \
 	libeina_la-eina_inlist.lo libeina_la-eina_file.lo \
@@ -89,7 +92,7 @@ am_libeina_la_OBJECTS = libeina_la-eina_error.lo \
 	libeina_la-eina_benchmark.lo libeina_la-eina_rectangle.lo \
 	libeina_la-eina_stringshare.lo libeina_la-eina_cpu.lo \
 	libeina_la-eina_tiler.lo $(am__objects_1) $(am__objects_2) \
-	$(am__objects_3) $(am__objects_4)
+	$(am__objects_3) $(am__objects_4) $(am__objects_5)
 libeina_la_OBJECTS = $(am_libeina_la_OBJECTS)
 libeina_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libeina_la_CFLAGS) \
@@ -148,6 +151,7 @@ EINA_CFLAGS = @EINA_CFLAGS@
 EINA_CONFIGURE_DEFAULT_MEMPOOL = @EINA_CONFIGURE_DEFAULT_MEMPOOL@
 EINA_CONFIGURE_MAGIC_DEBUG = @EINA_CONFIGURE_MAGIC_DEBUG@
 EINA_CONFIGURE_SAFETY_CHECKS = @EINA_CONFIGURE_SAFETY_CHECKS@
+EINA_CPPFLAGS = @EINA_CPPFLAGS@
 EINA_LIBS = @EINA_LIBS@
 EMEMOA_CFLAGS = @EMEMOA_CFLAGS@
 EMEMOA_LIBS = @EMEMOA_LIBS@
@@ -261,7 +265,8 @@ AM_CPPFLAGS = \
 -I$(top_builddir)/src/include \
 -DPACKAGE_BIN_DIR=\"$(bindir)\" \
 -DPACKAGE_LIB_DIR=\"$(libdir)\" \
--DPACKAGE_DATA_DIR=\"$(datadir)/$(PACKAGE)\"
+-DPACKAGE_DATA_DIR=\"$(datadir)/$(PACKAGE)\" \
+@EINA_CPPFLAGS@
 
 lib_LTLIBRARIES = libeina.la
 libeina_la_SOURCES = eina_error.c eina_hash.c eina_lalloc.c \
@@ -270,7 +275,8 @@ libeina_la_SOURCES = eina_error.c eina_hash.c eina_lalloc.c \
 	eina_main.c eina_counter.c eina_iterator.c eina_accessor.c \
 	eina_convert.c eina_rbtree.c eina_benchmark.c eina_rectangle.c \
 	eina_stringshare.c eina_cpu.c eina_tiler.c $(am__append_1) \
-	$(am__append_2) $(am__append_3) $(am__append_4)
+	$(am__append_2) $(am__append_3) $(am__append_4) \
+	$(am__append_5)
 libeina_la_LIBADD = @EINA_LIBS@ @dlopen_libs@
 libeina_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -version-info @version_info@ @release_info@
 libeina_la_CFLAGS = @EINA_CFLAGS@
@@ -354,6 +360,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_ememoa_unknown.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_error.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_file.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_fixed_bitmap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_hash.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_inlist.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_iterator.Plo@am__quote@
@@ -363,12 +370,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_mempool.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_module.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_pass_through.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_rbtree.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_rectangle.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_stringshare.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_tiler.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_value.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-pass_through.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -566,12 +573,19 @@ libeina_la-eina_ememoa_unknown.lo: $(top_srcdir)/src/modules/mp/ememoa_unknown/e
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -c -o libeina_la-eina_ememoa_unknown.lo `test -f '$(top_srcdir)/src/modules/mp/ememoa_unknown/eina_ememoa_unknown.c' || echo '$(srcdir)/'`$(top_srcdir)/src/modules/mp/ememoa_unknown/eina_ememoa_unknown.c
 
-libeina_la-pass_through.lo: $(top_srcdir)/src/modules/mp/pass_through/pass_through.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -MT libeina_la-pass_through.lo -MD -MP -MF $(DEPDIR)/libeina_la-pass_through.Tpo -c -o libeina_la-pass_through.lo `test -f '$(top_srcdir)/src/modules/mp/pass_through/pass_through.c' || echo '$(srcdir)/'`$(top_srcdir)/src/modules/mp/pass_through/pass_through.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libeina_la-pass_through.Tpo $(DEPDIR)/libeina_la-pass_through.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/src/modules/mp/pass_through/pass_through.c' object='libeina_la-pass_through.lo' libtool=yes @AMDEPBACKSLASH@
+libeina_la-eina_fixed_bitmap.lo: $(top_srcdir)/src/modules/mp/fixed_bitmap/eina_fixed_bitmap.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -MT libeina_la-eina_fixed_bitmap.lo -MD -MP -MF $(DEPDIR)/libeina_la-eina_fixed_bitmap.Tpo -c -o libeina_la-eina_fixed_bitmap.lo `test -f '$(top_srcdir)/src/modules/mp/fixed_bitmap/eina_fixed_bitmap.c' || echo '$(srcdir)/'`$(top_srcdir)/src/modules/mp/fixed_bitmap/eina_fixed_bitmap.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libeina_la-eina_fixed_bitmap.Tpo $(DEPDIR)/libeina_la-eina_fixed_bitmap.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/src/modules/mp/fixed_bitmap/eina_fixed_bitmap.c' object='libeina_la-eina_fixed_bitmap.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -c -o libeina_la-pass_through.lo `test -f '$(top_srcdir)/src/modules/mp/pass_through/pass_through.c' || echo '$(srcdir)/'`$(top_srcdir)/src/modules/mp/pass_through/pass_through.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -c -o libeina_la-eina_fixed_bitmap.lo `test -f '$(top_srcdir)/src/modules/mp/fixed_bitmap/eina_fixed_bitmap.c' || echo '$(srcdir)/'`$(top_srcdir)/src/modules/mp/fixed_bitmap/eina_fixed_bitmap.c
+
+libeina_la-eina_pass_through.lo: $(top_srcdir)/src/modules/mp/pass_through/eina_pass_through.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -MT libeina_la-eina_pass_through.lo -MD -MP -MF $(DEPDIR)/libeina_la-eina_pass_through.Tpo -c -o libeina_la-eina_pass_through.lo `test -f '$(top_srcdir)/src/modules/mp/pass_through/eina_pass_through.c' || echo '$(srcdir)/'`$(top_srcdir)/src/modules/mp/pass_through/eina_pass_through.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libeina_la-eina_pass_through.Tpo $(DEPDIR)/libeina_la-eina_pass_through.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/src/modules/mp/pass_through/eina_pass_through.c' object='libeina_la-eina_pass_through.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -c -o libeina_la-eina_pass_through.lo `test -f '$(top_srcdir)/src/modules/mp/pass_through/eina_pass_through.c' || echo '$(srcdir)/'`$(top_srcdir)/src/modules/mp/pass_through/eina_pass_through.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

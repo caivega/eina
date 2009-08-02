@@ -160,7 +160,7 @@ _eina_list_mempool_accounting_new(__UNUSED__ Eina_List *list)
 {
    Eina_List_Accounting *tmp;
 
-   tmp = eina_mempool_alloc(_eina_list_accounting_mp, sizeof (Eina_List_Accounting));
+   tmp = eina_mempool_malloc(_eina_list_accounting_mp, sizeof (Eina_List_Accounting));
    if (!tmp) return NULL;
 
    EINA_MAGIC_SET(tmp, EINA_MAGIC_LIST_ACCOUNTING);
@@ -181,7 +181,7 @@ _eina_list_mempool_list_new(__UNUSED__ Eina_List *list)
 {
    Eina_List *tmp;
 
-   tmp = eina_mempool_alloc(_eina_list_mp, sizeof (Eina_List));
+   tmp = eina_mempool_malloc(_eina_list_mp, sizeof (Eina_List));
    if (!tmp) return NULL;
 
    EINA_MAGIC_SET(tmp, EINA_MAGIC_LIST);
@@ -423,7 +423,7 @@ eina_list_sort_merge(Eina_List *a, Eina_List *b, Eina_Compare_Cb func)
 /**
  * @addtogroup Eina_List_Group List
  *
- * @brief These functions provide single linked list management.
+ * @brief These functions provide double linked list management.
  *
  * For more information, you can look at the @ref tutorial_list_page.
  *
@@ -435,10 +435,25 @@ eina_list_sort_merge(Eina_List *a, Eina_List *b, Eina_Compare_Cb func)
  *
  * @return 1 or greater on success, 0 on error.
  *
- * This function just sets up the error module or Eina. It is also
- * called by eina_init(). It returns 0 on failure, otherwise it
- * returns the number of times eina_error_init() has already been
- * called.
+ * This function sets up the error, magic and mempool modules of
+ * Eina. It is also called by eina_init(). It returns 0 on failure,
+ * otherwise it returns the number of times it has already been
+ * called. If Eina has been configured with the default memory pool,
+ * then the memory pool used in an Eina list will be
+ * "pass_through". Otherwise, the environment variable EINA_MEMPOOL is
+ * read and its value is chosen as memory pool ; if EINA_MEMPOOL is
+ * not defined, then the "chained_mempool" memory pool is chosen. If
+ * the memory pool is not found, then eina_list_init() return @c 0.
+ * See eina_error_init(), eina_magic_string_init() and
+ * eina_mempool_init() for the documentation of the initialisation of
+ * the dependency modules.
+ *
+ * When no more Eina lists are used, call eina_list_shutdown() to shut
+ * down the list module.
+ *
+ * @see eina_error_init()
+ * @see eina_magic_string_init()
+ * @see eina_mempool_init()
  */
 EAPI int
 eina_list_init(void)
@@ -472,19 +487,19 @@ eina_list_init(void)
 	 choice = "chained_mempool";
 #endif
 
-       _eina_list_mp = eina_mempool_new(choice, "list", NULL,
+       _eina_list_mp = eina_mempool_add(choice, "list", NULL,
 					sizeof (Eina_List), 320);
        if (!_eina_list_mp)
          {
            EINA_ERROR_PERR("ERROR: Mempool for list cannot be allocated in list init.\n");
 	   goto on_init_fail;
          }
-       _eina_list_accounting_mp = eina_mempool_new(choice, "list_accounting", NULL,
+       _eina_list_accounting_mp = eina_mempool_add(choice, "list_accounting", NULL,
 						   sizeof (Eina_List_Accounting), 80);
        if (!_eina_list_accounting_mp)
          {
            EINA_ERROR_PERR("ERROR: Mempool for list accounting cannot be allocated in list init.\n");
-	   eina_mempool_delete(_eina_list_mp);
+	   eina_mempool_del(_eina_list_mp);
 	   goto on_init_fail;
          }
 
@@ -516,13 +531,13 @@ eina_list_init(void)
 /**
  * @brief Shut down the list module.
  *
- * @return 0 when the error module is completely shut down, 1 or
+ * @return 0 when the list module is completely shut down, 1 or
  * greater otherwise.
  *
- * This function just shut down the error module set up by
- * eina_list_init(). It is also called by eina_shutdown(). It returns
- * 0 when it is called the same number of times than
- * eina_error_init().
+ * This function shuts down the mempool, magic and error modules set
+ * up by eina_list_init(). It is also called by eina_shutdown(). It
+ * returns 0 when it is called the same number of times than
+ * eina_list_init().
  */
 EAPI int
 eina_list_shutdown(void)
@@ -531,8 +546,8 @@ eina_list_shutdown(void)
 
    if (!_eina_list_init_count)
      {
-	eina_mempool_delete(_eina_list_accounting_mp);
-	eina_mempool_delete(_eina_list_mp);
+	eina_mempool_del(_eina_list_accounting_mp);
+	eina_mempool_del(_eina_list_mp);
 
 	eina_mempool_shutdown();
 	eina_magic_string_shutdown();
@@ -1633,6 +1648,8 @@ eina_list_search_sorted_near_list(const Eina_List *list, Eina_Compare_Cb func, c
    void *d;
    unsigned int inf, sup, cur, tmp;
    int part;
+
+   if (!list) return NULL;
 
    inf = 0;
    sup = eina_list_count(list) ;

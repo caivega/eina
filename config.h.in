@@ -32,19 +32,19 @@
 /* disable safety checks for NULL pointers and like. */
 #undef EINA_SAFETY_CHECKS
 
-/* Set to 1 if chained pool is statically built */
+/* Set to 1 if yes is statically built */
 #undef EINA_STATIC_BUILD_CHAINED_POOL
 
-/* Set to 1 if ememoa fixed is statically built */
+/* Set to 1 if ${enable_ememoa} is statically built */
 #undef EINA_STATIC_BUILD_EMEMOA_FIXED
 
-/* Set to 1 if ememoa unknown is statically built */
+/* Set to 1 if ${enable_ememoa} is statically built */
 #undef EINA_STATIC_BUILD_EMEMOA_UNKNOWN
 
-/* Set to 1 if fixed bitmap is statically built */
+/* Set to 1 if yes is statically built */
 #undef EINA_STATIC_BUILD_FIXED_BITMAP
 
-/* Set to 1 if pass through is statically built */
+/* Set to 1 if yes is statically built */
 #undef EINA_STATIC_BUILD_PASS_THROUGH
 
 /* Report Eina stringshare usage pattern */
