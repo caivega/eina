@@ -1,3 +1,10 @@
+eina (0.0.2.062-1) unstable; urgency=low
+
+  * New upstream snapshot
+  * This time the API broke, so drop the patches and use the upstream soname
+
+ -- Albin Tonnerre <albin.tonnerre@gmail.com>  Sun, 02 Aug 2009 17:04:34 +0200
+
 eina (0.0.2.061-1) unstable; urgency=low
 
   * New upstream snapshot
