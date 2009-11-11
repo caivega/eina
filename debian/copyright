@@ -2,10 +2,10 @@ This package was debianized by Albin Tonnerre <albin.tonnerre@gmail.com> on
 Sun, 10 Aug 2008 23:40:13 +0100, and uses parts of the work done by Falko
 Schmidt <falko@alphagemini.org>
 
-The source was downloaded from the trunk/eina module of the enlightenment SVN
-tree. For more information, see:
+This package was downloaded from: http://download.enlightenment.org/snapshots/
+For more information, see:
 
-	http://svn.enlightenment.org
+	http://trac.enlightenment.org/e/wiki/Eina
 
 Upstream Authors:
 	Jorge Luis "turran" Zapata <jorgeluis.zapata@gmail.com>

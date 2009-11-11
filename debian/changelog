@@ -1,3 +1,17 @@
+eina (0.0.2.062-2) unstable; urgency=low
+
+  * No longer build with -O3
+  * Prevent the doc from being built when it's not needed. Allows moving
+    doxygen to Build-Depends-Indep
+  * No longer use DEB_DH_STRIP_ARGS, CDBS handles that automatically
+  * debian/copyright: update download location and website URL
+  * Add support for running the testsuite during the build (ignore the
+    result for now, though, as there's still a testsuite bug that needs
+    fixing)
+  * Bump Standards-Version to 3.8.3
+
+ -- Albin Tonnerre <albin.tonnerre@gmail.com>  Mon, 24 Aug 2009 17:40:22 +0200
+
 eina (0.0.2.062-1) unstable; urgency=low
 
   * New upstream snapshot
