@@ -9,7 +9,7 @@ CFLAGS += -fvisibility=hidden
 common-post-build-arch:: check-stamp
 
 check-stamp:
-	-$(MAKE) check
+	$(MAKE) check
 	touch $@
 
 install/libeina-doc::
