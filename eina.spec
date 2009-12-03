@@ -2,7 +2,7 @@
 
 Summary: Data Type Library
 Name: eina
-Version: 0.0.2.062
+Version: 0.9.9.063
 Release: 0.%(date '+%Y%m%d')
 License: BSD
 Group: System Environment/Libraries
