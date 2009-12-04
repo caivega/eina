@@ -4,8 +4,6 @@ eina (0.9.9.063-1) unstable; urgency=low
   * Fix description formating (Closes: #535480)
   * Fix configure invocation for building static modules
   * The testsuite is no longer buggy, let's stop ignoring failures
-  * Add debian/patches/{01_fix_soname,02_reapply_autofoo}.patch
-    - The SONAME for this snapshot was meant to be ver-svn-04, not ver-svn-05
 
  -- Albin Tonnerre <albin.tonnerre@gmail.com>  Thu, 03 Dec 2009 15:52:26 +0100
 
