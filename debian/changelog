@@ -1,11 +1,12 @@
 eina (0.9.9.063-1) unstable; urgency=low
 
-  * Prepare for next release
+  * New upstream release
   * Fix description formating (Closes: #535480)
   * Fix configure invocation for building static modules
   * The testsuite is no longer buggy, let's stop ignoring failures
+  * debian/control: update my email address
 
- -- Albin Tonnerre <albin.tonnerre@gmail.com>  Thu, 03 Dec 2009 15:52:26 +0100
+ -- Albin Tonnerre <lutin@debian.org>  Thu, 03 Dec 2009 15:52:26 +0100
 
 eina (0.0.2.062-2) unstable; urgency=low
 
