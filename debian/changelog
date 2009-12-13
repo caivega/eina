@@ -1,3 +1,15 @@
+eina (0.9.9.063-2) unstable; urgency=low
+
+  * Add debian/patches/01_fix_compile_kbsd.diff:
+    - Fix FTBFS on kfreebsd, thanks to Cyril Brulebois (Closes: #560745)
+  * Add debian/patches/02_eina_test_rbtree_timeout.diff:
+    - Some tests in the testsuite take a long time to run, causing FTBFS on
+      several architectures, as the default timeout is 4 seconds. Wait for 5
+      minutes instead, that should be enough. (Closes: #560742)
+  * debian/rules: make the check-stamp target depend on build-arch
+
+ -- Albin Tonnerre <lutin@debian.org>  Sun, 13 Dec 2009 12:27:44 +0100
+
 eina (0.9.9.063-1) unstable; urgency=low
 
   * New upstream release
