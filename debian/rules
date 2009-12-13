@@ -8,7 +8,7 @@ CFLAGS += -fvisibility=hidden
 
 common-post-build-arch:: check-stamp
 
-check-stamp:
+check-stamp: build-arch
 	$(MAKE) check
 	touch $@
 
