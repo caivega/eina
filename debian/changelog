@@ -1,3 +1,9 @@
+eina (0.9.9.063-3) unstable; urgency=low
+
+  * Add debian/patches/03_fix_compile_hurd: fix FTBFS on Hurd
+
+ -- Albin Tonnerre <lutin@debian.org>  Tue, 15 Dec 2009 18:13:52 +0100
+
 eina (0.9.9.063-2) unstable; urgency=low
 
   * Add debian/patches/01_fix_compile_kbsd.diff:
