@@ -16,5 +16,5 @@ install/libeina-doc::
 	$(MAKE) doc
 
 DEB_CONFIGURE_EXTRA_FLAGS := --disable-rpath \
-                             --enable-chained-pool=static \
+                             --enable-mempool-chained-pool=static \
                              --disable-magic-debug  --enable-tests
