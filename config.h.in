@@ -20,25 +20,43 @@
 /* Define to mention that POSIX threads are supported */
 #undef EFL_HAVE_PTHREAD
 
+/* Define to mention that POSIX threads spinlocks are supported */
+#undef EFL_HAVE_PTHREAD_SPINLOCK
+
 /* Define to mention that SSE is supported */
 #undef EFL_HAVE_SSE
 
 /* Define to mention that SSE2 is supported */
 #undef EFL_HAVE_SSE2
 
-/* Use by the test suite to try ememoa mempool */
-#undef EINA_EMEMOA_SUPPORT
+/* Set to 1 if no is built */
+#undef EINA_BUILD_BUDDY
+
+/* Set to 1 if ${enable_chained_pool} is built */
+#undef EINA_BUILD_CHAINED_POOL
+
+/* Set to 1 if ${enable_ememoa} is built */
+#undef EINA_BUILD_EMEMOA_FIXED
+
+/* Set to 1 if ${enable_ememoa} is built */
+#undef EINA_BUILD_EMEMOA_UNKNOWN
+
+/* Set to 1 if no is built */
+#undef EINA_BUILD_FIXED_BITMAP
+
+/* Set to 1 if ${enable_pass_through} is built */
+#undef EINA_BUILD_PASS_THROUGH
 
 /* if set, logging is limited to this amount. */
 #undef EINA_LOG_LEVEL_MAXIMUM
 
-/* Build eina_log lock using pthread_spin */
-#undef EINA_PTHREAD_SPIN
-
 /* disable safety checks for NULL pointers and like. */
 #undef EINA_SAFETY_CHECKS
 
-/* Set to 1 if yes is statically built */
+/* Set to 1 if no is statically built */
+#undef EINA_STATIC_BUILD_BUDDY
+
+/* Set to 1 if ${enable_chained_pool} is statically built */
 #undef EINA_STATIC_BUILD_CHAINED_POOL
 
 /* Set to 1 if ${enable_ememoa} is statically built */
@@ -47,10 +65,10 @@
 /* Set to 1 if ${enable_ememoa} is statically built */
 #undef EINA_STATIC_BUILD_EMEMOA_UNKNOWN
 
-/* Set to 1 if yes is statically built */
+/* Set to 1 if no is statically built */
 #undef EINA_STATIC_BUILD_FIXED_BITMAP
 
-/* Set to 1 if yes is statically built */
+/* Set to 1 if ${enable_pass_through} is statically built */
 #undef EINA_STATIC_BUILD_PASS_THROUGH
 
 /* Report Eina stringshare usage pattern */
@@ -79,8 +97,11 @@
 /* Set to 1 if evil package is installed */
 #undef HAVE_EVIL
 
-/* Define to 1 if you have the `fnmatch' function. */
-#undef HAVE_FNMATCH
+/* Set to 1 if iconv library is installed */
+#undef HAVE_ICONV
+
+/* Define to 1 if you have the <iconv.h> header file. */
+#undef HAVE_ICONV_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -102,6 +123,9 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
+
+/* Define to 1 if you have the `strlcpy' function. */
+#undef HAVE_STRLCPY
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
@@ -148,8 +172,14 @@
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
 
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Suffix for shared objects */
+#undef SHARED_LIB_SUFFIX
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
@@ -167,6 +197,18 @@
 
 /* Version number of package */
 #undef VERSION
+
+/* Major version */
+#undef VMAJ
+
+/* Micro version */
+#undef VMIC
+
+/* Minor version */
+#undef VMIN
+
+/* Revison */
+#undef VREV
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
