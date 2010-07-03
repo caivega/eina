@@ -1,3 +1,9 @@
+eina (0.9.9.49898-1) UNRELEASED; urgency=low
+
+  * New upstream snapshot
+
+ -- Albin Tonnerre <lutin@debian.org>  Sat, 03 Jul 2010 09:26:47 +0200
+
 eina (0.9.9.063-3) unstable; urgency=low
 
   * Add debian/patches/03_fix_compile_hurd: fix FTBFS on Hurd
