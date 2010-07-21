@@ -1,8 +1,15 @@
-eina (0.9.9.49898-1) UNRELEASED; urgency=low
+eina (0.9.9.49898-1) unstable; urgency=low
 
   * New upstream snapshot
+  * debian/rules: update configure options
+  * Explicitly enable pthread support in configure options
+  * Bump Standards-Version, no change required
+  * Drop patches/03_fix_compile_hurd.diff, applied upstream
+  * Switch to '3.0 (quilt)' source format
+  * Drop patches/01_fix_compile_kbsd.diff, applied upstream
+  * No longer ship mp modules, since we build them inside the lib
 
- -- Albin Tonnerre <lutin@debian.org>  Sat, 03 Jul 2010 09:26:47 +0200
+ -- Albin Tonnerre <lutin@debian.org>  Wed, 21 Jul 2010 21:55:38 +0200
 
 eina (0.9.9.063-3) unstable; urgency=low
 
