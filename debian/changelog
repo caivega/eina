@@ -1,3 +1,12 @@
+eina (0.9.9.49898-2) unstable; urgency=low
+
+  * Add patches/01_fix_mempool_alignment_issues.diff. The memory
+    allocator now returns correctly aligned data, fixes issues on SPARC
+    (Closes: #592522)
+  * Bump Standards-Version, no change required
+
+ -- Albin Tonnerre <lutin@debian.org>  Tue, 10 Aug 2010 21:17:25 +0200
+
 eina (0.9.9.49898-1) unstable; urgency=low
 
   * New upstream snapshot
