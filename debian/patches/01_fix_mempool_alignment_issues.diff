@@ -1,0 +1,126 @@
+diff --git a/src/lib/eina_mempool.c b/src/lib/eina_mempool.c
+index c722d7a..50fe19c 100644
+--- a/src/lib/eina_mempool.c
++++ b/src/lib/eina_mempool.c
+@@ -339,6 +339,29 @@ EAPI void eina_mempool_statistics(Eina_Mempool *mp)
+ 	mp->backend.statistics(mp->backend_data);
+ }
+ 
++EAPI unsigned int
++eina_mempool_alignof(unsigned int size)
++{
++   int align;
++
++   if (size <= 2)
++      align = 2;
++   else if (size < 8)
++      align = 4;
++   else
++#if __WORDSIZE == 32
++      align = 8;
++
++#else
++   if (size < 16)
++      align = 8;
++   else
++      align = 16;
++#endif
++
++   return ((size / align) + 1) * align;
++}
++
+ /**
+  * @}
+  */
+diff --git a/src/modules/mp/chained_pool/eina_chained_mempool.c b/src/modules/mp/chained_pool/eina_chained_mempool.c
+index 4f9e42b..1600cf3 100644
+--- a/src/modules/mp/chained_pool/eina_chained_mempool.c
++++ b/src/modules/mp/chained_pool/eina_chained_mempool.c
+@@ -2,7 +2,7 @@
+  * vim:ts=8:sw=3:sts=8:noexpandtab:cino=>5n-3f0^-2{2
+  */
+ /* EINA - EFL data type library
+- * Copyright (C) 2008 Cedric BAIL
++ * Copyright (C) 2008-2010 Cedric BAIL, Vincent Torri
+  *
+  * This library is free software; you can redistribute it and/or
+  * modify it under the terms of the GNU Lesser General Public
+@@ -54,8 +54,10 @@ struct _Chained_Mempool
+ {
+    Eina_Inlist  *first;
+    const char *name;
+-   int item_size;
++   int item_alloc;
+    int pool_size;
++   int alloc_size;
++   int group_size;
+    int usage;
+ #ifdef EFL_HAVE_PTHREAD
+    pthread_mutex_t mutex;
+@@ -75,14 +77,20 @@ _eina_chained_mp_pool_new(Chained_Mempool *pool)
+ {
+    Chained_Pool *p;
+    unsigned char *ptr;
+-   int item_alloc, i;
++   int i;
+ 
+-   item_alloc = ((pool->item_size + sizeof(void *) - 1) / sizeof(void *)) * sizeof(void *);
+-   p = malloc(sizeof(Chained_Pool) + (pool->pool_size * item_alloc));
+-   ptr = (unsigned char *) (p + 1);
++   eina_error_set(0);
++   p = malloc(pool->alloc_size);
++   if (!p)
++     {
++	eina_error_set(EINA_ERROR_OUT_OF_MEMORY);
++	return NULL;
++     }
++
++   ptr = (unsigned char *)p + eina_mempool_alignof(sizeof(Chained_Pool));
+    p->usage = 0;
+    p->base = NULL;
+-   for (i = 0; i < pool->pool_size; ++i, ptr += item_alloc)
++   for (i = 0; i < pool->pool_size; ++i, ptr += pool->item_alloc)
+      eina_trash_push(&p->base, ptr);
+    return p;
+ }
+@@ -150,10 +158,9 @@ eina_chained_mempool_free(void *data, void *ptr)
+    Chained_Mempool *pool = data;
+    Chained_Pool *p;
+    void *pmem;
+-   int item_alloc, psize;
++   int psize;
+ 
+-   item_alloc = ((pool->item_size + sizeof(void *) - 1) / sizeof(void *)) * sizeof(void *);
+-   psize = item_alloc * pool->pool_size;
++   psize = pool->group_size;
+    // look 4 pool
+ 
+ #ifdef EFL_HAVE_PTHREAD
+@@ -202,6 +209,7 @@ static void*
+ eina_chained_mempool_init(const char *context, __UNUSED__ const char *option, va_list args)
+ {
+    Chained_Mempool *mp;
++   int item_size;
+    size_t length;
+ 
+    length = context ? strlen(context) + 1 : 0;
+@@ -209,7 +217,7 @@ eina_chained_mempool_init(const char *context, __UNUSED__ const char *option, va
+    mp = calloc(1, sizeof(Chained_Mempool) + length);
+    if (!mp) return NULL;
+ 
+-   mp->item_size = va_arg(args, int);
++   item_size = va_arg(args, int);
+    mp->pool_size = va_arg(args, int);
+ 
+    if (length)
+@@ -218,6 +226,10 @@ eina_chained_mempool_init(const char *context, __UNUSED__ const char *option, va
+ 	memcpy((char*) mp->name, context, length);
+      }
+ 
++   mp->item_alloc = eina_mempool_alignof(item_size);
++   mp->group_size = mp->item_alloc * mp->pool_size;
++   mp->alloc_size = mp->group_size + eina_mempool_alignof(sizeof(Chained_Pool));
++
+ #ifdef EFL_HAVE_PTHREAD
+    pthread_mutex_init(&mp->mutex, NULL);
+ #endif
