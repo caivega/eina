@@ -1,2 +1,2 @@
 version=3
-http://download.enlightenment.org/snapshots/LATEST/eina-(.*)\.tar\.gz
+http://download.enlightenment.org/releases/eina-(.*)\.tar\.gz
