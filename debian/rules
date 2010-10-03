@@ -16,6 +16,6 @@ install/libeina-doc::
 
 DEB_CONFIGURE_EXTRA_FLAGS := --disable-rpath \
                              --disable-magic-debug \
-                             --enable-threads \
+                             --enable-posix-threads \
                              --enable-tests \
                              --enable-mempool-chained-pool=static
