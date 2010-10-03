@@ -42,13 +42,13 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_attribute.m4 \
 	$(top_srcdir)/m4/efl_compiler_flag.m4 \
 	$(top_srcdir)/m4/efl_coverage.m4 $(top_srcdir)/m4/efl_cpu.m4 \
 	$(top_srcdir)/m4/efl_doxygen.m4 \
-	$(top_srcdir)/m4/efl_fnmatch.m4 \
-	$(top_srcdir)/m4/efl_pthread.m4 $(top_srcdir)/m4/efl_tests.m4 \
-	$(top_srcdir)/m4/eina_bench.m4 $(top_srcdir)/m4/eina_check.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/efl_fnmatch.m4 $(top_srcdir)/m4/efl_tests.m4 \
+	$(top_srcdir)/m4/efl_threads.m4 \
+	$(top_srcdir)/m4/efl_voltron.m4 $(top_srcdir)/m4/eina_bench.m4 \
+	$(top_srcdir)/m4/eina_check.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -158,10 +158,13 @@ EFL_SIMD_FLAGS = @EFL_SIMD_FLAGS@
 EGREP = @EGREP@
 EINA_CFLAGS = @EINA_CFLAGS@
 EINA_CONFIGURE_DEFAULT_MEMPOOL = @EINA_CONFIGURE_DEFAULT_MEMPOOL@
+EINA_CONFIGURE_HAVE_INTTYPES_H = @EINA_CONFIGURE_HAVE_INTTYPES_H@
+EINA_CONFIGURE_HAVE_STDINT_H = @EINA_CONFIGURE_HAVE_STDINT_H@
 EINA_CONFIGURE_MAGIC_DEBUG = @EINA_CONFIGURE_MAGIC_DEBUG@
 EINA_CONFIGURE_SAFETY_CHECKS = @EINA_CONFIGURE_SAFETY_CHECKS@
 EINA_CPPFLAGS = @EINA_CPPFLAGS@
 EINA_LIBS = @EINA_LIBS@
+EINA_SIZEOF_WCHAR_T = @EINA_SIZEOF_WCHAR_T@
 EMEMOA_CFLAGS = @EMEMOA_CFLAGS@
 EMEMOA_LIBS = @EMEMOA_LIBS@
 EVIL_CFLAGS = @EVIL_CFLAGS@
@@ -275,6 +278,8 @@ AM_CPPFLAGS = \
 -I. \
 -I$(top_srcdir)/src/include \
 -I$(top_builddir)/src/include \
+-I$(top_srcdir)/src/lib \
+-I$(top_builddir)/src/lib \
 @EINA_CPPFLAGS@ \
 @EFL_EINA_BUILD@
 

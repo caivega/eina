@@ -41,13 +41,13 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_attribute.m4 \
 	$(top_srcdir)/m4/efl_compiler_flag.m4 \
 	$(top_srcdir)/m4/efl_coverage.m4 $(top_srcdir)/m4/efl_cpu.m4 \
 	$(top_srcdir)/m4/efl_doxygen.m4 \
-	$(top_srcdir)/m4/efl_fnmatch.m4 \
-	$(top_srcdir)/m4/efl_pthread.m4 $(top_srcdir)/m4/efl_tests.m4 \
-	$(top_srcdir)/m4/eina_bench.m4 $(top_srcdir)/m4/eina_check.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/efl_fnmatch.m4 $(top_srcdir)/m4/efl_tests.m4 \
+	$(top_srcdir)/m4/efl_threads.m4 \
+	$(top_srcdir)/m4/efl_voltron.m4 $(top_srcdir)/m4/eina_bench.m4 \
+	$(top_srcdir)/m4/eina_check.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -99,10 +99,13 @@ EFL_SIMD_FLAGS = @EFL_SIMD_FLAGS@
 EGREP = @EGREP@
 EINA_CFLAGS = @EINA_CFLAGS@
 EINA_CONFIGURE_DEFAULT_MEMPOOL = @EINA_CONFIGURE_DEFAULT_MEMPOOL@
+EINA_CONFIGURE_HAVE_INTTYPES_H = @EINA_CONFIGURE_HAVE_INTTYPES_H@
+EINA_CONFIGURE_HAVE_STDINT_H = @EINA_CONFIGURE_HAVE_STDINT_H@
 EINA_CONFIGURE_MAGIC_DEBUG = @EINA_CONFIGURE_MAGIC_DEBUG@
 EINA_CONFIGURE_SAFETY_CHECKS = @EINA_CONFIGURE_SAFETY_CHECKS@
 EINA_CPPFLAGS = @EINA_CPPFLAGS@
 EINA_LIBS = @EINA_LIBS@
+EINA_SIZEOF_WCHAR_T = @EINA_SIZEOF_WCHAR_T@
 EMEMOA_CFLAGS = @EMEMOA_CFLAGS@
 EMEMOA_LIBS = @EMEMOA_LIBS@
 EVIL_CFLAGS = @EVIL_CFLAGS@
@@ -211,7 +214,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 version_info = @version_info@
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES = Makefile.in 
+PACKAGE_DOCNAME = $(PACKAGE_TARNAME)-$(PACKAGE_VERSION)-doc
 EXTRA_DIST = Doxyfile $(wildcard img/*.*) e.css head.html foot.html
 all: all-am
 
@@ -319,6 +323,7 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+@EFL_BUILD_DOC_FALSE@clean-local:
 clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-local mostlyclean-am
@@ -402,16 +407,24 @@ uninstall-am:
 
 .PHONY: doc
 
+@EFL_BUILD_DOC_TRUE@doc-clean:
+@EFL_BUILD_DOC_TRUE@	rm -rf html/ latex/ man/ xml/ $(PACKAGE_DOCNAME).tar*
+
 @EFL_BUILD_DOC_TRUE@doc: all
-@EFL_BUILD_DOC_TRUE@	rm -rf html/ latex/ man/
 @EFL_BUILD_DOC_TRUE@	$(efl_doxygen)
 @EFL_BUILD_DOC_TRUE@	cp img/* html/
+@EFL_BUILD_DOC_TRUE@	rm -rf $(PACKAGE_DOCNAME).tar*
+@EFL_BUILD_DOC_TRUE@	mkdir -p $(PACKAGE_DOCNAME)/doc
+@EFL_BUILD_DOC_TRUE@	cp -R html/ latex/ man/ $(PACKAGE_DOCNAME)/doc
+@EFL_BUILD_DOC_TRUE@	tar cf $(PACKAGE_DOCNAME).tar $(PACKAGE_DOCNAME)/
+@EFL_BUILD_DOC_TRUE@	bzip2 -9 $(PACKAGE_DOCNAME).tar
+@EFL_BUILD_DOC_TRUE@	rm -rf $(PACKAGE_DOCNAME)/
+@EFL_BUILD_DOC_TRUE@	mv $(PACKAGE_DOCNAME).tar.bz2 $(top_srcdir)
+
+@EFL_BUILD_DOC_TRUE@clean-local: doc-clean
 
 @EFL_BUILD_DOC_FALSE@doc:
 @EFL_BUILD_DOC_FALSE@	@echo "Documentation not built. Run ./configure --help"
-
-clean-local:
-	@rm -rf html/ latex/ man/
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

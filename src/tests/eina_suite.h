@@ -22,6 +22,8 @@
 #include <check.h>
 
 void eina_test_stringshare(TCase *tc);
+void eina_test_ustringshare(TCase *tc);
+void eina_test_binshare(TCase *tc);
 void eina_test_array(TCase *tc);
 void eina_test_log(TCase *tc);
 void eina_test_error(TCase *tc);
@@ -45,7 +47,9 @@ void eina_test_matrixsparse(TCase *tc);
 void eina_test_tiler(TCase *tc);
 void eina_test_strbuf(TCase *tc);
 void eina_test_str(TCase *tc);
+void eina_test_ustr(TCase *tc);
 void eina_test_quadtree(TCase *tc);
 void eina_test_fp(TCase *tc);
+void eina_test_sched(TCase *tc);
 
 #endif /* EINA_SUITE_H_ */

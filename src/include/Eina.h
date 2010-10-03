@@ -15,6 +15,7 @@
  *           Raphael Kubo da Costa <kubo@profusion.mobi>
  *           Tilman Sauerbeck <tilman@code-monkey.de>
  *           Vincent "caro" Torri  <vtorri at univ-evry dot fr>
+ *           Tom Hacohen <tom@stosb.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,6 +53,7 @@
  * @author Raphael Kubo da Costa <kubo@@profusion.mobi>
  * @author Tilman Sauerbeck <tilman@@code-monkey.de>
  * @author Vincent "caro" Torri  <vtorri at univ-evry dot fr>
+ * @author Tom Hacohen <tom@@stosb.com>
  * @date 2008-2010
  *
  * @section eina_intro_sec Introduction
@@ -91,7 +93,7 @@
  * @li @ref Eina_Safety_Checks_Group extra checks that will report unexpected conditions and can be disabled at compile time.
  * @li @ref Eina_String_Group a set of functions that manages C strings.
  *
- * @defgroup Eina_Data_Types_Group
+ * @defgroup Eina_Data_Types_Group Data types.
  *
  * Eina provide easy to use and optimized data types and structures.
  *
@@ -108,6 +110,12 @@
  * Eina tools aims to help application development, providing ways to
  * make it safer, log errors, manage memory more efficiently and more.
  */
+
+#include <dirent.h>
+
+#ifdef _WIN32
+# include <Evil.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -129,7 +137,9 @@ extern "C" {
 #include "eina_error.h"
 #include "eina_log.h"
 #include "eina_array.h"
+#include "eina_binshare.h"
 #include "eina_stringshare.h"
+#include "eina_ustringshare.h"
 #include "eina_magic.h"
 #include "eina_counter.h"
 #include "eina_rbtree.h"
@@ -138,11 +148,14 @@ extern "C" {
 #include "eina_benchmark.h"
 #include "eina_convert.h"
 #include "eina_cpu.h"
+#include "eina_sched.h"
 #include "eina_tiler.h"
 #include "eina_hamster.h"
 #include "eina_matrixsparse.h"
 #include "eina_str.h"
 #include "eina_strbuf.h"
+#include "eina_ustrbuf.h"
+#include "eina_unicode.h"
 #include "eina_quadtree.h"
 
 #ifdef __cplusplus

@@ -18,16 +18,22 @@
 #undef EFL_HAVE_MMX
 
 /* Define to mention that POSIX threads are supported */
-#undef EFL_HAVE_PTHREAD
+#undef EFL_HAVE_POSIX_THREADS
 
 /* Define to mention that POSIX threads spinlocks are supported */
-#undef EFL_HAVE_PTHREAD_SPINLOCK
+#undef EFL_HAVE_POSIX_THREADS_SPINLOCK
 
 /* Define to mention that SSE is supported */
 #undef EFL_HAVE_SSE
 
 /* Define to mention that SSE2 is supported */
 #undef EFL_HAVE_SSE2
+
+/* Define to mention that POSIX or Win32 threads are supported */
+#undef EFL_HAVE_THREADS
+
+/* Define to mention that Win32 threads are supported */
+#undef EFL_HAVE_WIN32_THREADS
 
 /* Set to 1 if no is built */
 #undef EINA_BUILD_BUDDY
@@ -43,6 +49,9 @@
 
 /* Set to 1 if no is built */
 #undef EINA_BUILD_FIXED_BITMAP
+
+/* Set to 1 if ${enable_one_big} is built */
+#undef EINA_BUILD_ONE_BIG
 
 /* Set to 1 if ${enable_pass_through} is built */
 #undef EINA_BUILD_PASS_THROUGH
@@ -67,6 +76,9 @@
 
 /* Set to 1 if no is statically built */
 #undef EINA_STATIC_BUILD_FIXED_BITMAP
+
+/* Set to 1 if ${enable_one_big} is statically built */
+#undef EINA_STATIC_BUILD_ONE_BIG
 
 /* Set to 1 if ${enable_pass_through} is statically built */
 #undef EINA_STATIC_BUILD_PASS_THROUGH
@@ -180,6 +192,9 @@
 
 /* Suffix for shared objects */
 #undef SHARED_LIB_SUFFIX
+
+/* The size of `wchar_t', as computed by sizeof. */
+#undef SIZEOF_WCHAR_T
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be

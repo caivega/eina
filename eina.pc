@@ -6,7 +6,7 @@ includedir=${prefix}/include
 Name: Eina
 Description: A Library that implements fast data types and miscellaneous tools
 Requires.private: 
-Version: 0.9.9.49898
+Version: 1.0.0.beta
 Libs: -L${libdir} -leina
-Libs.private:  -ldl
-Cflags: -I${includedir}/eina-0 -I${includedir}/eina-0/eina
+Libs.private:  -pthread -ldl
+Cflags: -I${includedir}/eina-1 -I${includedir}/eina-1/eina

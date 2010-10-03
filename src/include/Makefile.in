@@ -44,13 +44,13 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_attribute.m4 \
 	$(top_srcdir)/m4/efl_compiler_flag.m4 \
 	$(top_srcdir)/m4/efl_coverage.m4 $(top_srcdir)/m4/efl_cpu.m4 \
 	$(top_srcdir)/m4/efl_doxygen.m4 \
-	$(top_srcdir)/m4/efl_fnmatch.m4 \
-	$(top_srcdir)/m4/efl_pthread.m4 $(top_srcdir)/m4/efl_tests.m4 \
-	$(top_srcdir)/m4/eina_bench.m4 $(top_srcdir)/m4/eina_check.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/efl_fnmatch.m4 $(top_srcdir)/m4/efl_tests.m4 \
+	$(top_srcdir)/m4/efl_threads.m4 \
+	$(top_srcdir)/m4/efl_voltron.m4 $(top_srcdir)/m4/eina_bench.m4 \
+	$(top_srcdir)/m4/eina_check.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -127,10 +127,13 @@ EFL_SIMD_FLAGS = @EFL_SIMD_FLAGS@
 EGREP = @EGREP@
 EINA_CFLAGS = @EINA_CFLAGS@
 EINA_CONFIGURE_DEFAULT_MEMPOOL = @EINA_CONFIGURE_DEFAULT_MEMPOOL@
+EINA_CONFIGURE_HAVE_INTTYPES_H = @EINA_CONFIGURE_HAVE_INTTYPES_H@
+EINA_CONFIGURE_HAVE_STDINT_H = @EINA_CONFIGURE_HAVE_STDINT_H@
 EINA_CONFIGURE_MAGIC_DEBUG = @EINA_CONFIGURE_MAGIC_DEBUG@
 EINA_CONFIGURE_SAFETY_CHECKS = @EINA_CONFIGURE_SAFETY_CHECKS@
 EINA_CPPFLAGS = @EINA_CPPFLAGS@
 EINA_LIBS = @EINA_LIBS@
+EINA_SIZEOF_WCHAR_T = @EINA_SIZEOF_WCHAR_T@
 EMEMOA_CFLAGS = @EMEMOA_CFLAGS@
 EMEMOA_LIBS = @EMEMOA_LIBS@
 EVIL_CFLAGS = @EVIL_CFLAGS@
@@ -265,7 +268,10 @@ eina_counter.h \
 eina_inline_array.x \
 eina_magic.h \
 eina_stringshare.h \
+eina_binshare.h \
+eina_ustringshare.h \
 eina_inline_stringshare.x \
+eina_inline_ustringshare.x \
 eina_inline_list.x \
 eina_accessor.h \
 eina_convert.h \
@@ -279,6 +285,7 @@ eina_trash.h \
 eina_iterator.h \
 eina_main.h \
 eina_cpu.h \
+eina_sched.h \
 eina_tiler.h \
 eina_hamster.h \
 eina_matrixsparse.h \
@@ -286,6 +293,8 @@ eina_inline_tiler.x \
 eina_str.h \
 eina_inline_str.x \
 eina_strbuf.h \
+eina_ustrbuf.h \
+eina_unicode.h \
 eina_quadtree.h
 
 installed_mainheaderdir = $(includedir)/eina-@VMAJ@
@@ -293,8 +302,7 @@ dist_installed_mainheader_DATA = Eina.h eina_config.h
 installed_headersdir = $(includedir)/eina-@VMAJ@/eina
 dist_installed_headers_DATA = $(EINAHEADERS)
 EXTRA_DIST = \
-eina_config.h.in \
-eina_private.h
+eina_config.h.in
 
 all: all-am
 
