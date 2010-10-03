@@ -44,7 +44,8 @@
 #endif
 
 #ifndef CLAMP
-# define CLAMP(x, min, max) (((x) > (max)) ? (max) : (((x) < (min)) ? (min) : (x)))
+# define CLAMP(x, min, \
+               max) (((x) > (max)) ? (max) : (((x) < (min)) ? (min) : (x)))
 #endif
 
 #define READBUFSIZ 65536
@@ -52,11 +53,13 @@
 #define EINA_LOG_COLOR_DEFAULT "\033[36m"
 
 /* eina magic types */
-#define EINA_MAGIC_STRINGSHARE 0x98761234
-#define EINA_MAGIC_STRINGSHARE_NODE 0x98761235
-#define EINA_MAGIC_STRINGSHARE_HEAD 0x98761236
+#define EINA_MAGIC_SHARE 0x98761234
+#define EINA_MAGIC_SHARE_HEAD 0x98761235
+#define EINA_MAGIC_STRINGSHARE_NODE 0x98761254
+#define EINA_MAGIC_USTRINGSHARE_NODE 0x98761255
+#define EINA_MAGIC_BINSHARE_NODE 0x98761256
 
-#define EINA_MAGIC_LIST	0x98761237
+#define EINA_MAGIC_LIST 0x98761237
 #define EINA_MAGIC_LIST_ITERATOR 0x98761238
 #define EINA_MAGIC_LIST_ACCESSOR 0x98761239
 #define EINA_MAGIC_LIST_ACCOUNTING 0x9876123a
@@ -81,6 +84,7 @@
 #define EINA_MAGIC_MATRIXSPARSE_CELL_ACCESSOR 0x98761249
 
 #define EINA_MAGIC_STRBUF 0x98761250
+#define EINA_MAGIC_USTRBUF 0x98761257
 
 #define EINA_MAGIC_QUADTREE 0x98761251
 #define EINA_MAGIC_QUADTREE_ROOT 0x98761252
@@ -112,17 +116,17 @@
      }						\
   } while(0);
 
-#define MAGIC_FREE(ptr)					\
-  do {							\
-     if (ptr) {						\
-	EINA_MAGIC_SET(ptr, EINA_MAGIC_NONE);		\
-	FREE(ptr);					\
-     }							\
+#define MAGIC_FREE(ptr)				\
+  do {						\
+     if (ptr) {					\
+	EINA_MAGIC_SET(ptr, EINA_MAGIC_NONE);	\
+	FREE(ptr);				\
+     }						\
   } while(0);
 
-#ifdef EFL_HAVE_PTHREAD
-void eina_stringshare_threads_init(void);
-void eina_stringshare_threads_shutdown(void);
+#ifdef EFL_HAVE_THREADS
+void eina_share_common_threads_init(void);
+void eina_share_common_threads_shutdown(void);
 void eina_log_threads_init(void);
 void eina_log_threads_shutdown(void);
 #endif

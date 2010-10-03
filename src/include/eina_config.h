@@ -34,4 +34,19 @@
 #endif
 #define EINA_SAFETY_CHECKS
 
+#ifdef EINA_HAVE_INTTYPES_H
+# undef EINA_HAVE_INTTYPES_H
+#endif
+#define EINA_HAVE_INTTYPES_H
+
+#ifdef EINA_HAVE_STDINT_H
+# undef EINA_HAVE_STDINT_H
+#endif
+#define EINA_HAVE_STDINT_H
+
+#ifdef EINA_SIZEOF_WCHAR_T
+# undef EINA_SIZEOF_WCHAR_T
+#endif
+#define EINA_SIZEOF_WCHAR_T 4
+
 #endif /* EINA_CONFIG_H_ */

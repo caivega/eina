@@ -37,7 +37,7 @@ host_triplet = @host@
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/eina-0.pc.in $(srcdir)/eina.spec.in \
+	$(srcdir)/eina.pc.in $(srcdir)/eina.spec.in \
 	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
 	config.guess config.sub depcomp install-sh ltmain.sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -46,20 +46,20 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_attribute.m4 \
 	$(top_srcdir)/m4/efl_compiler_flag.m4 \
 	$(top_srcdir)/m4/efl_coverage.m4 $(top_srcdir)/m4/efl_cpu.m4 \
 	$(top_srcdir)/m4/efl_doxygen.m4 \
-	$(top_srcdir)/m4/efl_fnmatch.m4 \
-	$(top_srcdir)/m4/efl_pthread.m4 $(top_srcdir)/m4/efl_tests.m4 \
-	$(top_srcdir)/m4/eina_bench.m4 $(top_srcdir)/m4/eina_check.m4 \
-	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
-	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/efl_fnmatch.m4 $(top_srcdir)/m4/efl_tests.m4 \
+	$(top_srcdir)/m4/efl_threads.m4 \
+	$(top_srcdir)/m4/efl_voltron.m4 $(top_srcdir)/m4/eina_bench.m4 \
+	$(top_srcdir)/m4/eina_check.m4 $(top_srcdir)/m4/libtool.m4 \
+	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
+	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
+	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = eina-0.pc eina.spec
+CONFIG_CLEAN_FILES = eina.pc eina.spec
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
@@ -179,10 +179,13 @@ EFL_SIMD_FLAGS = @EFL_SIMD_FLAGS@
 EGREP = @EGREP@
 EINA_CFLAGS = @EINA_CFLAGS@
 EINA_CONFIGURE_DEFAULT_MEMPOOL = @EINA_CONFIGURE_DEFAULT_MEMPOOL@
+EINA_CONFIGURE_HAVE_INTTYPES_H = @EINA_CONFIGURE_HAVE_INTTYPES_H@
+EINA_CONFIGURE_HAVE_STDINT_H = @EINA_CONFIGURE_HAVE_STDINT_H@
 EINA_CONFIGURE_MAGIC_DEBUG = @EINA_CONFIGURE_MAGIC_DEBUG@
 EINA_CONFIGURE_SAFETY_CHECKS = @EINA_CONFIGURE_SAFETY_CHECKS@
 EINA_CPPFLAGS = @EINA_CPPFLAGS@
 EINA_LIBS = @EINA_LIBS@
+EINA_SIZEOF_WCHAR_T = @EINA_SIZEOF_WCHAR_T@
 EMEMOA_CFLAGS = @EMEMOA_CFLAGS@
 EMEMOA_LIBS = @EMEMOA_LIBS@
 EVIL_CFLAGS = @EVIL_CFLAGS@
@@ -308,15 +311,14 @@ ltmain.sh \
 missing
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = eina-0.pc
+pkgconfig_DATA = eina.pc
 EXTRA_DIST = \
 AUTHORS \
 COPYING \
-OLD-COPYING.PLAIN \
 README \
 $(pkgconfig_DATA) \
 autogen.sh \
-eina-0.pc.in \
+eina.pc.in \
 eina.spec \
 eina.spec.in \
 m4/ac_attribute.m4 \
@@ -325,8 +327,9 @@ m4/efl_compiler_flag.m4 \
 m4/efl_coverage.m4 \
 m4/efl_cpu.m4 \
 m4/efl_doxygen.m4 \
-m4/efl_pthread.m4 \
+m4/efl_fnmatch.m4 \
 m4/efl_tests.m4 \
+m4/efl_threads.m4 \
 m4/eina_bench.m4 \
 m4/eina_check.m4
 
@@ -385,7 +388,7 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-eina-0.pc: $(top_builddir)/config.status $(srcdir)/eina-0.pc.in
+eina.pc: $(top_builddir)/config.status $(srcdir)/eina.pc.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 eina.spec: $(top_builddir)/config.status $(srcdir)/eina.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
