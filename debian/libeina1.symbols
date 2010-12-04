@@ -60,6 +60,7 @@ libeina.so.1 libeina1 #MINVER#
  eina_file_direct_ls@Base 1.0.0~beta
  eina_file_ls@Base 1.0.0~beta
  eina_file_split@Base 1.0.0~beta
+ eina_file_stat_ls@Base 1.0.0~beta3
  eina_hamster_count@Base 1.0.0~beta
  eina_hash_add@Base 1.0.0~beta
  eina_hash_add_by_hash@Base 1.0.0~beta
