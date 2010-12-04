@@ -1,0 +1,133 @@
+diff --git a/src/lib/Makefile.am b/src/lib/Makefile.am
+index fac41ad..d444dd4 100644
+--- a/src/lib/Makefile.am
++++ b/src/lib/Makefile.am
+@@ -45,7 +45,8 @@ eina_tiler.c \
+ eina_unicode.c \
+ eina_ustrbuf.c \
+ eina_ustringshare.c \
+-eina_value.c
++eina_value.c \
++eina_abi.c
+ 
+ if EINA_HAVE_WIN32
+ base_sources += eina_file_win32.c
+diff --git a/src/lib/Makefile.in b/src/lib/Makefile.in
+index 8b96b57..aebac58 100644
+--- a/src/lib/Makefile.in
++++ b/src/lib/Makefile.in
+@@ -97,7 +97,7 @@ am__libeina_la_SOURCES_DIST = eina_accessor.c eina_array.c \
+ 	eina_rectangle.c eina_safety_checks.c eina_sched.c \
+ 	eina_share_common.c eina_str.c eina_strbuf.c \
+ 	eina_strbuf_common.c eina_stringshare.c eina_tiler.c \
+-	eina_unicode.c eina_ustrbuf.c eina_ustringshare.c eina_value.c \
++	eina_unicode.c eina_ustrbuf.c eina_ustringshare.c eina_value.c eina_abi.c \
+ 	eina_file_win32.c eina_file.c \
+ 	$(top_srcdir)/src/modules/mp/chained_pool/eina_chained_mempool.c \
+ 	$(top_srcdir)/src/modules/mp/one_big/eina_one_big.c \
+@@ -131,7 +131,7 @@ am__objects_9 = libeina_la-eina_accessor.lo libeina_la-eina_array.lo \
+ 	libeina_la-eina_strbuf.lo libeina_la-eina_strbuf_common.lo \
+ 	libeina_la-eina_stringshare.lo libeina_la-eina_tiler.lo \
+ 	libeina_la-eina_unicode.lo libeina_la-eina_ustrbuf.lo \
+-	libeina_la-eina_ustringshare.lo libeina_la-eina_value.lo \
++	libeina_la-eina_ustringshare.lo libeina_la-eina_value.lo libeina_la-eina_abi.lo \
+ 	$(am__objects_1) $(am__objects_2) $(am__objects_3) \
+ 	$(am__objects_4) $(am__objects_5) $(am__objects_6) \
+ 	$(am__objects_7) $(am__objects_8)
+@@ -349,7 +349,7 @@ base_sources = eina_accessor.c eina_array.c eina_benchmark.c \
+ 	eina_rectangle.c eina_safety_checks.c eina_sched.c \
+ 	eina_share_common.c eina_str.c eina_strbuf.c \
+ 	eina_strbuf_common.c eina_stringshare.c eina_tiler.c \
+-	eina_unicode.c eina_ustrbuf.c eina_ustringshare.c eina_value.c \
++	eina_unicode.c eina_ustrbuf.c eina_ustringshare.c eina_value.c eina_abi.c \
+ 	$(am__append_1) $(am__append_2) $(am__append_3) \
+ 	$(am__append_4) $(am__append_5) $(am__append_6) \
+ 	$(am__append_7) $(am__append_8)
+@@ -484,6 +484,7 @@ distclean-compile:
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_ustrbuf.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_ustringshare.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_value.Plo@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_abi.Plo@am__quote@
+ 
+ .c.o:
+ @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+@@ -797,6 +798,14 @@ libeina_la-eina_value.lo: eina_value.c
+ @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+ @am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -c -o libeina_la-eina_value.lo `test -f 'eina_value.c' || echo '$(srcdir)/'`eina_value.c
+ 
++libeina_la-eina_abi.lo: eina_abi.c
++@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -MT libeina_la-eina_abi.lo -MD -MP -MF $(DEPDIR)/libeina_la-eina_abi.Tpo -c -o libeina_la-eina_abi.lo `test -f 'eina_abi.c' || echo '$(srcdir)/'`eina_abi.c
++@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libeina_la-eina_abi.Tpo $(DEPDIR)/libeina_la-eina_abi.Plo
++@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
++@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='eina_abi.c' object='libeina_la-eina_abi.lo' libtool=yes @AMDEPBACKSLASH@
++@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
++@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -c -o libeina_la-eina_abi.lo `test -f 'eina_abi.c' || echo '$(srcdir)/'`eina_abi.c
++
+ libeina_la-eina_file_win32.lo: eina_file_win32.c
+ @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -MT libeina_la-eina_file_win32.lo -MD -MP -MF $(DEPDIR)/libeina_la-eina_file_win32.Tpo -c -o libeina_la-eina_file_win32.lo `test -f 'eina_file_win32.c' || echo '$(srcdir)/'`eina_file_win32.c
+ @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libeina_la-eina_file_win32.Tpo $(DEPDIR)/libeina_la-eina_file_win32.Plo
+diff --git a/src/lib/eina_abi.c b/src/lib/eina_abi.c
+new file mode 100644
+index 0000000..0155a99
+--- /dev/null
++++ b/src/lib/eina_abi.c
+@@ -0,0 +1,59 @@
++/* EINA - EFL data type library
++ * Copyright (C) 2010 Cedric Bail
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library;
++ * if not, see <http://www.gnu.org/licenses/>.
++ */
++
++/* This file is here to preserve ABI compatibility, don't touch
++   it unless you know what you are doing */
++
++#ifdef HAVE_CONFIG_H
++# include "config.h"
++#endif
++
++#include <assert.h>
++#include <stdlib.h>
++#include <string.h>
++#include <stdio.h>
++
++#include "eina_config.h"
++#include "eina_private.h"
++#include "eina_error.h"
++#include "eina_log.h"
++#include "eina_safety_checks.h"
++
++typedef struct _Eina_Array Eina_Array;
++struct _Eina_Array
++{
++#define EINA_ARRAY_VERSION 1
++   int          version;
++
++   void       **data;
++   unsigned int total;
++   unsigned int count;
++   unsigned int step;
++   EINA_MAGIC
++};
++
++EAPI void
++eina_array_clean(Eina_Array *array)
++{
++   EINA_SAFETY_ON_NULL_RETURN(array);
++
++   assert(array->version == EINA_ARRAY_VERSION);
++
++   array->count = 0;
++}
++
