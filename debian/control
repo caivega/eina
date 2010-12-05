@@ -14,6 +14,7 @@ Package: libeina1
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Conflicts: libeina0
+Breaks: libeet1 (<= 1.4.0~beta+1.4.0)
 Description: Enlightenment Foundation Library providing optimized data types
  Eina is a multi-platform library that provides optimized data types and a few
  tools. It supports the following data types:
