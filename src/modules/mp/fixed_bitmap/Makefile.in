@@ -42,7 +42,8 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_attribute.m4 \
 	$(top_srcdir)/m4/efl_compiler_flag.m4 \
 	$(top_srcdir)/m4/efl_coverage.m4 $(top_srcdir)/m4/efl_cpu.m4 \
 	$(top_srcdir)/m4/efl_doxygen.m4 \
-	$(top_srcdir)/m4/efl_fnmatch.m4 $(top_srcdir)/m4/efl_tests.m4 \
+	$(top_srcdir)/m4/efl_fnmatch.m4 \
+	$(top_srcdir)/m4/efl_path_max.m4 $(top_srcdir)/m4/efl_tests.m4 \
 	$(top_srcdir)/m4/efl_threads.m4 \
 	$(top_srcdir)/m4/efl_voltron.m4 $(top_srcdir)/m4/eina_bench.m4 \
 	$(top_srcdir)/m4/eina_check.m4 $(top_srcdir)/m4/libtool.m4 \
@@ -209,6 +210,8 @@ SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+VALGRIND_CFLAGS = @VALGRIND_CFLAGS@
+VALGRIND_LIBS = @VALGRIND_LIBS@
 VERSION = @VERSION@
 VMAJ = @VMAJ@
 abs_builddir = @abs_builddir@
@@ -520,6 +523,8 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+@EINA_BUILD_FIXED_BITMAP_FALSE@install-data-hook:
+@EINA_STATIC_BUILD_FIXED_BITMAP_TRUE@install-data-hook:
 clean: clean-am
 
 clean-am: clean-controllerLTLIBRARIES clean-generic clean-libtool \
@@ -544,7 +549,8 @@ info: info-am
 info-am:
 
 install-data-am: install-controllerLTLIBRARIES
-
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 install-dvi: install-dvi-am
 
 install-dvi-am:
@@ -591,7 +597,7 @@ ps-am:
 
 uninstall-am: uninstall-controllerLTLIBRARIES
 
-.MAKE: install-am install-strip
+.MAKE: install-am install-data-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean \
 	clean-controllerLTLIBRARIES clean-generic clean-libtool \
@@ -599,15 +605,18 @@ uninstall-am: uninstall-controllerLTLIBRARIES
 	distclean-generic distclean-libtool distclean-tags distdir dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-controllerLTLIBRARIES install-data install-data-am \
-	install-dvi install-dvi-am install-exec install-exec-am \
-	install-html install-html-am install-info install-info-am \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-controllerLTLIBRARIES
+	install-data-hook install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-controllerLTLIBRARIES
 
+
+@EINA_BUILD_FIXED_BITMAP_TRUE@@EINA_STATIC_BUILD_FIXED_BITMAP_FALSE@install-data-hook:
+@EINA_BUILD_FIXED_BITMAP_TRUE@@EINA_STATIC_BUILD_FIXED_BITMAP_FALSE@	rm -f $(DESTDIR)$(controllerdir)/$(controller_LTLIBRARIES)
 
 clean-local:
 	rm -rf *.gcno

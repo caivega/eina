@@ -20,10 +20,6 @@
 # include "config.h"
 #endif
 
-#ifdef HAVE_DLADDR
-# define _GNU_SOURCE
-#endif
-
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>
 #elif defined __GNUC__
@@ -147,8 +143,6 @@ static void _dir_list_cb(const char *name, const char *path, void *data)
         length = strlen(path) + strlen(name) + 2;
 
         file = alloca(sizeof (char) * length);
-        if (!file)
-           return;
 
         snprintf(file, length, "%s/%s", path, name);
         m = eina_module_new(file);
@@ -502,28 +496,32 @@ EAPI char *eina_module_symbol_path_get(const void *symbol, const char *sub_dir)
    EINA_SAFETY_ON_NULL_RETURN_VAL(symbol, NULL);
 
    if (dladdr(symbol, &eina_dl))
-      if (strrchr(eina_dl.dli_fname, '/'))
-        {
-           char *path;
-           int l0;
-           int l1;
-           int l2 = 0;
+     {
+        char *pos = strrchr(eina_dl.dli_fname, '/');
+        if (pos)
+          {
+             char *path;
+             int l0;
+             int l1;
+             int l2 = 0;
 
-           l0 = strlen(eina_dl.dli_fname);
-           l1 = strlen(strrchr(eina_dl.dli_fname, '/'));
-           if (sub_dir && (*sub_dir != '\0'))
-              l2 = strlen(sub_dir);
+             l0 = strlen(eina_dl.dli_fname);
+             l1 = strlen(pos);
+             if (sub_dir && (*sub_dir != '\0'))
+                l2 = strlen(sub_dir);
 
-           path = malloc(l0 - l1 + l2 + 1);
-           if (path)
-             {
-                memcpy(path, eina_dl.dli_fname, l0 - l1);
-                if (sub_dir && (*sub_dir != '\0'))
-                   memcpy(path + l0 - l1, sub_dir, l2);
-                path[l0 - l1 + l2] = '\0';
-                return path;
-             }
-        }
+             path = malloc(l0 - l1 + l2 + 1);
+             if (path)
+               {
+                  memcpy(path, eina_dl.dli_fname, l0 - l1);
+                  if (sub_dir && (*sub_dir != '\0'))
+                     memcpy(path + l0 - l1, sub_dir, l2);
+
+                  path[l0 - l1 + l2] = '\0';
+                  return path;
+               }
+          }
+     }
 
 #endif /* ! HAVE_DLADDR */
 

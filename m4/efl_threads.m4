@@ -85,12 +85,12 @@ case "$host_os" in
    mingw*)
       ;;
    solaris*)
-      _efl_thread_cflags="-mt"
-      _efl_thread_libs="-mt"
+      _efl_threads_cflags="-mt"
+      _efl_threads_libs="-mt"
       ;;
    *)
-      _efl_thread_cflags="-pthread"
-      _efl_thread_libs="-pthread"
+      _efl_threads_cflags="-pthread"
+      _efl_threads_libs="-pthread"
       ;;
 esac
 
@@ -127,17 +127,27 @@ fi
 EFL_PTHREAD_CFLAGS=""
 EFL_PTHREAD_LIBS=""
 if test "x${_efl_have_posix_threads}" = "xyes" ; then
-   EFL_PTHREAD_CFLAGS=${_efl_thread_cflags}
-   EFL_PTHREAD_LIBS=${_efl_thread_libs}
+   EFL_PTHREAD_CFLAGS=${_efl_threads_cflags}
+   EFL_PTHREAD_LIBS=${_efl_threads_libs}
 fi
 
 AC_SUBST(EFL_PTHREAD_CFLAGS)
 AC_SUBST(EFL_PTHREAD_LIBS)
 
+_efl_enable_debug_threads="no"
+AC_ARG_ENABLE([debug-threads],
+   [AC_HELP_STRING([--enable-debug-threads], [disable assert when you forgot to call eina_threads_init])],
+   [_efl_enable_debug_threads="${enableval}"])
+
+have_debug_threads="no"
+if test "x${_efl_have_posix_threads}" = "xyes" -a "x${_efl_enable_debug_threads}" = "xyes"; then
+   have_debug_threads="yes"
+   AC_DEFINE([EFL_DEBUG_THREADS], [1], [Assert when forgot to call eina_threads_init])
+fi
+
 if test "x${_efl_have_posix_threads}" = "xyes" ; then
    AC_DEFINE([EFL_HAVE_POSIX_THREADS], [1], [Define to mention that POSIX threads are supported])
 fi
-
 
 if test "x${_efl_enable_win32_threads}" = "xyes" ; then
    _efl_have_win32_threads="yes"

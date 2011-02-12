@@ -17,18 +17,25 @@ m4_define([lt_cur], v_mic)
 m4_define([lt_age], v_min)
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
- 
-AC_INIT([eina], [v_ver.beta], [enlightenment-devel@lists.sourceforge.net])
+
+AC_INIT([eina], [v_ver], [enlightenment-devel@lists.sourceforge.net])
 AC_PREREQ([2.59])
 AC_CONFIG_SRCDIR([configure.ac])
 AC_CONFIG_MACRO_DIR([m4])
-AC_CANONICAL_BUILD
-AC_CANONICAL_HOST
-AC_ISC_POSIX
+
+AC_CONFIG_HEADERS([config.h])
+AH_TOP([
+#ifndef EFL_CONFIG_H__
+#define EFL_CONFIG_H__
+])
+AH_BOTTOM([
+#endif /* EFL_CONFIG_H__ */
+])
 
 AM_INIT_AUTOMAKE([1.6 dist-bzip2])
-AM_CONFIG_HEADER([config.h])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+
+AC_GNU_SOURCE
 
 AC_LIBTOOL_WIN32_DLL
 define([AC_LIBTOOL_LANG_CXX_CONFIG], [:])dnl
@@ -52,7 +59,11 @@ AC_SUBST(release_info)
 VMAJ=v_maj
 AC_SUBST(VMAJ)
 
+
 ### Needed information
+
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
 
 requirement_eina=""
 
@@ -119,6 +130,34 @@ if test "x${have_magic_debug}" = "xyes" ; then
    EINA_CONFIGURE_MAGIC_DEBUG="#define EINA_MAGIC_DEBUG"
 fi
 AC_SUBST(EINA_CONFIGURE_MAGIC_DEBUG)
+
+# Valgrind
+want_valgrind="auto"
+have_valgrind="no"
+
+AC_MSG_CHECKING(whether to enable build with valgrind)
+AC_ARG_ENABLE(valgrind,
+  AC_HELP_STRING([--enable-valgrind], [improve valgrind support by hinting it of our memory usages, having it to report proper mempool leaks.]),
+  [want_valgrind=$enableval]
+)
+AC_MSG_RESULT($want_valgrind)
+
+if test "x${want_valgrind}" = "xyes" -o "x${want_valgrind}" = "xauto"; then
+    PKG_CHECK_MODULES(VALGRIND, valgrind >= 2.4.0,
+        [
+         requirement_eina="valgrind ${requirement_eina}"
+         have_valgrind="yes"
+        ],
+        [
+         AC_DEFINE(NVALGRIND, 1, [Valgrind support disabled])
+         if test "x$want_valgrind" = "xyes"; then
+            AC_MSG_ERROR([Valgrind >= 2.4.0 is required)])
+         fi
+        ]
+    )
+else
+    AC_DEFINE(NVALGRIND, 1, [Valgrind support disabled])
+fi
 
 # Safety checks (avoid crashes on wrong api usage)
 AC_ARG_ENABLE(safety-checks,
@@ -291,7 +330,7 @@ fi
 AC_HEADER_ASSERT
 AC_HEADER_DIRENT
 AC_HEADER_TIME
-
+EFL_CHECK_PATH_MAX
 
 ### Checks for types
 AC_CHECK_HEADER([inttypes.h],
@@ -316,18 +355,22 @@ AC_C_INLINE
 AC_C___ATTRIBUTE__
 AC_PROG_CC_STDC
 
+have_win32="no"
 EINA_CPPFLAGS=""
 EINA_CFLAGS=""
 case "$host_os" in
    mingw32ce*)
       EINA_CPPFLAGS="-D_WIN32_WCE=0x0420"
       EINA_CFLAGS="${EVIL_CFLAGS}"
+      have_win32="yes"
       ;;
    mingw*)
       EINA_CPPFLAGS="-D_WIN32_WINNT=0x0501"
       EINA_CFLAGS="${EVIL_CFLAGS}"
+      have_win32="yes"
       ;;
 esac
+AM_CONDITIONAL([EINA_HAVE_WIN32], [test "x$have_win32" = "xyes"])
 
 m4_ifdef([v_mic],
    [
@@ -372,6 +415,7 @@ EFL_LINKER_FLAG([-fno-strict-aliasing])
 
 
 ### Checks for library functions
+AC_ISC_POSIX
 AC_FUNC_ALLOCA
 AC_CHECK_FUNCS(strlcpy)
 
@@ -422,7 +466,7 @@ if test "x${have_iconv}" = "xno" ; then
 
    if test "x${have_iconv}" = "xyes" ; then
       AC_MSG_CHECKING([whether iconv() is in libc])
-      
+
       AC_LINK_IFELSE(
          [AC_LANG_PROGRAM(
              [[
@@ -493,6 +537,15 @@ if test "x${have_iconv}" = "xyes" ; then
    AC_DEFINE([HAVE_ICONV], [1], [Set to 1 if iconv library is installed])
 fi
 
+#check for dirfd API presence
+have_dirfd="no"
+AC_CHECK_FUNCS([dirfd], [have_dirfd="yes"], [])
+if test "x${dirfd}" = "xyes"; then
+   AC_DEFINE(HAVE_DIRFD)
+fi
+AC_CHECK_FUNCS([openat], [AC_DEFINE(HAVE_OPENAT)], [])
+AC_CHECK_FUNCS([statat], [AC_DEFINE(HAVE_STATAT)], [])
+AC_CHECK_FUNCS([fpathconf], [AC_DEFINE(HAVE_FPATHCONF)], [])
 
 ### Modules
 
@@ -588,13 +641,16 @@ echo "  Magic debug..........: ${have_magic_debug}"
 echo "  Safety checks........: ${have_safety_checks}"
 echo "  Maximum log level....: ${with_max_log_level}"
 echo "  Report string usage..: ${have_stringshare_usage}"
+echo "  Valgrind support.....: ${have_valgrind}"
 echo "  Default mempool......: ${have_default_mempool}"
 echo "  Thread Support.......: ${have_threads}"
 if test "${have_threads}" = "POSIX" ; then
 echo "    spinlock...........: ${have_posix_threads_spinlock}"
+echo "    debug usage........: ${have_debug_threads}"
 fi
 echo "  Amalgamation.........: ${do_amalgamation}"
 echo "  Iconv support........: ${have_iconv}"
+echo "  File dirfd...........: ${have_dirfd}"
 echo
 echo "  Documentation........: ${build_doc}"
 echo "  Tests................: ${enable_tests}"
