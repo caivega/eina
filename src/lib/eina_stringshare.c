@@ -33,8 +33,6 @@
 # include "config.h"
 #endif
 
-#define _GNU_SOURCE
-
 #ifdef HAVE_ALLOCA_H
 # include <alloca.h>
 #elif defined __GNUC__
@@ -659,7 +657,7 @@ eina_stringshare_add_length(const char *str, unsigned int slen)
 {
    DBG("str=%p (%.*s), slen=%u", str, slen, str ? str : "", slen);
 
-   if (slen <= 0)
+   if ((!str) || (slen <= 0))
       return "";
    else if (slen == 1)
       return (const char *)_eina_stringshare_single + ((*str) << 1);

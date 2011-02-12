@@ -63,7 +63,7 @@ eina_test_strbuf.c	\
 eina_test_str.c		\
 eina_test_quadtree.c
 
-eina_suite_LDADD = @CHECK_LIBS@ $(top_builddir)/src/lib/libeina.la
+eina_suite_LDADD = @CHECK_LIBS@ $(top_builddir)/src/lib/libeina.la -lm
 
 module_dummydir = $(libdir)/eina/test
 module_dummy_LTLIBRARIES = module_dummy.la
@@ -112,4 +112,9 @@ eina_bench_LDADD = @GLIB_LIBS@ $(top_builddir)/src/lib/libeina.la
 
 endif
 
-EXTRA_DIST = eina_bench.h eina_suite.h Ecore_Data.h Evas_Data.h evas_mempool.h
+EXTRA_DIST = eina_bench.h \
+	eina_suite.h \
+	Ecore_Data.h \
+	Evas_Data.h \
+	evas_mempool.h \
+	strlog

@@ -26,6 +26,7 @@
 #include <stdarg.h>
 #ifndef _WIN32
 # include <time.h>
+# include <sys/time.h>
 #else
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
@@ -42,8 +43,8 @@
 #include "eina_counter.h"
 
 /*============================================================================*
-*                                  Local                                     *
-*============================================================================*/
+ *                                  Local                                     *
+ *============================================================================*/
 
 /**
  * @cond LOCAL
@@ -87,7 +88,15 @@ _eina_counter_time_get(Eina_Nano_Time *tp)
 # elif defined(CLOCK_REALTIME)
    return clock_gettime(CLOCK_REALTIME, tp);
 # else
-   return gettimeofday(tp, NULL);
+   struct timeval tv;
+
+   if (gettimeofday(&tv, NULL))
+     return -1;
+
+   tp->tv_sec = tv.tv_sec;
+   tp->tv_nsec = tv.tv_usec * 1000L;
+
+   return 0;
 # endif
 }
 #else
@@ -148,8 +157,8 @@ _eina_counter_asiprintf(char *base, int *position, const char *format, ...)
  */
 
 /*============================================================================*
-*                                 Global                                     *
-*============================================================================*/
+ *                                 Global                                     *
+ *============================================================================*/
 
 /**
  * @internal
@@ -202,8 +211,8 @@ eina_counter_shutdown(void)
 }
 
 /*============================================================================*
-*                                   API                                      *
-*============================================================================*/
+ *                                   API                                      *
+ *============================================================================*/
 
 /**
  * @addtogroup Eina_Counter_Group Counter
@@ -292,6 +301,7 @@ eina_counter_shutdown(void)
  * @brief Return a counter.
  *
  * @param name The name of the counter.
+ * @return A newly allocated counter.
  *
  * This function returns a new counter. It is characterized by @p
  * name. If @p name is @c NULL, the function returns @c NULL

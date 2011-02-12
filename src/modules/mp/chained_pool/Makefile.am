@@ -7,7 +7,8 @@ AM_CPPFLAGS = \
 -I$(top_srcdir)/src/lib \
 -I$(top_builddir)/src/lib \
 @EINA_CPPFLAGS@ \
-@EFL_EINA_BUILD@
+@EFL_EINA_BUILD@ \
+@VALGRIND_CFLAGS@
 
 if EINA_BUILD_CHAINED_POOL
 if !EINA_STATIC_BUILD_CHAINED_POOL
@@ -22,6 +23,9 @@ module_la_CFLAGS = @EINA_CFLAGS@ @EFL_PTHREAD_CFLAGS@
 module_la_LIBADD = $(top_builddir)/src/lib/libeina.la @EINA_LIBS@
 module_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -module -avoid-version @EFL_PTHREAD_LIBS@
 module_la_LIBTOOLFLAGS = --tag=disable-static
+
+install-data-hook:
+	rm -f $(DESTDIR)$(controllerdir)/$(controller_LTLIBRARIES)
 
 endif
 endif

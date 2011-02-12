@@ -40,26 +40,26 @@
 #include "eina_hash.h"
 
 /*============================================================================*
-*                                  Local                                     *
-*============================================================================*/
+ *                                  Local                                     *
+ *============================================================================*/
 
 /**
  * @cond LOCAL
  */
 
-#define EINA_MAGIC_CHECK_HASH(d)                                        \
-   do {                                                                  \
-        if (!EINA_MAGIC_CHECK(d, EINA_MAGIC_HASH)) {                         \
-             EINA_MAGIC_FAIL(d, EINA_MAGIC_HASH); }                             \
+#define EINA_MAGIC_CHECK_HASH(d)                     \
+   do {                                              \
+        if (!EINA_MAGIC_CHECK(d, EINA_MAGIC_HASH)) { \
+             EINA_MAGIC_FAIL(d, EINA_MAGIC_HASH); }  \
      } while(0)
 
-#define EINA_MAGIC_CHECK_HASH_ITERATOR(d, ...)                          \
-   do {                                                                  \
-        if (!EINA_MAGIC_CHECK(d, EINA_MAGIC_HASH_ITERATOR))                \
-          {                                                                  \
-             EINA_MAGIC_FAIL(d, EINA_MAGIC_HASH_ITERATOR);                 \
-             return __VA_ARGS__;                                                   \
-          }                                                                  \
+#define EINA_MAGIC_CHECK_HASH_ITERATOR(d, ...)              \
+   do {                                                     \
+        if (!EINA_MAGIC_CHECK(d, EINA_MAGIC_HASH_ITERATOR)) \
+          {                                                 \
+             EINA_MAGIC_FAIL(d, EINA_MAGIC_HASH_ITERATOR);  \
+             return __VA_ARGS__;                            \
+          }                                                 \
      } while(0)
 
 #define EINA_HASH_BUCKET_SIZE 8
@@ -611,13 +611,13 @@ _eina_hash_iterator_next(Eina_Iterator_Hash *it, void **data)
      }
    else
      {
-        ok = eina_iterator_next(it->list, (void **)&it->hash_element);
+        ok = eina_iterator_next(it->list, (void **)(void*)&it->hash_element);
         if (!ok)
           {
                   eina_iterator_free(it->list);
              it->list = NULL;
 
-             ok = eina_iterator_next(it->current, (void **)&it->hash_head);
+             ok = eina_iterator_next(it->current, (void **)(void*)&it->hash_head);
              if (!ok)
                {
                   eina_iterator_free(it->current);
@@ -627,7 +627,7 @@ _eina_hash_iterator_next(Eina_Iterator_Hash *it, void **data)
              else
                {
                   it->list = eina_rbtree_iterator_prefix(it->hash_head->head);
-                  ok = eina_iterator_next(it->list, (void **)&it->hash_element);
+                  ok = eina_iterator_next(it->list, (void **)(void*)&it->hash_element);
                }
           }
 
@@ -642,7 +642,7 @@ _eina_hash_iterator_next(Eina_Iterator_Hash *it, void **data)
                {
                   it->current =
                      eina_rbtree_iterator_prefix(it->hash->buckets[bucket]);
-                  ok = eina_iterator_next(it->current, (void **)&it->hash_head);
+                  ok = eina_iterator_next(it->current, (void **)(void*)&it->hash_head);
                   if (ok)
                      break;
 
@@ -656,7 +656,7 @@ _eina_hash_iterator_next(Eina_Iterator_Hash *it, void **data)
                   eina_iterator_free(it->list);
 
         it->list = eina_rbtree_iterator_prefix(it->hash_head->head);
-        ok = eina_iterator_next(it->list, (void **)&it->hash_element);
+        ok = eina_iterator_next(it->list, (void **)(void*)&it->hash_element);
         if (bucket == it->hash->size)
            ok = EINA_FALSE;
      }
@@ -695,12 +695,12 @@ _eina_hash_iterator_free(Eina_Iterator_Hash *it)
  */
 
 /*============================================================================*
-*                                 Global                                     *
-*============================================================================*/
+ *                                 Global                                     *
+ *============================================================================*/
 
 /*============================================================================*
-*                                   API                                      *
-*============================================================================*/
+ *                                   API                                      *
+ *============================================================================*/
 
 /**
  * @addtogroup Eina_Hash_Group Hash Table
@@ -739,7 +739,7 @@ _eina_hash_iterator_free(Eina_Iterator_Hash *it)
  *
  * This function create a new hash table using user-defined callbacks
  * to manage the hash table. On failure, @c NULL is returned and
- * #EINA_ERROR_OUT_OF_MEMORY is set. If @p key_cmp_cb or @pkey_hash_cb
+ * #EINA_ERROR_OUT_OF_MEMORY is set. If @p key_cmp_cb or @p key_hash_cb
  * are @c NULL, @c NULL is returned. If @p buckets_power_size is
  * smaller or equal than 2, or if it is greater or equal than 17,
  * @c NULL is returned.
