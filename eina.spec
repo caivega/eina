@@ -1,9 +1,9 @@
-%{!?_rel:%{expand:%%global _rel 0.r%(svnversion | sed 's/[^0-9].*$//' || echo 0000)}}
+%{!?_rel:%{expand:%%global _rel 0.enl%{?dist}}}
 %define _missing_doc_files_terminate_build 0
 
 Summary: Data Type Library
 Name: eina
-Version: 1.0.0
+Version: 1.2.0
 Release: %{_rel}
 License: LGPLv2.1
 Group: System Environment/Libraries

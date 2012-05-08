@@ -30,24 +30,20 @@
 # endif
 #endif
 
+#ifdef EFL_HAVE_WIN32_THREADS
+# ifndef WIN32_LEAN_AND_MEAN
+#  define WIN32_LEAN_AND_MEAN
+# endif
+# include <windows.h>
+# undef WIN32_LEAN_AND_MEAN
+#endif
+
 #include "eina_sched.h"
 #include "eina_log.h"
 
-#define RTNICENESS 5
+#define RTNICENESS 1
 #define NICENESS 5
 
-/**
- * @brief Lower priority of current thread.
- *
- * It's used by worker threads so they use up background cpu and do not stall
- * the main thread If current thread is running with real-time priority, we
- * decrease our priority by @c RTNICENESS. This is done in a portable way.
- *
- * Otherwise (we are running with SCHED_OTHER policy) there's no portable way to
- * set the nice level on current thread. In Linux, it does work and it's the
- * only one that is implemented as of now. In this case the nice level is
- * incremented on this thread by @c NICENESS.
- */
 EAPI void
 eina_sched_prio_drop(void)
 {
@@ -66,14 +62,18 @@ eina_sched_prio_drop(void)
 
    if (EINA_UNLIKELY(pol == SCHED_RR || pol == SCHED_FIFO))
      {
-        prio = sched_get_priority_max(pol);
-        param.sched_priority += RTNICENESS;
-        if (prio > 0 && param.sched_priority > prio)
-           param.sched_priority = prio;
+        param.sched_priority -= RTNICENESS;
+
+        /* We don't change the policy */
+        if (param.sched_priority < 1)
+          {
+             EINA_LOG_INFO("RT prio < 1, setting to 1 instead");
+             param.sched_priority = 1;
+          }
 
         pthread_setschedparam(pthread_id, pol, &param);
      }
-#ifdef __linux__
+# ifdef __linux__
    else
      {
         errno = 0;
@@ -82,12 +82,18 @@ eina_sched_prio_drop(void)
           {
              prio += NICENESS;
              if (prio > 19)
-                prio = 19;
+               {
+                  EINA_LOG_INFO("Max niceness reached; keeping max (19)");
+                  prio = 19;
+               }
 
              setpriority(PRIO_PROCESS, 0, prio);
           }
      }
-#endif
+# endif
+#elif defined EFL_HAVE_WIN32_THREADS
+   if (!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL))
+     EINA_LOG_ERR("Can not set thread priority");
 #else
    EINA_LOG_ERR("Eina does not have support for threads enabled"
                 "or it doesn't support setting scheduler priorities");

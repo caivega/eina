@@ -24,7 +24,7 @@
 # ifdef _WIN32
 #  define WIN32_LEAN_AND_MEAN
 #  include <windows.h>
-# elif defined (__SUNPRO_C) || defined(__GNU__)
+# elif defined (__sun) || defined(__GNU__)
 #  include <unistd.h>
 # elif defined (__FreeBSD__) || defined (__OpenBSD__) || \
    defined (__NetBSD__) || defined (__DragonFly__) || defined (__MacOSX__) || \
@@ -42,6 +42,7 @@
 # define TH_MAX 8
 #endif
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
@@ -130,7 +131,10 @@ EAPI Eina_Cpu_Features eina_cpu_features_get(void)
    return ecf;
 }
 
-EAPI int eina_cpu_count(void)
+static int _cpu_count = -1;
+
+static int
+_eina_cpu_count_internal(void)
 {
 #ifdef EFL_HAVE_THREADS
 
@@ -140,7 +144,7 @@ EAPI int eina_cpu_count(void)
    GetSystemInfo(&sysinfo);
    return sysinfo.dwNumberOfProcessors;
 
-# elif defined (__SUNPRO_C) || defined(__GNU__)
+# elif defined (__sun) || defined(__GNU__)
    /*
     * _SC_NPROCESSORS_ONLN: number of processors that are online, that
                             is available when sysconf is called. The number
@@ -204,4 +208,17 @@ EAPI int eina_cpu_count(void)
 #else
    return 1;
 #endif
+}
+
+EAPI int eina_cpu_count(void)
+{
+   return _cpu_count;
+}
+
+void eina_cpu_count_internal(void)
+{
+   if (getenv("EINA_CPU_FAKE"))
+     _cpu_count = atoi(getenv("EINA_CPU_FAKE"));
+   else
+     _cpu_count = _eina_cpu_count_internal();
 }

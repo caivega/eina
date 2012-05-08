@@ -6,13 +6,14 @@ AM_CPPFLAGS = \
 -DPACKAGE_BIN_DIR=\"$(bindir)\" \
 -DPACKAGE_LIB_DIR=\"$(libdir)\" \
 -DPACKAGE_DATA_DIR=\"$(datadir)/$(PACKAGE)\" \
-@EINA_CPPFLAGS@ \
-@EFL_EINA_BUILD@
+@EFL_EINA_BUILD@ \
+@VALGRIND_CFLAGS@
 
 base_sources = \
 eina_accessor.c \
 eina_array.c \
 eina_benchmark.c \
+eina_binbuf.c \
 eina_binshare.c \
 eina_convert.c \
 eina_counter.c \
@@ -21,6 +22,7 @@ eina_error.c \
 eina_fp.c \
 eina_hamster.c \
 eina_hash.c \
+eina_inarray.c \
 eina_inlist.c \
 eina_iterator.c \
 eina_lalloc.c \
@@ -30,13 +32,16 @@ eina_magic.c \
 eina_main.c \
 eina_matrixsparse.c \
 eina_mempool.c \
+eina_mmap.c \
 eina_module.c \
+eina_prefix.c \
 eina_quadtree.c \
 eina_rbtree.c \
 eina_rectangle.c \
 eina_safety_checks.c \
 eina_sched.c \
 eina_share_common.c \
+eina_simple_xml_parser.c \
 eina_str.c \
 eina_strbuf.c \
 eina_strbuf_common.c \
@@ -45,7 +50,12 @@ eina_tiler.c \
 eina_unicode.c \
 eina_ustrbuf.c \
 eina_ustringshare.c \
-eina_value.c
+eina_value.c \
+eina_xattr.c
+
+# Will be back for developper after 1.2
+# eina_model.c \
+# eina_object.c
 
 if EINA_HAVE_WIN32
 base_sources += eina_file_win32.c
@@ -57,16 +67,17 @@ EXTRA_DIST = \
 eina_share_common.h \
 eina_private.h \
 eina_strbuf_common.h \
-eina_strbuf_template_c.x
+eina_strbuf_template_c.x \
+eina_binbuf_template_c.x
 
 
+
+if EINA_STATIC_BUILD_BUDDY
+base_sources += $(top_srcdir)/src/modules/mp/buddy/eina_buddy.c
+endif
 
 if EINA_STATIC_BUILD_CHAINED_POOL
 base_sources += $(top_srcdir)/src/modules/mp/chained_pool/eina_chained_mempool.c
-endif
-
-if EINA_STATIC_BUILD_ONE_BIG
-base_sources += $(top_srcdir)/src/modules/mp/one_big/eina_one_big.c
 endif
 
 if EINA_STATIC_BUILD_EMEMOA_FIXED
@@ -79,6 +90,10 @@ endif
 
 if EINA_STATIC_BUILD_FIXED_BITMAP
 base_sources += $(top_srcdir)/src/modules/mp/fixed_bitmap/eina_fixed_bitmap.c
+endif
+
+if EINA_STATIC_BUILD_ONE_BIG
+base_sources += $(top_srcdir)/src/modules/mp/one_big/eina_one_big.c
 endif
 
 if EINA_STATIC_BUILD_PASS_THROUGH
@@ -117,12 +132,17 @@ eina_amalgamation.c: $(base_sources) Makefile
 	@echo "#include <stdio.h>" >> eina_amalgamation.c
 	@echo "#include <stdlib.h>" >> eina_amalgamation.c
 	@echo "#include <string.h>" >> eina_amalgamation.c
-	@echo "#include <dlfcn.h>" >> eina_amalgamation.c
+	@echo "#ifdef HAVE_DLOPEN" >> eina_amalgamation.c
+	@echo "# include <dlfcn.h>" >> eina_amalgamation.c
+	@echo "#endif" >> eina_amalgamation.c
 	@echo "#include <sys/types.h>" >> eina_amalgamation.c
-	@echo "#include <dirent.h>" >> eina_amalgamation.c
+	@echo "#ifdef HAVE_DIRENT_H" >> eina_amalgamation.c
+	@echo "# include <dirent.h>" >> eina_amalgamation.c
+	@echo "#endif" >> eina_amalgamation.c
 	@echo "#include <assert.h>" >> eina_amalgamation.c
 	@echo "#include <errno.h>" >> eina_amalgamation.c
 	@echo "#include <fnmatch.h>" >> eina_amalgamation.c
+	@echo "#include <fcntl.h>" >> eina_amalgamation.c
 
 	@echo "#ifdef HAVE_EVIL" >> eina_amalgamation.c
 	@echo "# include <Evil.h>" >> eina_amalgamation.c
@@ -150,7 +170,7 @@ else
 libeina_la_SOURCES = $(base_sources)
 endif
 
-libeina_la_LIBADD = @EINA_LIBS@ @dlopen_libs@
+libeina_la_LIBADD = @iconv_libs@ @EFL_SHM_OPEN_LIBS@ @EINA_LIBS@ @EFL_DLOPEN_LIBS@ @EFL_DLADDR_LIBS@ -lm
 libeina_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -version-info @version_info@ @release_info@ @EFL_PTHREAD_LIBS@
 libeina_la_CFLAGS = @EINA_CFLAGS@ @EFL_PTHREAD_CFLAGS@
 

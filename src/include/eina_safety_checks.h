@@ -60,6 +60,28 @@
  * #include "my_functions2.h"
  *
  * @endcode
+ */
+
+/**
+ * @addtogroup Eina_Safety_Checks_Group Safety Checks
+ *
+ * Safety checks are a set of macros to check for parameters or values
+ * that should never happen, it is similar in concept to assert(), but
+ * will log and return instead of abort() your program.
+ *
+ * Since these cases should never happen, one may wantto keep safety
+ * checks enabled during tests but disable then during deploy, not
+ * doing any checks at all. This is a common requirement for embedded
+ * systems. Whenever to check or not should be set during compile time
+ * by using @c --disable-safety-checks or @c --enable-safety-checks
+ * options to @c configure script.
+ *
+ * Whenever these macros capture an error, EINA_LOG_ERR() will be
+ * called and @c eina_error set to @c EINA_ERROR_SAFETY_FAILED and can
+ * be checked with eina_error_get() after call.
+ *
+ * @see EINA_SAFETY_ON_NULL_RETURN(), EINA_SAFETY_ON_NULL_RETURN_VAL()
+ *      and other macros.
  *
  * @{
  */
@@ -188,35 +210,78 @@ EAPI extern Eina_Error EINA_ERROR_SAFETY_FAILED;
 #ifdef EINA_ARG_NONNULL
 /* make EINA_ARG_NONNULL void so GCC does not optimize safety checks */
 #undef EINA_ARG_NONNULL
-#define EINA_ARG_NONNULL(idx, ...)
+#define EINA_ARG_NONNULL(...)
 #endif
 
 #else /* no safety checks */
 
+/**
+ * @def EINA_SAFETY_ON_NULL_RETURN
+ * @brief The macro doesn't do anything unless EINA_SAFETY_CHECKS is defined.
+ * @param exp The expression to be evaluated.
+ */
 #define EINA_SAFETY_ON_NULL_RETURN(exp) \
   do { (void)(!(exp)); } while (0)
-
+/**
+ * @def EINA_SAFETY_ON_NULL_RETURN_VAL
+ * @brief The macro doesn't do anything unless EINA_SAFETY_CHECKS is defined.
+ * @param exp The expression to be evaluated.
+ * @param val The value to be returned.
+ */
 #define EINA_SAFETY_ON_NULL_RETURN_VAL(exp, val) \
   do { if (0 && !(exp)) { (void)val; } } while (0)
-
+/**
+ * @def EINA_SAFETY_ON_NULL_GOTO
+ * @brief The macro doesn't do anything unless EINA_SAFETY_CHECKS is defined.
+ * @param exp The expression to be evaluated.
+ * @param label The label to jump to.
+ */
 #define EINA_SAFETY_ON_NULL_GOTO(exp, label) \
   do { if (0 && (exp) == NULL) { goto label; } } while (0)
-
+/**
+ * @def EINA_SAFETY_ON_TRUE_RETURN
+ * @brief The macro doesn't do anything unless EINA_SAFETY_CHECKS is defined.
+ * @param exp The expression to be evaluated.
+ */
 #define EINA_SAFETY_ON_TRUE_RETURN(exp) \
   do { (void)(exp); } while (0)
-
+/**
+ * @def EINA_SAFETY_ON_TRUE_RETURN_VAL
+ * @brief The macro doesn't do anything unless EINA_SAFETY_CHECKS is defined.
+ * @param exp The expression to be evaluated.
+ * @param val The value to be returned.
+ */
 #define EINA_SAFETY_ON_TRUE_RETURN_VAL(exp, val) \
   do { if (0 && (exp)) { (void)val; } } while (0)
-
+/**
+ * @def EINA_SAFETY_ON_TRUE_GOTO
+ * @brief The macro doesn't do anything unless EINA_SAFETY_CHECKS is defined.
+ * @param exp The expression to be evaluated.
+ * @param label The label to jump to.
+ */
 #define EINA_SAFETY_ON_TRUE_GOTO(exp, label) \
   do { if (0 && (exp)) { goto label; } } while (0)
-
+/**
+ * @def EINA_SAFETY_ON_FALSE_RETURN
+ * @brief The macro doesn't do anything unless EINA_SAFETY_CHECKS is defined.
+ * @param exp The expression to be evaluated.
+ */
 #define EINA_SAFETY_ON_FALSE_RETURN(exp) \
   do { (void)(!(exp)); } while (0)
-
+/**
+ * @def EINA_SAFETY_ON_FALSE_RETURN_VAL
+ * @brief The macro doesn't do anything unless EINA_SAFETY_CHECKS is defined.
+ * @param exp The expression to be evaluated.
+ * @param val The value to be returned.
+ */
 #define EINA_SAFETY_ON_FALSE_RETURN_VAL(exp, val) \
   do { if (0 && !(exp)) { (void)val; } } while (0)
-
+/**
+ * @def EINA_SAFETY_ON_FALSE_GOTO
+ * @brief The macro doesn't do anything unless EINA_SAFETY_CHECKS is defined.
+ * @param exp The expression to be evaluated.
+ * @param label The label to jump to.
+ */
 #define EINA_SAFETY_ON_FALSE_GOTO(exp, label) \
   do { if (0 && !(exp)) { goto label; } } while (0)
 

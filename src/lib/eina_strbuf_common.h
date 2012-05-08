@@ -7,6 +7,10 @@
 #include "eina_magic.h"
 #include "eina_strbuf.h"
 
+/**
+ * @struct _Eina_Strbuf
+ * String buffer to facilitate string operations.
+ */
 struct _Eina_Strbuf
 {
    void *buf;
@@ -33,6 +37,10 @@ Eina_Bool
 eina_strbuf_common_shutdown(void);
 Eina_Strbuf *
 eina_strbuf_common_new(size_t csize);
+Eina_Strbuf *
+eina_strbuf_common_manage_new(size_t csize,
+                               void *str,
+                               size_t len);
 void
 eina_strbuf_common_free(Eina_Strbuf *buf);
 void

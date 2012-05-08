@@ -21,12 +21,6 @@
 
 #include <stdarg.h>
 
-#if HAVE___ATTRIBUTE__
-# define __UNUSED__ __attribute__((unused))
-#else
-# define __UNUSED__
-#endif
-
 #include "eina_magic.h"
 #include "eina_iterator.h"
 #include "eina_accessor.h"
@@ -47,6 +41,8 @@
 # define CLAMP(x, min, \
                max) (((x) > (max)) ? (max) : (((x) < (min)) ? (min) : (x)))
 #endif
+
+#define EINA_INLIST_JUMP_SIZE 256
 
 #define READBUFSIZ 65536
 
@@ -85,10 +81,23 @@
 
 #define EINA_MAGIC_STRBUF 0x98761250
 #define EINA_MAGIC_USTRBUF 0x98761257
+#define EINA_MAGIC_BINBUF 0x98761258
 
 #define EINA_MAGIC_QUADTREE 0x98761251
 #define EINA_MAGIC_QUADTREE_ROOT 0x98761252
 #define EINA_MAGIC_QUADTREE_ITEM 0x98761253
+
+#define EINA_MAGIC_SIMPLE_XML_TAG 0x98761260
+#define EINA_MAGIC_SIMPLE_XML_DATA 0x98761261
+#define EINA_MAGIC_SIMPLE_XML_ATTRIBUTE 0x98761262
+
+#define EINA_MAGIC_INARRAY 0x98761270
+#define EINA_MAGIC_INARRAY_ITERATOR 0x98761271
+#define EINA_MAGIC_INARRAY_ACCESSOR 0x98761272
+
+#define EINA_MAGIC_MODEL 0x98761280
+
+#define EINA_MAGIC_CLASS 0x9877CB30
 
 /* undef the following, we want out version */
 #undef FREE
@@ -132,6 +141,10 @@ void eina_share_common_threads_shutdown(void);
 void eina_log_threads_init(void);
 void eina_log_threads_shutdown(void);
 #endif
+
+void eina_cpu_count_internal(void);
+
+void eina_file_mmap_faulty(void *addr, long page_size);
 
 #endif /* EINA_PRIVATE_H_ */
 

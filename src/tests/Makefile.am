@@ -28,7 +28,7 @@ endif
 
 if EFL_ENABLE_TESTS
 
-check_PROGRAMS = eina_suite
+check_PROGRAMS = eina_suite cxx_compile_test
 
 eina_suite_SOURCES = 	\
 eina_suite.c 		\
@@ -37,7 +37,10 @@ eina_test_stringshare.c \
 eina_test_ustringshare.c\
 eina_test_ustr.c	\
 eina_test_binshare.c    \
+eina_test_binbuf.c	\
+eina_test_inarray.c 	\
 eina_test_array.c 	\
+eina_test_clist.c	\
 eina_test_error.c	\
 eina_test_sched.c       \
 eina_test_log.c 	\
@@ -61,9 +64,15 @@ eina_test_matrixsparse.c \
 eina_test_tiler.c       \
 eina_test_strbuf.c	\
 eina_test_str.c		\
-eina_test_quadtree.c
+eina_test_quadtree.c	\
+eina_test_simple_xml_parser.c \
+eina_test_value.c
+# eina_test_model.c
 
 eina_suite_LDADD = @CHECK_LIBS@ $(top_builddir)/src/lib/libeina.la -lm
+
+cxx_compile_test_SOURCES = cxx_compile_test.cxx
+cxx_compile_test_LDADD = $(top_builddir)/src/lib/libeina.la
 
 module_dummydir = $(libdir)/eina/test
 module_dummy_LTLIBRARIES = module_dummy.la
@@ -77,7 +86,7 @@ module_dummy_la_CPPFLAGS = 			\
 -I$(top_builddir)/src/include 			\
 -I$(top_builddir)/src/lib 			\
 @EFL_EINA_BUILD@
-module_dummy_la_LIBADD       = $(top_builddir)/src/lib/libeina.la @EINA_LIBS@
+module_dummy_la_LIBADD       = $(top_builddir)/src/lib/libeina.la @EINA_LIBS@ -lm
 module_dummy_la_LDFLAGS      = -no-undefined @lt_enable_auto_import@ -module -avoid-version
 module_dummy_la_LIBTOOLFLAGS = --tag=disable-static
 
@@ -90,7 +99,7 @@ bench_PROGRAMS = eina_bench
 eina_bench_SOURCES = 	\
 eina_bench.c 		\
 eina_bench_sort.c	\
-eina_bench_hash.c 	\
+eina_bench_hash.c	\
 eina_bench_stringshare.c \
 eina_bench_convert.c	\
 eina_bench_mempool.c	\
@@ -108,7 +117,18 @@ evas_object_list.c \
 evas_stringshare.c \
 eina_bench_quad.c
 
+if CITYHASH_BENCH
+noinst_LTLIBRARIES = libcity.la
+libcity_la_SOURCES = city.cc
+
+nodist_EXTRA_eina_bench_SOURCES = dummy.cc
+eina_bench_LDADD = @GLIB_LIBS@ $(top_builddir)/src/lib/libeina.la libcity.la
+else
 eina_bench_LDADD = @GLIB_LIBS@ $(top_builddir)/src/lib/libeina.la
+
+endif
+
+
 
 endif
 
@@ -118,3 +138,6 @@ EXTRA_DIST = eina_bench.h \
 	Evas_Data.h \
 	evas_mempool.h \
 	strlog
+
+clean-local:
+	rm -rf *.gcno *.gcda

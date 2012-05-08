@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #ifdef HAVE_EVIL
 # include <Evil.h>
@@ -80,17 +81,6 @@ static const char __STRBUF_MAGIC_STR[] = "Eina Strbuf";
  *                                   API                                      *
  *============================================================================*/
 
-
-/**
- * @addtogroup Eina_String_Buffer_Group String Buffer
- *
- * @brief These functions provide string buffers management.
- *
- * The String Buffer data type is designed to be a mutable string,
- * allowing to append, prepend or insert a string to a buffer.
- *
- * @{
- */
 
 EAPI Eina_Bool
 eina_strbuf_append_printf(Eina_Strbuf *buf, const char *fmt, ...)
@@ -169,10 +159,44 @@ eina_strbuf_insert_vprintf(Eina_Strbuf *buf,
    return ret;
 }
 
+EAPI void
+eina_strbuf_trim(Eina_Strbuf *buf)
+{
+   unsigned char *c = buf->buf;
+
+   while (buf->len > 0 && isspace(c[buf->len - 1]))
+     buf->len--;
+   while (buf->len > 0 && isspace(*c))
+     {
+        c++;
+        buf->len--;
+     }
+   memmove(buf->buf, c, buf->len);
+   ((unsigned char *)buf->buf)[buf->len] = '\0';
+}
+
+EAPI void
+eina_strbuf_ltrim(Eina_Strbuf *buf)
+{
+   unsigned char *c = buf->buf;
+
+   while (buf->len > 0 && isspace(*c))
+     {
+        c++;
+        buf->len--;
+     }
+   memmove(buf->buf, c, buf->len);
+   ((unsigned char *)buf->buf)[buf->len] = '\0';
+}
+
+EAPI void
+eina_strbuf_rtrim(Eina_Strbuf *buf)
+{
+   while (buf->len > 0 && isspace(((unsigned char*)(buf->buf))[buf->len - 1]))
+     buf->len--;
+   ((unsigned char *)buf->buf)[buf->len] = '\0';
+}
+
 /* Unicode */
 
 #include "eina_strbuf_template_c.x"
-
-/**
- * @}
- */

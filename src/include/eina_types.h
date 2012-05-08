@@ -53,6 +53,10 @@
 #   define EAPI
 #  endif
 # else
+/**
+ * @def EAPI
+ * @brief Used to export functions(by changing visibility).
+ */
 #  define EAPI
 # endif
 #endif
@@ -98,15 +102,15 @@
 
 #ifdef __GNUC__
 # if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
-#  define EINA_WARN_UNUSED_RESULT __attribute__ ((warn_unused_result))
+#  define EINA_WARN_UNUSED_RESULT __attribute__ ((__warn_unused_result__))
 # else
 #  define EINA_WARN_UNUSED_RESULT
 # endif
 
 # if (!defined(EINA_SAFETY_CHECKS)) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3))
-#  define EINA_ARG_NONNULL(idx, ...) __attribute__ ((nonnull(idx, ## __VA_ARGS__)))
+#  define EINA_ARG_NONNULL(...) __attribute__ ((__nonnull__(__VA_ARGS__)))
 # else
-#  define EINA_ARG_NONNULL(idx, ...)
+#  define EINA_ARG_NONNULL(...)
 # endif
 
 # if __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1)
@@ -116,19 +120,23 @@
 # endif
 
 # if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96)
-#  define EINA_MALLOC __attribute__ ((malloc))
-#  define EINA_PURE   __attribute__ ((pure))
+#  define EINA_MALLOC __attribute__ ((__malloc__))
+#  define EINA_PURE   __attribute__ ((__pure__))
 # else
 #  define EINA_MALLOC
 #  define EINA_PURE
 # endif
 
 # if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
-#  define EINA_PRINTF(fmt, arg) __attribute__((format (printf, fmt, arg)))
-#  define EINA_SCANF(fmt, arg)  __attribute__((format (scanf, fmt, arg)))
-#  define EINA_FORMAT(fmt)      __attribute__((format_arg(fmt)))
-#  define EINA_CONST        __attribute__((const))
-#  define EINA_NOINSTRUMENT __attribute__((no_instrument_function))
+#  if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 3)
+#   define EINA_PRINTF(fmt, arg) __attribute__((__format__ (__gnu_printf__, fmt, arg)))
+#  else
+#   define EINA_PRINTF(fmt, arg) __attribute__((__format__ (__printf__, fmt, arg)))
+#  endif
+#  define EINA_SCANF(fmt, arg)  __attribute__((__format__ (__scanf__, fmt, arg)))
+#  define EINA_FORMAT(fmt)      __attribute__((__format_arg__(fmt)))
+#  define EINA_CONST        __attribute__((__const__))
+#  define EINA_NOINSTRUMENT __attribute__((__no_instrument_function__))
 #  define EINA_UNLIKELY(exp)    __builtin_expect((exp), 0)
 #  define EINA_LIKELY(exp)      __builtin_expect((exp), 1)
 # else
@@ -143,7 +151,7 @@
 
 #elif defined(_WIN32)
 # define EINA_WARN_UNUSED_RESULT
-# define EINA_ARG_NONNULL(idx, ...)
+# define EINA_ARG_NONNULL(...)
 # if defined(_MSC_VER) && _MSC_VER >= 1300
 #  define EINA_DEPRECATED __declspec(deprecated)
 # else
@@ -194,21 +202,63 @@
  * @def EINA_ARG_NONNULL
  * Used to warn when the specified arguments of the function are @c NULL.
  */
-# define EINA_ARG_NONNULL(idx, ...)
+# define EINA_ARG_NONNULL(...)
 
 /**
  * @def EINA_DEPRECATED
  * Used to warn when the function is considered as deprecated.
  */
 # define EINA_DEPRECATED
+/**
+ * @def EINA_MALLOC
+ * @brief EINA_MALLOC is used to tell the compiler that a function may be treated
+ * as if any non-NULL pointer it returns cannot alias any other pointer valid when
+ * the function returns and that the memory has undefined content.
+ */
 # define EINA_MALLOC
+/**
+ * @def EINA_PURE
+ * @brief EINA_PURE is used to tell the compiler this functions has no effects
+ * except the return value and their return value depends only on the parameters
+ * and/or global variables.
+ */
 # define EINA_PURE
+/**
+ * @def EINA_PRINTF
+ * @param fmt The format to be used.
+ * @param arg The argument to be used.
+ */
 # define EINA_PRINTF(fmt, arg)
+/**
+ * @def EINA_SCANF
+ * @param fmt The format to be used.
+ * @param arg The argument to be used.
+ */
 # define EINA_SCANF(fmt, arg)
+/**
+ * @def EINA_FORMAT
+ * @param fmt The format to be used.
+ */
 # define EINA_FORMAT(fmt)
+/**
+ * @def EINA_CONST
+ * @brief Attribute from gcc to prevent the function to read/modify any global memory.
+ */
 # define EINA_CONST
+/**
+ * @def EINA_NOINSTRUMENT
+ * @brief Attribute from gcc to disable instrumentation for a specific function.
+ */
 # define EINA_NOINSTRUMENT
+/**
+ * @def EINA_UNLIKELY
+ * @param exp The expression to be used.
+ */
 # define EINA_UNLIKELY(exp) exp
+/**
+ * @def EINA_LIKELY
+ * @param exp The expression to be used.
+ */
 # define EINA_LIKELY(exp)   exp
 #endif /* ! __GNUC__ && ! _WIN32 && ! __SUNPRO_C */
 
@@ -251,6 +301,10 @@ typedef int (*Eina_Compare_Cb)(const void *data1, const void *data2);
  */
 #define EINA_COMPARE_CB(function) ((Eina_Compare_Cb)function)
 
+/**
+ * @typedef Eina_Each_Cb
+ * A callback type used when iterating over a container.
+ */
 typedef Eina_Bool (*Eina_Each_Cb)(const void *container, void *data, void *fdata);
 
 /**
@@ -270,6 +324,16 @@ typedef void (*Eina_Free_Cb)(void *data);
  * Macro to cast to Eina_Free_Cb.
  */
 #define EINA_FREE_CB(Function) ((Eina_Free_Cb)Function)
+
+/**
+ * @def EINA_C_ARRAY_LENGTH
+ * Macro to return the array length of a standard c array.
+ * For example:
+ * int foo[] = { 0, 1, 2, 3 };
+ * would return 4 and not 4 * sizeof(int).
+ * @since 1.2.0
+ */
+#define EINA_C_ARRAY_LENGTH(arr) (sizeof(arr) / sizeof((arr)[0]))
 
 /**
  * @}
