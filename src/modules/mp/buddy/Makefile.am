@@ -6,11 +6,7 @@ AM_CPPFLAGS = \
 -I$(top_builddir)/src/include \
 -I$(top_srcdir)/src/lib \
 -I$(top_builddir)/src/lib \
-@EINA_CPPFLAGS@ \
 @EFL_EINA_BUILD@
-
-if EINA_BUILD_BUDDY
-if !EINA_STATIC_BUILD_BUDDY
 
 controllerdir = $(libdir)/eina/modules/mp/buddy/$(MODULE_ARCH)
 controller_LTLIBRARIES = module.la
@@ -25,9 +21,8 @@ module_la_LIBTOOLFLAGS = --tag=disable-static
 
 install-data-hook:
 	rm -f $(DESTDIR)$(controllerdir)/$(controller_LTLIBRARIES)
-
-endif
-endif
+uninstall-hook:
+	rm -f $(DESTDIR)$(controllerdir)/module.*
 
 clean-local:
 	rm -rf *.gcno

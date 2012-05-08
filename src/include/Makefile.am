@@ -13,6 +13,9 @@ eina_inline_fp.x \
 eina_hash.h \
 eina_inline_hash.x \
 eina_lalloc.h \
+eina_clist.h \
+eina_inline_clist.x \
+eina_inarray.h \
 eina_inlist.h \
 eina_list.h \
 eina_file.h \
@@ -26,6 +29,7 @@ eina_inline_array.x \
 eina_magic.h \
 eina_stringshare.h \
 eina_binshare.h \
+eina_binbuf.h \
 eina_ustringshare.h \
 eina_inline_stringshare.x \
 eina_inline_ustringshare.x \
@@ -52,7 +56,33 @@ eina_inline_str.x \
 eina_strbuf.h \
 eina_ustrbuf.h \
 eina_unicode.h \
-eina_quadtree.h
+eina_quadtree.h \
+eina_simple_xml_parser.h \
+eina_lock.h \
+eina_prefix.h \
+eina_refcount.h \
+eina_mmap.h \
+eina_xattr.h \
+eina_value.h \
+eina_inline_value.x
+
+# Will be back for developper after 1.2.
+# eina_model.h
+# eina_object.h
+
+if EINA_HAVE_THREADS
+if EINA_HAVE_WINCE
+EINAHEADERS += eina_inline_lock_wince.x
+else
+if EINA_HAVE_WIN32
+EINAHEADERS += eina_inline_lock_win32.x
+else
+EINAHEADERS += eina_inline_lock_posix.x
+endif
+endif
+else
+EINAHEADERS += eina_inline_lock_void.x
+endif
 
 installed_mainheaderdir = $(includedir)/eina-@VMAJ@
 dist_installed_mainheader_DATA = Eina.h eina_config.h

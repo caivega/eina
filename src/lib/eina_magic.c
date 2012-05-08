@@ -79,7 +79,7 @@ _eina_magic_strings_sort_cmp(const void *p1, const void *p2)
 static int
 _eina_magic_strings_find_cmp(const void *p1, const void *p2)
 {
-   Eina_Magic a = (Eina_Magic)p1;
+   Eina_Magic a = (Eina_Magic)(size_t)p1;
    const Eina_Magic_String *b = p2;
    return a - b->magic;
 }
@@ -102,13 +102,8 @@ _eina_magic_strings_alloc(void)
         tmp = realloc(_eina_magic_strings, sizeof(Eina_Magic_String) * size);
         if (!tmp)
           {
-#ifdef _WIN32
-             ERR("could not realloc magic_strings from %Iu to %Iu buckets.",
-                 _eina_magic_strings_allocated, size);
-#else
              ERR("could not realloc magic_strings from %zu to %zu buckets.",
                  _eina_magic_strings_allocated, size);
-#endif
              return NULL;
           }
 
@@ -128,6 +123,10 @@ _eina_magic_strings_alloc(void)
 /*============================================================================*
 *                                 Global                                     *
 *============================================================================*/
+
+EAPI Eina_Error EINA_ERROR_MAGIC_FAILED = 0;
+
+static const char EINA_ERROR_MAGIC_FAILED_STR[] = "Magic check failed.";
 
 /**
  * @internal
@@ -150,6 +149,8 @@ eina_magic_string_init(void)
         EINA_LOG_ERR("Could not register log domain: eina_magic_string");
         return EINA_FALSE;
      }
+   EINA_ERROR_MAGIC_FAILED = eina_error_msg_static_register(
+         EINA_ERROR_MAGIC_FAILED_STR);
 
    return EINA_TRUE;
 }
@@ -191,120 +192,6 @@ eina_magic_string_shutdown(void)
 /*============================================================================*
 *                                   API                                      *
 *============================================================================*/
-
-/**
- * @addtogroup Eina_Magic_Group Magic
- *
- * @brief These functions provide runtime type-checking (magic checks)
- * management for projects.
- *
- * C is a weak statically typed language, in other words, it will just
- * check for types during compile time and any cast will make the
- * compiler believe the type is correct.
- *
- * In real world projects we often need to deal with casts, either
- * explicit or implicit by means of @c void*. We also need to resort
- * to casts when doing inheritance in C, as seen in the example below:
- *
- * @code
- * struct base {
- *    int id;
- *    char *name;
- * };
- * int base_id_get(struct base *ptr) {
- *    return ptr->id;
- * }
- *
- * struct subtype {
- *    struct base base;
- *    time_t date;
- * };
- * @endcode
- *
- * It is perfectly valid to use @c {struct subtype} blobs for functions
- * that expect @c {struct base}, since the fields will have the same
- * offset (as base member is the first, at offset 0). We could give
- * the functions the @c {&subtype->base} and avoid the cast, but often
- * we just cast.
- *
- * In any case, we might be safe and check if the given pointer is
- * actually of the expected type. We can do so by using eina_magic,
- * that is nothing more than attaching an unique type identifier to
- * the members and check for it elsewhere.
- *
- * @code
- * #define BASE_MAGIC 0x12345
- * #define SUBTYPE_MAGIC 0x3333
- * struct base {
- *    int id;
- *    char *name;
- *    EINA_MAGIC;
- * };
- * int base_id_get(struct base *ptr) {
- *    if (!EINA_MAGIC_CHECK(ptr, BASE_MAGIC)) {
- *       EINA_MAGIC_FAIL(ptr, BASE_MAGIC);
- *       return -1;
- *    }
- *    return ptr->id;
- * }
- * void base_free(struct base *ptr) {
- *    if (!EINA_MAGIC_CHECK(ptr, BASE_MAGIC)) {
- *       EINA_MAGIC_FAIL(ptr, BASE_MAGIC);
- *       return;
- *    }
- *    EINA_MAGIC_SET(ptr, EINA_MAGIC_NONE);
- *    free(ptr->name);
- *    free(ptr);
- * }
- * struct base *base_new(int id, const char *name) {
- *    struct base *ptr = malloc(sizeof(struct base));
- *    EINA_MAGIC_SET(ptr, BASE_MAGIC);
- *    ptr->id = id;
- *    ptr->name = strdup(name);
- * }
- *
- * struct subtype {
- *    struct base base;
- *    EINA_MAGIC;
- *    time_t date;
- * };
- *
- * int my_init(void) {
- *    eina_init();
- *    eina_magic_string_set(BASE_MAGIC, "base type");
- *    eina_magic_string_set(SUBTYPE_MAGIC, "subtype");
- * }
- * @endcode
- *
- * This code also shows that it is a good practice to set magic to
- * #EINA_MAGIC_NONE before freeing pointer. Sometimes the pointers are
- * in pages that are still live in memory, so kernel will not send
- * SEGV signal to the process and it may go unnoticed that you're
- * using already freed pointers. By setting them to #EINA_MAGIC_NONE
- * you avoid using the bogus pointer any further and gets a nice error
- * message.
- *
- * @{
- */
-
-/**
- * @brief Return the string associated to the given magic identifier.
- *
- * @param magic The magic identifier.
- * @return The string associated to the identifier.
- *
- * This function returns the string associated to @p magic. If none
- * are found, the this function still returns non @c NULL, in this
- * case an identifier such as "(none)", "(undefined)" or
- * "(unknown)". The returned value must not be freed.
- *
- * The following identifiers may be returned whenever magic is
- * invalid, with their meanings:
- *
- *   - (none): no magic was registered exists at all.
- *   - (undefined): magic was registered and found, but no string associated.
- *   - (unknown): magic was not found in the registry.
- */
 EAPI const char *
 eina_magic_string_get(Eina_Magic magic)
 {
@@ -320,7 +207,7 @@ eina_magic_string_get(Eina_Magic magic)
         _eina_magic_strings_dirty = 0;
      }
 
-   ems = bsearch((void *)magic, _eina_magic_strings,
+   ems = bsearch((void *)(size_t)magic, _eina_magic_strings,
                  _eina_magic_strings_count, sizeof(Eina_Magic_String),
                  _eina_magic_strings_find_cmp);
    if (ems)
@@ -329,21 +216,6 @@ eina_magic_string_get(Eina_Magic magic)
    return "(unknown)";
 }
 
-/**
- * @brief Set the string associated to the given magic identifier.
- *
- * @param magic The magic identifier.
- * @param magic_name The string associated to the identifier, must not
- *        be @c NULL.
- *
- * @return #EINA_TRUE on success, #EINA_FALSE on failure.
- *
- * This function sets the string @p magic_name to @p magic. It is not
- * checked if number or string are already set, then you might end
- * with duplicates in that case.
- *
- * @see eina_magic_string_static_set()
- */
 EAPI Eina_Bool
 eina_magic_string_set(Eina_Magic magic, const char *magic_name)
 {
@@ -369,22 +241,6 @@ eina_magic_string_set(Eina_Magic magic, const char *magic_name)
    return EINA_TRUE;
 }
 
-/**
- * @brief Set the string associated to the given magic identifier.
- *
- * @param magic The magic identifier.
- * @param magic_name The string associated to the identifier, must not be
- *        @c NULL, it will not be duplcated, just referenced thus it must
- *        be live during magic number usage.
- *
- * @return #EINA_TRUE on success, #EINA_FALSE on failure.
- *
- * This function sets the string @p magic_name to @p magic. It is not
- * checked if number or string are already set, then you might end
- * with duplicates in that case.
- *
- * @see eina_magic_string_set()
- */
 EAPI Eina_Bool
 eina_magic_string_static_set(Eina_Magic magic, const char *magic_name)
 {
@@ -408,29 +264,6 @@ eina_magic_string_static_set(Eina_Magic magic, const char *magic_name)
 # undef eina_magic_fail
 #endif
 
-/**
- * @brief Display a message or abort is a magic check failed.
- *
- * @param d The checked data pointer.
- * @param m The magic identifer to check.
- * @param req_m The requested magic identifier to check.
- * @param file The file in which the magic check failed.
- * @param fnc The function in which the magic check failed.
- * @param line The line at which the magic check failed.
- *
- * This function displays an error message if a magic check has
- * failed, using the following logic in the following order:
- * @li If @p d is @c NULL, a message warns about a @c NULL pointer.
- * @li Otherwise, if @p m is equal to #EINA_MAGIC_NONE, a message
- * warns about a handle that was already freed.
- * @li Otherwise, if @p m is equal to @p req_m, a message warns about
- * a handle that is of wrong type.
- * @li Otherwise, a message warns you about ab-using that function...
- *
- * If the environment variable EINA_LOG_ABORT is set, abort() is
- * called and the program stops. It is useful for debugging programs
- * with gdb.
- */
 EAPI void
 eina_magic_fail(void *d,
                 Eina_Magic m,
@@ -439,6 +272,7 @@ eina_magic_fail(void *d,
                 const char *fnc,
                 int line)
 {
+   eina_error_set(EINA_ERROR_MAGIC_FAILED);
    if (!d)
       eina_log_print(EINA_LOG_DOMAIN_GLOBAL, EINA_LOG_LEVEL_CRITICAL,
                      file, fnc, line,

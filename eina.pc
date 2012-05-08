@@ -6,7 +6,7 @@ includedir=${prefix}/include
 Name: Eina
 Description: A Library that implements fast data types and miscellaneous tools
 Requires.private: valgrind 
-Version: 1.0.0
-Libs: -L${libdir} -leina
-Libs.private:  -pthread -ldl
+Version: 1.2.0
+Libs: -L${libdir} -leina -pthread
+Libs.private:  -lrt -pthread  -ldl -ldl   -lm
 Cflags: -I${includedir}/eina-1 -I${includedir}/eina-1/eina

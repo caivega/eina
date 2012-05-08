@@ -16,120 +16,6 @@
  * if not, see <http://www.gnu.org/licenses/>.
  */
 
-
-/**
- * @page tutorial_error_page Error Tutorial
- *
- * @section tutorial_error_introduction Introduction
- *
- * The Eina error module provides a way to manage errors in a simple
- * but powerful way in libraries and modules. It is also used in Eina
- * itself. Similar to libC's @c errno and strerror() facilities, this
- * is extensible and recommended for other libraries and applications.
- *
- * @section tutorial_error_registering_msg Registering messages
- *
- * The error module can provide a system that mimic the errno system
- * of the C standard library. It consists in 2 parts:
- *
- * @li a way of registering new messages with
- * eina_error_msg_register() and eina_error_msg_get(),
- * @li a way of setting / getting last error message with
- * eina_error_set() / eina_error_get().
- *
- * So one has to fisrt register all the error messages that a program
- * or a lib should manage. Then, when an error can occur, use
- * eina_error_set(), and when errors are managed, use
- * eina_error_get(). If eina_error_set() is used to set an error, do
- * not forget to call before eina_error_set0), to remove previous set
- * errors.
- *
- * Here is an example of use:
- *
- * @code
- * #include <stdlib.h>
- * #include <stdio.h>
- *
- * #include <eina_error.h>
- *
- * Eina_Error MY_ERROR_NEGATIVE;
- * Eina_Error MY_ERROR_NULL;
- *
- * voi *data_new()
- * {
- *    eina_error_set(0);
- *
- *    eina_error_set(MY_ERROR_NULL);
- *    return NULL;
- * }
- *
- * int test(int n)
- * {
- *    eina_error_set(0);
- *
- *    if (n < 0)
- *    {
- *       eina_error_set(MY_ERROR_NEGATIVE);
- *       return 0;
- *    }
- *
- *    return 1;
- * }
- *
- * int main(void)
- * {
- *    void *data;
- *
- *    if (!eina_init())
- *    {
- *       printf ("Error during the initialization of eina_error module\n");
- *       return EXIT_FAILURE;
- *    }
- *
- *    MY_ERROR_NEGATIVE = eina_error_msg_register("Negative number");
- *    MY_ERROR_NULL = eina_error_msg_register("NULL pointer");
-
- *    data = data_new();
- *    if (!data)
- *    {
- *       Eina_Error err;
- *
- *       err = eina_error_get();
- *       if (err)
- *          printf("Error during memory allocation: %s\n",
- *                 eina_error_msg_get(err));
- *    }
- *
- *    if (!test(0))
- *    {
- *       Eina_Error err;
- *
- *       err = eina_error_get();
- *       if (err)
- *          printf("Error during test function: %s\n",
- *                 eina_error_msg_get(err));
- *    }
- *
- *    if (!test(-1))
- *    {
- *       Eina_Error err;
- *
- *       err = eina_error_get();
- *       if (err)
- *          printf("Error during test function: %s\n",
- *                 eina_error_msg_get(err));
- *    }
- *
- *    eina_shutdown();
- *
- *    return EXIT_SUCCESS;
- * }
- * @endcode
- *
- * Of course, instead of printf(), eina_log_print() can be used to
- * have beautiful error messages.
- */
-
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif
@@ -149,6 +35,7 @@
 /* undefs EINA_ARG_NONULL() so NULL checks are not compiled out! */
 #include "eina_safety_checks.h"
 #include "eina_error.h"
+#include "eina_stringshare.h"
 
 /* TODO
  * + add a wrapper for assert?
@@ -269,7 +156,7 @@ eina_error_shutdown(void)
 
    for (; eem < eem_end; eem++)
       if (eem->string_allocated)
-         free((char *)eem->string);
+         eina_stringshare_del(eem->string);
 
          free(_eina_errors);
    _eina_errors = NULL;
@@ -283,36 +170,6 @@ eina_error_shutdown(void)
 *                                   API                                      *
 *============================================================================*/
 
-/**
- * @addtogroup Eina_Error_Group Error
- *
- * @brief These functions provide error management for projects.
- *
- * To use the error system Eina must be initialized with eina_init()
- * and later shut down with eina_shutdown(). Error codes are
- * registered with eina_error_msg_register() and converted from
- * identifier to original message string with eina_error_msg_get().
- *
- * Logging functions are not in eina_error anymore, see
- * eina_log_print() instead.
- *
- * @{
- */
-
-/**
- * @brief Register a new error type.
- *
- * @param msg The description of the error. It will be duplicated using
- *        strdup().
- * @return The unique number identifier for this error.
- *
- * This function stores in a list the error message described by
- * @p msg. The returned value is a unique identifier greater or equal
- * than 1. The description can be retrieve later by passing to
- * eina_error_msg_get() the returned value.
- *
- * @see eina_error_msg_static_register()
- */
 EAPI Eina_Error
 eina_error_msg_register(const char *msg)
 {
@@ -325,7 +182,7 @@ eina_error_msg_register(const char *msg)
       return 0;
 
    eem->string_allocated = EINA_TRUE;
-   eem->string = strdup(msg);
+   eem->string = eina_stringshare_add(msg);
    if (!eem->string)
      {
         _eina_errors_count--;
@@ -335,21 +192,6 @@ eina_error_msg_register(const char *msg)
    return _eina_errors_count; /* identifier = index + 1 (== _count). */
 }
 
-/**
- * @brief Register a new error type, statically allocated message.
- *
- * @param msg The description of the error. This string will not be
- *        duplicated and thus the given pointer should live during
- *        usage of eina_error.
- * @return The unique number identifier for this error.
- *
- * This function stores in a list the error message described by
- * @p msg. The returned value is a unique identifier greater or equal
- * than 1. The description can be retrieve later by passing to
- * eina_error_msg_get() the returned value.
- *
- * @see eina_error_msg_register()
- */
 EAPI Eina_Error
 eina_error_msg_static_register(const char *msg)
 {
@@ -366,22 +208,6 @@ eina_error_msg_static_register(const char *msg)
    return _eina_errors_count; /* identifier = index + 1 (== _count). */
 }
 
-/**
- * @brief Change the message of an already registered message
- *
- * @param error The Eina_Error to change the message of
- * @param msg The description of the error. This string will be
- * duplicated only if the error was registered with @ref eina_error_msg_register
- * otherwise it must remain intact for the duration
- * @return EINA_TRUE if successful, EINA_FALSE on error
- *
- * This function modifies the message associated with @p error and changes
- * it to @p msg.  If the error was previously registered by @ref eina_error_msg_static_register
- * then the string will not be duplicated, otherwise the previous message
- * will be freed and @p msg copied.
- *
- * @see eina_error_msg_register()
- */
 EAPI Eina_Bool
 eina_error_msg_modify(Eina_Error error, const char *msg)
 {
@@ -396,10 +222,10 @@ eina_error_msg_modify(Eina_Error error, const char *msg)
      {
         const char *tmp;
 
-        if (!(tmp = strdup(msg)))
+        if (!(tmp = eina_stringshare_add(msg)))
            return EINA_FALSE;
 
-        free((void *)_eina_errors[error - 1].string);
+        eina_stringshare_del(_eina_errors[error - 1].string);
         _eina_errors[error - 1].string = tmp;
         return EINA_TRUE;
      }
@@ -408,16 +234,6 @@ eina_error_msg_modify(Eina_Error error, const char *msg)
    return EINA_TRUE;
 }
 
-/**
- * @brief Return the description of the given an error number.
- *
- * @param error The error number.
- * @return The description of the error.
- *
- * This function returns the description of an error that has been
- * registered with eina_error_msg_register(). If an incorrect error is
- * given, then @c NULL is returned.
- */
 EAPI const char *
 eina_error_msg_get(Eina_Error error)
 {
@@ -430,34 +246,34 @@ eina_error_msg_get(Eina_Error error)
    return _eina_errors[error - 1].string;
 }
 
-/**
- * @brief Return the last set error.
- *
- * @return The last error.
- *
- * This function returns the last error set by eina_error_set(). The
- * description of the message is returned by eina_error_msg_get().
- */
 EAPI Eina_Error
 eina_error_get(void)
 {
    return _eina_last_error;
 }
 
-/**
- * @brief Set the last error.
- *
- * @param err The error identifier.
- *
- * This function sets the last error identifier. The last error can be
- * retrieved with eina_error_get().
- */
 EAPI void
 eina_error_set(Eina_Error err)
 {
    _eina_last_error = err;
 }
 
-/**
- * @}
- */
+EAPI Eina_Error
+eina_error_find(const char *msg)
+{
+   size_t i;
+
+   EINA_SAFETY_ON_NULL_RETURN_VAL(msg, 0);
+
+   for (i = 0; i < _eina_errors_count; i++)
+     {
+        if (_eina_errors[i].string_allocated)
+          {
+             if (_eina_errors[i].string == msg)
+               return i + 1;
+          }
+        if (!strcmp(_eina_errors[i].string, msg))
+          return i + 1;
+     }
+   return 0;
+}

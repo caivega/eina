@@ -37,19 +37,26 @@ host_triplet = @host@
 subdir = src/modules/mp/buddy
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ac_attribute.m4 \
-	$(top_srcdir)/m4/efl_benchmark.m4 \
-	$(top_srcdir)/m4/efl_compiler_flag.m4 \
-	$(top_srcdir)/m4/efl_coverage.m4 $(top_srcdir)/m4/efl_cpu.m4 \
-	$(top_srcdir)/m4/efl_doxygen.m4 \
-	$(top_srcdir)/m4/efl_fnmatch.m4 \
-	$(top_srcdir)/m4/efl_path_max.m4 $(top_srcdir)/m4/efl_tests.m4 \
-	$(top_srcdir)/m4/efl_threads.m4 \
-	$(top_srcdir)/m4/efl_voltron.m4 $(top_srcdir)/m4/eina_bench.m4 \
-	$(top_srcdir)/m4/eina_check.m4 $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/eina/eina_bench.m4 \
+	$(top_srcdir)/m4/eina/eina_check.m4 \
+	$(top_srcdir)/m4/common/efl_attribute.m4 \
+	$(top_srcdir)/m4/common/efl_benchmark.m4 \
+	$(top_srcdir)/m4/common/efl_compiler_flag.m4 \
+	$(top_srcdir)/m4/common/efl_coverage.m4 \
+	$(top_srcdir)/m4/common/efl_cpu.m4 \
+	$(top_srcdir)/m4/common/efl_dlfcn.m4 \
+	$(top_srcdir)/m4/common/efl_doxygen.m4 \
+	$(top_srcdir)/m4/common/efl_examples.m4 \
+	$(top_srcdir)/m4/common/efl_fnmatch.m4 \
+	$(top_srcdir)/m4/common/efl_path_max.m4 \
+	$(top_srcdir)/m4/common/efl_shm_open.m4 \
+	$(top_srcdir)/m4/common/efl_tests.m4 \
+	$(top_srcdir)/m4/common/efl_threads.m4 \
+	$(top_srcdir)/m4/common/efl_voltron.m4 \
+	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
+	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -79,9 +86,8 @@ am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
 am__installdirs = "$(DESTDIR)$(controllerdir)"
 LTLIBRARIES = $(controller_LTLIBRARIES)
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@module_la_DEPENDENCIES = $(top_builddir)/src/lib/libeina.la
-am__module_la_SOURCES_DIST = eina_buddy.c
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@am_module_la_OBJECTS = module_la-eina_buddy.lo
+module_la_DEPENDENCIES = $(top_builddir)/src/lib/libeina.la
+am_module_la_OBJECTS = module_la-eina_buddy.lo
 module_la_OBJECTS = $(am_module_la_OBJECTS)
 AM_V_lt = $(am__v_lt_$(V))
 am__v_lt_ = $(am__v_lt_$(AM_DEFAULT_VERBOSITY))
@@ -90,9 +96,6 @@ module_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC \
 	$(module_la_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=link $(CCLD) \
 	$(module_la_CFLAGS) $(CFLAGS) $(module_la_LDFLAGS) $(LDFLAGS) \
 	-o $@
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@am_module_la_rpath =  \
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@	-rpath \
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@	$(controllerdir)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -120,7 +123,7 @@ AM_V_GEN = $(am__v_GEN_$(V))
 am__v_GEN_ = $(am__v_GEN_$(AM_DEFAULT_VERBOSITY))
 am__v_GEN_0 = @echo "  GEN   " $@;
 SOURCES = $(module_la_SOURCES)
-DIST_SOURCES = $(am__module_la_SOURCES_DIST)
+DIST_SOURCES = $(module_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -141,6 +144,10 @@ CHECK_CFLAGS = @CHECK_CFLAGS@
 CHECK_LIBS = @CHECK_LIBS@
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+CXXCPP = @CXXCPP@
+CXXDEPMODE = @CXXDEPMODE@
+CXXFLAGS = @CXXFLAGS@
 CYGPATH_W = @CYGPATH_W@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
@@ -150,28 +157,42 @@ DUMPBIN = @DUMPBIN@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
+ECORE_EVAS_CFLAGS = @ECORE_EVAS_CFLAGS@
+ECORE_EVAS_LIBS = @ECORE_EVAS_LIBS@
 EFL_COVERAGE_CFLAGS = @EFL_COVERAGE_CFLAGS@
 EFL_COVERAGE_LIBS = @EFL_COVERAGE_LIBS@
+EFL_DLADDR_LIBS = @EFL_DLADDR_LIBS@
+EFL_DLOPEN_LIBS = @EFL_DLOPEN_LIBS@
 EFL_EINA_BUILD = @EFL_EINA_BUILD@
 EFL_FNMATCH_LIBS = @EFL_FNMATCH_LIBS@
 EFL_PTHREAD_CFLAGS = @EFL_PTHREAD_CFLAGS@
 EFL_PTHREAD_LIBS = @EFL_PTHREAD_LIBS@
+EFL_SHM_OPEN_LIBS = @EFL_SHM_OPEN_LIBS@
 EFL_SIMD_FLAGS = @EFL_SIMD_FLAGS@
 EGREP = @EGREP@
 EINA_CFLAGS = @EINA_CFLAGS@
 EINA_CONFIGURE_DEFAULT_MEMPOOL = @EINA_CONFIGURE_DEFAULT_MEMPOOL@
+EINA_CONFIGURE_ENABLE_LOG = @EINA_CONFIGURE_ENABLE_LOG@
+EINA_CONFIGURE_HAVE_DEBUG_THREADS = @EINA_CONFIGURE_HAVE_DEBUG_THREADS@
+EINA_CONFIGURE_HAVE_DIRENT_H = @EINA_CONFIGURE_HAVE_DIRENT_H@
+EINA_CONFIGURE_HAVE_EXOTIC = @EINA_CONFIGURE_HAVE_EXOTIC@
 EINA_CONFIGURE_HAVE_INTTYPES_H = @EINA_CONFIGURE_HAVE_INTTYPES_H@
+EINA_CONFIGURE_HAVE_ON_OFF_THREADS = @EINA_CONFIGURE_HAVE_ON_OFF_THREADS@
 EINA_CONFIGURE_HAVE_STDINT_H = @EINA_CONFIGURE_HAVE_STDINT_H@
+EINA_CONFIGURE_HAVE_THREADS = @EINA_CONFIGURE_HAVE_THREADS@
 EINA_CONFIGURE_MAGIC_DEBUG = @EINA_CONFIGURE_MAGIC_DEBUG@
 EINA_CONFIGURE_SAFETY_CHECKS = @EINA_CONFIGURE_SAFETY_CHECKS@
-EINA_CPPFLAGS = @EINA_CPPFLAGS@
 EINA_LIBS = @EINA_LIBS@
 EINA_SIZEOF_WCHAR_T = @EINA_SIZEOF_WCHAR_T@
 EMEMOA_CFLAGS = @EMEMOA_CFLAGS@
 EMEMOA_LIBS = @EMEMOA_LIBS@
+ESCAPE_CFLAGS = @ESCAPE_CFLAGS@
+ESCAPE_LIBS = @ESCAPE_LIBS@
 EVIL_CFLAGS = @EVIL_CFLAGS@
 EVIL_LIBS = @EVIL_LIBS@
 EXEEXT = @EXEEXT@
+EXOTIC_CFLAGS = @EXOTIC_CFLAGS@
+EXOTIC_LIBS = @EXOTIC_LIBS@
 FGREP = @FGREP@
 GLIB_CFLAGS = @GLIB_CFLAGS@
 GLIB_LIBS = @GLIB_LIBS@
@@ -207,6 +228,8 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 RANLIB = @RANLIB@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
@@ -221,6 +244,7 @@ abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
 abs_top_srcdir = @abs_top_srcdir@
 ac_ct_CC = @ac_ct_CC@
+ac_ct_CXX = @ac_ct_CXX@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
 am__include = @am__include@
 am__leading_dot = @am__leading_dot@
@@ -236,7 +260,6 @@ build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
-dlopen_libs = @dlopen_libs@
 docdir = @docdir@
 dvidir = @dvidir@
 efl_doxygen = @efl_doxygen@
@@ -249,6 +272,7 @@ host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
 htmldir = @htmldir@
+iconv_libs = @iconv_libs@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
@@ -284,18 +308,17 @@ AM_CPPFLAGS = \
 -I$(top_builddir)/src/include \
 -I$(top_srcdir)/src/lib \
 -I$(top_builddir)/src/lib \
-@EINA_CPPFLAGS@ \
 @EFL_EINA_BUILD@
 
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@controllerdir = $(libdir)/eina/modules/mp/buddy/$(MODULE_ARCH)
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@controller_LTLIBRARIES = module.la
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@module_la_SOURCES = \
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@eina_buddy.c
+controllerdir = $(libdir)/eina/modules/mp/buddy/$(MODULE_ARCH)
+controller_LTLIBRARIES = module.la
+module_la_SOURCES = \
+eina_buddy.c
 
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@module_la_CFLAGS = @EINA_CFLAGS@
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@module_la_LIBADD = $(top_builddir)/src/lib/libeina.la @EINA_LIBS@
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@module_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -module -avoid-version
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@module_la_LIBTOOLFLAGS = --tag=disable-static
+module_la_CFLAGS = @EINA_CFLAGS@
+module_la_LIBADD = $(top_builddir)/src/lib/libeina.la @EINA_LIBS@
+module_la_LDFLAGS = -no-undefined @lt_enable_auto_import@ -module -avoid-version
+module_la_LIBTOOLFLAGS = --tag=disable-static
 all: all-am
 
 .SUFFIXES:
@@ -362,7 +385,7 @@ clean-controllerLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 module.la: $(module_la_OBJECTS) $(module_la_DEPENDENCIES) 
-	$(AM_V_CCLD)$(module_la_LINK) $(am_module_la_rpath) $(module_la_OBJECTS) $(module_la_LIBADD) $(LIBS)
+	$(AM_V_CCLD)$(module_la_LINK) -rpath $(controllerdir) $(module_la_OBJECTS) $(module_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -525,8 +548,6 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
-@EINA_BUILD_BUDDY_FALSE@install-data-hook:
-@EINA_STATIC_BUILD_BUDDY_TRUE@install-data-hook:
 clean: clean-am
 
 clean-am: clean-controllerLTLIBRARIES clean-generic clean-libtool \
@@ -598,8 +619,9 @@ ps: ps-am
 ps-am:
 
 uninstall-am: uninstall-controllerLTLIBRARIES
-
-.MAKE: install-am install-data-am install-strip
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
+.MAKE: install-am install-data-am install-strip uninstall-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean \
 	clean-controllerLTLIBRARIES clean-generic clean-libtool \
@@ -614,11 +636,14 @@ uninstall-am: uninstall-controllerLTLIBRARIES
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-controllerLTLIBRARIES
+	tags uninstall uninstall-am uninstall-controllerLTLIBRARIES \
+	uninstall-hook
 
 
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@install-data-hook:
-@EINA_BUILD_BUDDY_TRUE@@EINA_STATIC_BUILD_BUDDY_FALSE@	rm -f $(DESTDIR)$(controllerdir)/$(controller_LTLIBRARIES)
+install-data-hook:
+	rm -f $(DESTDIR)$(controllerdir)/$(controller_LTLIBRARIES)
+uninstall-hook:
+	rm -f $(DESTDIR)$(controllerdir)/module.*
 
 clean-local:
 	rm -rf *.gcno

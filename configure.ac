@@ -1,9 +1,9 @@
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
 m4_define([v_maj], [1])
-m4_define([v_min], [0])
+m4_define([v_min], [2])
 m4_define([v_mic], [0])
-m4_define([v_rev], m4_esyscmd([(svnversion "${SVN_REPO_PATH:-.}" | grep -v export || echo 0) | awk -F : '{printf("%s\n", $1);}' | tr -d ' :MSP\n']))
+m4_define([v_rev], m4_esyscmd([(svnversion "${SVN_REPO_PATH:-.}" | grep -v '\(export\|Unversioned directory\)' || echo 0) | awk -F : '{printf("%s\n", $1);}' | tr -d ' :MSP\n']))
 m4_if(v_rev, [0], [m4_define([v_rev], m4_esyscmd([git log 2> /dev/null | (grep -m1 git-svn-id || echo 0) | sed -e 's/.*@\([0-9]*\).*/\1/' | tr -d '\n']))])
 ##--   When released, remove the dnl on the below line
 m4_undefine([v_rev])
@@ -12,8 +12,8 @@ dnl m4_define([relname], [ver-pre-svn-07])
 dnl m4_define([v_rel], [-release relname])
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
 m4_ifdef([v_rev], [m4_define([v_ver], [v_maj.v_min.v_mic.v_rev])], [m4_define([v_ver], [v_maj.v_min.v_mic])])
-m4_define([lt_rev], m4_eval(v_maj + v_min))
-m4_define([lt_cur], v_mic)
+m4_define([lt_cur], m4_eval(v_maj + v_min))
+m4_define([lt_rev], v_mic)
 m4_define([lt_age], v_min)
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
@@ -36,6 +36,7 @@ AM_INIT_AUTOMAKE([1.6 dist-bzip2])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_GNU_SOURCE
+AC_SYS_LARGEFILE
 
 AC_LIBTOOL_WIN32_DLL
 define([AC_LIBTOOL_LANG_CXX_CONFIG], [:])dnl
@@ -50,7 +51,7 @@ AC_DEFINE_UNQUOTED(VMAJ, [v_maj], [Major version])
 AC_DEFINE_UNQUOTED(VMIN, [v_min], [Minor version])
 AC_DEFINE_UNQUOTED(VMIC, [v_mic], [Micro version])
 AC_DEFINE_UNQUOTED(VREV, [v_rev], [Revison])
-version_info="lt_rev:lt_cur:lt_age"
+version_info="lt_cur:lt_rev:lt_age"
 release_info="v_rel"
 AC_SUBST(version_info)
 AC_SUBST(release_info)
@@ -109,6 +110,24 @@ EFL_CHECK_THREADS(
    [have_threads="no"])
 EFL_CHECK_SPINLOCK([have_posix_threads_spinlock="yes"], [have_posix_threads_spinlock="no"])
 
+if ! test "x${have_threads}" = "xno" ; then
+   EINA_CONFIGURE_HAVE_THREADS="#define EINA_HAVE_THREADS"
+fi
+AC_SUBST(EINA_CONFIGURE_HAVE_THREADS)
+AM_CONDITIONAL([EINA_HAVE_THREADS], [! test "x${have_threads}" = "xno"])
+
+if ! test "x${have_debug_threads}" = "xno"; then
+   EINA_CONFIGURE_HAVE_DEBUG_THREADS="#define EINA_HAVE_DEBUG_THREADS"
+fi
+AC_SUBST(EINA_CONFIGURE_HAVE_DEBUG_THREADS)
+AM_CONDITIONAL([EINA_DEBUG_THREADS], [! test "x${have_debug_threads}" = "xno"])
+
+if ! test "x${have_on_off_threads}" = "xno"; then
+   EINA_CONFIGURE_HAVE_ON_OFF_THREADS="#define EINA_HAVE_ON_OFF_THREADS"
+fi
+AC_SUBST(EINA_CONFIGURE_HAVE_ON_OFF_THREADS)
+AM_CONDITIONAL([EINA_ON_OFF_THREADS], [! test "x${have_on_off_threads}" = "xno"])
+
 ### Additional options to configure
 
 # Magic debug
@@ -130,34 +149,6 @@ if test "x${have_magic_debug}" = "xyes" ; then
    EINA_CONFIGURE_MAGIC_DEBUG="#define EINA_MAGIC_DEBUG"
 fi
 AC_SUBST(EINA_CONFIGURE_MAGIC_DEBUG)
-
-# Valgrind
-want_valgrind="auto"
-have_valgrind="no"
-
-AC_MSG_CHECKING(whether to enable build with valgrind)
-AC_ARG_ENABLE(valgrind,
-  AC_HELP_STRING([--enable-valgrind], [improve valgrind support by hinting it of our memory usages, having it to report proper mempool leaks.]),
-  [want_valgrind=$enableval]
-)
-AC_MSG_RESULT($want_valgrind)
-
-if test "x${want_valgrind}" = "xyes" -o "x${want_valgrind}" = "xauto"; then
-    PKG_CHECK_MODULES(VALGRIND, valgrind >= 2.4.0,
-        [
-         requirement_eina="valgrind ${requirement_eina}"
-         have_valgrind="yes"
-        ],
-        [
-         AC_DEFINE(NVALGRIND, 1, [Valgrind support disabled])
-         if test "x$want_valgrind" = "xyes"; then
-            AC_MSG_ERROR([Valgrind >= 2.4.0 is required)])
-         fi
-        ]
-    )
-else
-    AC_DEFINE(NVALGRIND, 1, [Valgrind support disabled])
-fi
 
 # Safety checks (avoid crashes on wrong api usage)
 AC_ARG_ENABLE(safety-checks,
@@ -187,7 +178,7 @@ AC_ARG_WITH(internal-maximum-log-level,
                    [limit eina internal log level to the given number, any call to EINA_LOG() with values greater than this will be compiled out, ignoring runtime settings, but saving function calls.])],
    [
     if test "x${withval}" != "xno"; then
-       if echo "${withval}" | grep '^[[0-9]]\+$' >/dev/null 2>/dev/null; then
+       if echo "${withval}" | grep -E '^[[0-9]]+$' >/dev/null 2>/dev/null; then
           AC_MSG_NOTICE([ignoring any EINA_LOG() with level greater than ${withval}])
           AC_DEFINE_UNQUOTED(EINA_LOG_LEVEL_MAXIMUM, ${withval}, [if set, logging is limited to this amount.])
           with_max_log_level="${withval}"
@@ -269,6 +260,8 @@ AM_CONDITIONAL(EINA_ENABLE_BENCHMARK_E17, test "x${enable_benchmark_e17}" = "xye
 
 ### Checks for programs
 AC_PROG_CC
+#for src/tests...
+AC_PROG_CXX
 
 # pkg-config
 PKG_PROG_PKG_CONFIG
@@ -288,18 +281,76 @@ EFL_CHECK_DOXYGEN([build_doc="yes"], [build_doc="no"])
 
 ### Checks for libraries
 
-# Evil library for compilation on Windows CE
+# Valgrind
+want_valgrind="auto"
+have_valgrind="no"
+
+AC_ARG_ENABLE([valgrind],
+  [AC_HELP_STRING([--enable-valgrind], [improve valgrind support by hinting it of our memory usages, having it to report proper mempool leaks.])],
+  [want_valgrind=$enableval])
+
+AC_MSG_CHECKING([whether to enable build with valgrind])
+AC_MSG_RESULT([${want_valgrind}])
+
+if test "x${want_valgrind}" = "xyes" || test "x${want_valgrind}" = "xauto"; then
+   PKG_CHECK_MODULES([VALGRIND],
+      [valgrind >= 2.4.0],
+      [
+       requirement_eina="valgrind ${requirement_eina}"
+       have_valgrind="yes"
+      ],
+      [
+       AC_DEFINE([NVALGRIND], [1], [Valgrind support disabled])
+       if test "x${want_valgrind}" = "xyes"; then
+          AC_MSG_ERROR([Valgrind >= 2.4.0 is required])
+       fi
+      ])
+else
+    AC_DEFINE([NVALGRIND], [1], [Valgrind support disabled])
+fi
+
+
+# Evil library for compilation on Windows
 
 EFL_EINA_BUILD=""
 case "$host_os" in
    mingw*)
-      PKG_CHECK_MODULES([EVIL], [evil])
-      AC_DEFINE(HAVE_EVIL, 1, [Set to 1 if evil package is installed])
-      requirement_eina="evil"
+      PKG_CHECK_MODULES([EVIL], [evil >= 1.0.0])
+      AC_DEFINE([HAVE_EVIL], [1], [Set to 1 if evil package is installed])
+      requirement_eina="${requirement_eina} evil"
       EFL_EINA_BUILD="-DEFL_EINA_BUILD"
    ;;
 esac
-AC_SUBST(EFL_EINA_BUILD)
+AC_SUBST([EFL_EINA_BUILD])
+
+# Checks for portability layer
+
+PKG_CHECK_MODULES([EXOTIC],
+   [exotic],
+   [enable_exotic="yes"],
+   [enable_exotic="no"])
+
+if test "x${enable_exotic}" = "xyes"; then
+    requirement_eina="exotic ${requirement_eina}"
+    EINA_CFLAGS="${EINA_CFLAGS} ${EXOTIC_CFLAGS}"
+    EINA_LIBS="${EXOTIC_LIBS}"
+
+    EINA_CONFIGURE_HAVE_EXOTIC="#define EINA_HAVE_EXOTIC"
+    AC_DEFINE([HAVE_EXOTIC_H], [1], [Define to 1 if you have Exotic.])
+fi
+AM_CONDITIONAL([EINA_HAVE_EXOTIC], [test "x${enable_exotic}" = "xyes"])
+AC_SUBST([EINA_CONFIGURE_HAVE_EXOTIC])
+
+case "$host_vendor" in
+  ps3*)
+      PKG_CHECK_MODULES([ESCAPE], [escape])
+      AC_DEFINE(HAVE_ESCAPE, 1, [Set to 1 if Escape package is installed])
+      requirement_eina="${requirement_eina} escape"
+      EINA_CFLAGS="${ESCAPE_CFLAGS} ${EINA_CFLAGS}"
+    ;;
+esac
+
+AC_SUBST([EINA_CFLAGS])
 
 # Check ememoa memory pool library
 
@@ -312,8 +363,8 @@ AC_ARG_ENABLE([ememoa],
        enable_ememoa="no"
     fi
    ],
-   [enable_ememoa="yes"]
-)
+   [enable_ememoa="yes"])
+
 AC_MSG_CHECKING([whether to use ememoa for memory pool])
 AC_MSG_RESULT([$enable_ememoa])
 
@@ -321,55 +372,85 @@ if test "x${enable_ememoa}" = "xyes" ; then
    PKG_CHECK_MODULES([EMEMOA],
       [ememoa >= 0.0.26 ],
       [enable_ememoa="yes"],
-      [enable_ememoa="no"]
-   )
+      [enable_ememoa="no"])
 fi
 
+PKG_CHECK_MODULES([ECORE_EVAS],
+   [ecore-evas ecore evas],
+   [build_tiler_example="yes"],
+   [build_tiler_example="no"])
+
+AM_CONDITIONAL([BUILD_TILER_EXAMPLE], [test "x${build_tiler_example}" = "xyes"])
 
 ### Checks for header files
 AC_HEADER_ASSERT
-AC_HEADER_DIRENT
 AC_HEADER_TIME
-EFL_CHECK_PATH_MAX
+AC_HEADER_DIRENT
+
+AC_CHECK_HEADERS([unistd.h libgen.h inttypes.h stdint.h sys/types.h siginfo.h strings.h sys/mman.h execinfo.h mcheck.h])
+
+if test "x${ac_cv_header_inttypes_h}" = "xyes" ; then
+   EINA_CONFIGURE_HAVE_INTTYPES_H="#define EINA_HAVE_INTTYPES_H"
+   AC_DEFINE([HAVE_INTTYPES_H], [1], [Define to 1 if you have the <inttypes.h> header file.])
+fi
+AC_SUBST([EINA_CONFIGURE_HAVE_INTTYPES_H])
+
+if test "x${ac_cv_header_inttypes_h}" = "xyes" ; then
+    EINA_CONFIGURE_HAVE_STDINT_H="#define EINA_HAVE_STDINT_H"
+    AC_DEFINE([HAVE_STDINT_H], [1], [Define to 1 if you have the <stdint.h> header file.])
+fi
+AC_SUBST([EINA_CONFIGURE_HAVE_STDINT_H])
 
 ### Checks for types
-AC_CHECK_HEADER([inttypes.h],
-		[EINA_CONFIGURE_HAVE_INTTYPES_H="#define EINA_HAVE_INTTYPES_H"])
-AC_SUBST(EINA_CONFIGURE_HAVE_INTTYPES_H)
 
-AC_CHECK_HEADER([stdint.h],
-		[EINA_CONFIGURE_HAVE_STDINT_H="#define EINA_HAVE_STDINT_H"])
-AC_SUBST(EINA_CONFIGURE_HAVE_STDINT_H)
+# wchar_t
 
-AC_CHECK_SIZEOF(wchar_t)
+AC_CHECK_SIZEOF([wchar_t])
 EINA_SIZEOF_WCHAR_T=$ac_cv_sizeof_wchar_t
-AC_SUBST(EINA_SIZEOF_WCHAR_T)
+AC_SUBST([EINA_SIZEOF_WCHAR_T])
+AC_CHECK_TYPES([siginfo_t], [], [],
+   [[
+#include <signal.h>
+#if HAVE_SIGINFO_H
+# include <siginfo.h>
+#endif
+   ]])
+
+# struct dirent
+
+AC_CHECK_TYPES([struct dirent], [have_dirent="yes"], [have_dirent="no"],
+   [[
+#include <dirent.h>
+   ]])
+
+if test "x${have_dirent}" = "xyes" ; then
+    EINA_CONFIGURE_HAVE_DIRENT_H="#define EINA_HAVE_DIRENT_H"
+    AC_DEFINE([HAVE_DIRENT_H], [1], [Define to 1 if you have a valid <dirent.h> header file.])
+fi
+AC_SUBST([EINA_CONFIGURE_HAVE_DIRENT_H])
 
 ### Checks for structures
 
-
 ### Checks for compiler characteristics
-AC_C_CONST
 AC_C_BIGENDIAN
 AC_C_INLINE
-AC_C___ATTRIBUTE__
 AC_PROG_CC_STDC
+EFL_ATTRIBUTE_UNUSED
 
+have_wince="no"
 have_win32="no"
-EINA_CPPFLAGS=""
-EINA_CFLAGS=""
 case "$host_os" in
    mingw32ce*)
-      EINA_CPPFLAGS="-D_WIN32_WCE=0x0420"
       EINA_CFLAGS="${EVIL_CFLAGS}"
       have_win32="yes"
+      have_wince="yes"
       ;;
    mingw*)
-      EINA_CPPFLAGS="-D_WIN32_WINNT=0x0501"
       EINA_CFLAGS="${EVIL_CFLAGS}"
       have_win32="yes"
       ;;
 esac
+AM_CONDITIONAL([EINA_HAVE_WINCE], [test "x$have_wince" = "xyes"])
 AM_CONDITIONAL([EINA_HAVE_WIN32], [test "x$have_win32" = "xyes"])
 
 m4_ifdef([v_mic],
@@ -380,70 +461,106 @@ m4_ifdef([v_mic],
 
 EFL_COMPILER_FLAG([-Wshadow])
 
-AC_SUBST(EINA_CPPFLAGS)
-AC_SUBST(EINA_CFLAGS)
-
+EFL_CHECK_PATH_MAX
 
 ### Checks for linker characteristics
 EINA_LIBS=
 lt_enable_auto_import=""
 case "${host_os}" in
    mingw*)
-      EINA_LIBS="-ldl ${EVIL_LIBS} -lm"
+      EINA_LIBS="${EINA_LIBS} ${EVIL_LIBS}"
       lt_enable_auto_import="-Wl,--enable-auto-import"
    ;;
-   dragonfly*|openbsd*)
-      EINA_LIBS="-lm"
-   ;;
-   freebsd*|netbsd*)
-      EINA_LIBS="-lrt -lm"
-   ;;
-   darwin*)
-      EINA_LIBS="-lm"
-   ;;
-   cygwin*)
-      EINA_LIBS="-ldl -lm"
-   ;;
-   *)
-      EINA_LIBS="-ldl -lrt -lm"
-   ;;
 esac
-AC_SUBST(EINA_LIBS)
-AC_SUBST(lt_enable_auto_import)
+case "$host_vendor" in
+  ps3*)
+      # Escape had already been checked to exist
+      EINA_LIBS="${ESCAPE_LIBS}"
+    ;;
+esac
+AC_SUBST([EINA_LIBS])
+AC_SUBST([lt_enable_auto_import])
 
 EFL_LINKER_FLAG([-fno-strict-aliasing])
 
-
 ### Checks for library functions
-AC_ISC_POSIX
 AC_FUNC_ALLOCA
-AC_CHECK_FUNCS(strlcpy)
+AC_CHECK_FUNCS([strlcpy openat fstatat fpathconf execvp backtrace backtrace_symbols malloc_usable_size mtrace])
 
-#dlopen and dladdr
-dlopen_libs=""
-case "$host_os" in
-   mingw*)
-# managed by evil
-      AC_DEFINE(HAVE_DLADDR)
-      ;;
-   *)
-      AC_CHECK_FUNCS([dlopen], [res="yes"], [res="no"])
-      if test "x${res}" = "xyes" ; then
-         AC_CHECK_FUNCS([dladdr], [AC_DEFINE(HAVE_DLADDR)])
-      else
-         AC_CHECK_LIB([dl], [dlopen], [res="yes"], [res="no"])
-         if test "x${res}" = "xyes" ; then
-            AC_CHECK_LIB([dl], [dladdr], [AC_DEFINE(HAVE_DLADDR)])
-            dlopen_libs="-ldl"
-         else
-            AC_MSG_ERROR([Cannot find dlopen])
-         fi
-      fi
-      ;;
-esac
-AC_SUBST(dlopen_libs)
+AC_MSG_CHECKING([for dirfd])
+AC_LINK_IFELSE(
+   [
+    AC_LANG_PROGRAM(
+       [[
+#ifdef HAVE_DIRENT_H
+# include <dirent.h>
+#endif
+       ]],
+       [[
+int main(void)
+{
+  DIR *dirp;
+  return dirfd(dirp);
+}
+       ]])
+   ],
+   [have_dirfd="yes"],
+   [have_dirfd="no"])
 
-EFL_CHECK_FNMATCH([], [AC_MSG_ERROR([Cannot find fnmatch()])])
+AC_MSG_RESULT([${have_dirfd}])
+
+if test "x${have_dirfd}" = "xyes" ; then
+   AC_DEFINE([HAVE_DIRFD], [1], [ Define to 1 if you have the `dirfd' function or macro.])
+fi
+
+want_debug_malloc="no"
+AC_ARG_ENABLE([debug-malloc],
+   [AC_HELP_STRING([--enable-debug-malloc], [enable debugging of malloc usage overhead in our allocator @<:@default=enabled@:>@])],
+   [
+     if test "x${enableval}" = "xyes" ; then
+     	want_debug_malloc="yes"
+     else
+	want_debug_malloc="no"
+     fi
+   ], [want_debug_malloc="no"])
+
+if test "x${ac_cv_func_malloc_usable_size}" = "xyes" && test "x${want_debug_malloc}" = "xyes"; then
+   AC_DEFINE([EINA_DEBUG_MALLOC], [1], [Turn on debugging overhead in mempool])
+fi
+
+# dlopen and dladdr
+EFL_CHECK_DLOPEN
+EFL_CHECK_DLADDR
+
+have_log="yes"
+EFL_CHECK_FNMATCH([have_log="yes"], [have_log="no"])
+
+want_log="yes"
+AC_ARG_ENABLE([log],
+   [AC_HELP_STRING([--disable-log], [disable Eina_Log infrastructure completly @<:@default=enabled@:>@])],
+   [
+    if test "x${enableval}" = "xyes" ; then
+       want_log="yes"
+    else
+       want_log="no"
+    fi
+   ],
+   [want_log="yes"])
+
+enable_log="no"
+if test "x${have_log}" = xyes -a "x${want_log}" = xyes; then
+   enable_log="yes"
+fi
+
+AC_MSG_CHECKING([wether to build Eina_Log infrastructure])
+AC_MSG_RESULT([${enable_log}])
+
+if test "x${enable_log}" = "xyes"; then
+    EINA_CONFIGURE_ENABLE_LOG="#define EINA_ENABLE_LOG"
+    AC_DEFINE([HAVE_LOG], [1], [Define to 1 if we log support is on])
+fi
+AC_SUBST([EINA_CONFIGURE_ENABLE_LOG])
+
 
 # iconv library
 have_iconv="no"
@@ -452,6 +569,7 @@ AC_ARG_WITH([iconv-link],
    [
     LIBS="$withval $LIBS"
     have_iconv="yes"
+    iconv_libs=$withval
    ])
 
 AC_MSG_CHECKING(for explicit iconv link options)
@@ -499,7 +617,10 @@ iconv_t ic;
 size_t count;
 count = iconv(ic, NULL, NULL, NULL, NULL);
              ]])],
-         [have_iconv="yes"],
+         [
+          have_iconv="yes"
+          iconv_libs="-liconv"
+         ],
          [
           have_iconv="no"
           LIBS=${LIBS_save}
@@ -523,7 +644,10 @@ count = iconv(ic, NULL, NULL, NULL, NULL);
 iconv_t ic;
 size_t count = iconv(ic, NULL, NULL, NULL, NULL);
              ]])],
-         [have_iconv="yes"],
+         [
+          have_iconv="yes"
+          iconv_libs="-liconv_plug"
+         ],
          [
           have_iconv="no"
           LIBS=${LIBS_save}
@@ -533,19 +657,38 @@ size_t count = iconv(ic, NULL, NULL, NULL, NULL);
    fi
 fi
 
+AC_SUBST([iconv_libs])
+
 if test "x${have_iconv}" = "xyes" ; then
    AC_DEFINE([HAVE_ICONV], [1], [Set to 1 if iconv library is installed])
 fi
 
-#check for dirfd API presence
-have_dirfd="no"
-AC_CHECK_FUNCS([dirfd], [have_dirfd="yes"], [])
-if test "x${dirfd}" = "xyes"; then
-   AC_DEFINE(HAVE_DIRFD)
-fi
-AC_CHECK_FUNCS([openat], [AC_DEFINE(HAVE_OPENAT)], [])
-AC_CHECK_FUNCS([statat], [AC_DEFINE(HAVE_STATAT)], [])
-AC_CHECK_FUNCS([fpathconf], [AC_DEFINE(HAVE_FPATHCONF)], [])
+# shm_open
+EFL_CHECK_SHM_OPEN([have_shm_open="yes"], [have_shm_open="no"])
+
+# extended attribute
+
+AC_MSG_CHECKING([for extended attributes])
+
+AC_COMPILE_IFELSE(
+   [AC_LANG_PROGRAM(
+       [[
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/xattr.h>
+       ]],
+       [[
+size_t tmp = listxattr("/", NULL, 0);
+tmp = getxattr("/", "user.ethumb.md5", NULL, 0);
+setxattr("/", "user.ethumb.md5", NULL, 0, 0);
+       ]])],
+   [
+    AC_DEFINE([HAVE_XATTR], [1], [Define to 1 if you have the `listxattr', `setxattr' and `getxattr' functions.])
+    have_xattr="yes"
+   ],
+   [have_xattr="no"])
+
+AC_MSG_RESULT([${have_xattr}])
 
 ### Modules
 
@@ -582,30 +725,23 @@ fi
 
 EFL_CHECK_BENCHMARK([enable_benchmark="yes"], [enable_benchmark="no"])
 EINA_BENCH_MODULE([glib], [${enable_benchmark}], [glib-2.0], [enable_benchmark_glib="yes"], [enable_benchmark_glib="no"])
+if test -n "$CXX" && test "x$enable_benchmark" = "xyes" ; then
+   AC_DEFINE_UNQUOTED([CITYHASH_BENCH], [1], [enable bench tests for google hash method])
+fi
+AM_CONDITIONAL([CITYHASH_BENCH], [test -n "$CXX" && test "x$enable_benchmark" = "xyes"])
 
-AC_SUBST(requirement_eina)
+AC_SUBST([requirement_eina])
 
-### Create the .pc.in file according to the major version
-#cat > ${srcdir}/eina-${VMAJ}.pc.in << EOF
-#prefix=@prefix@
-#exec_prefix=@exec_prefix@
-#libdir=@libdir@
-#includedir=@includedir@
-#
-#Name: Eina
-#Description: A Library that implements fast data types and miscellaneous tools
-#Requires:
-#Version: @VERSION@
-#Libs: -L${libdir} -leina
-#Libs.private: -ldl
-#Cflags: -I${includedir}/eina-@VMAJ@ -I${includedir}/eina-@VMAJ@/eina
-#EOF
+### Build and install examples
+EFL_CHECK_BUILD_EXAMPLES([enable_build_examples="yes"], [enable_build_examples="no"])
+EFL_CHECK_INSTALL_EXAMPLES([enable_install_examples="yes"], [enable_install_examples="no"])
 
 AC_CONFIG_FILES([
 Makefile
 eina.pc
 eina.spec
 doc/Makefile
+doc/Doxyfile
 src/Makefile
 src/include/Makefile
 src/include/eina_config.h
@@ -620,6 +756,7 @@ src/modules/mp/fixed_bitmap/Makefile
 src/modules/mp/buddy/Makefile
 src/modules/mp/one_big/Makefile
 src/tests/Makefile
+src/examples/Makefile
 ])
 
 AC_OUTPUT
@@ -643,18 +780,25 @@ echo "  Maximum log level....: ${with_max_log_level}"
 echo "  Report string usage..: ${have_stringshare_usage}"
 echo "  Valgrind support.....: ${have_valgrind}"
 echo "  Default mempool......: ${have_default_mempool}"
+echo "  Log support..........: ${enable_log}"
 echo "  Thread Support.......: ${have_threads}"
 if test "${have_threads}" = "POSIX" ; then
 echo "    spinlock...........: ${have_posix_threads_spinlock}"
 echo "    debug usage........: ${have_debug_threads}"
+echo "    on/off support.....: ${have_on_off_threads}"
 fi
 echo "  Amalgamation.........: ${do_amalgamation}"
 echo "  Iconv support........: ${have_iconv}"
 echo "  File dirfd...........: ${have_dirfd}"
+echo "  File xattr...........: ${have_xattr}"
+echo "  shm_open.............: ${have_shm_open}"
 echo
 echo "  Documentation........: ${build_doc}"
 echo "  Tests................: ${enable_tests}"
 echo "  Coverage.............: ${enable_coverage}"
+echo "  Examples.............: ${enable_build_examples}"
+echo "  Tiler Example........: ${build_tiler_example}"
+echo "  Examples installed...: ${enable_install_examples}"
 echo "  Benchmark............: ${enable_benchmark}"
 if test "x${enable_benchmark}" = "xyes" ; then
 echo "    Glib...............: ${enable_benchmark_glib}"
@@ -668,13 +812,13 @@ echo "    SSE2...............: ${have_sse2}"
 echo "    ALTIVEC............: ${have_altivec}"
 echo
 echo "  Memory pools:"
+echo "    Buddy..............: ${enable_buddy}"
 echo "    Chained pool.......: ${enable_chained_pool}"
 echo "    Ememoa fixed.......: ${enable_ememoa_fixed}"
 echo "    Ememoa unknown.....: ${enable_ememoa_unknown}"
 echo "    Fixed bitmap.......: ${enable_fixed_bitmap}"
-echo "    Pass through.......: ${enable_pass_through}"
-echo "    Buddy..............: ${enable_buddy}"
 echo "    One big............: ${enable_one_big}"
+echo "    Pass through.......: ${enable_pass_through}"
 echo
 echo "Compilation............: make (or gmake)"
 echo "  CPPFLAGS.............: $CPPFLAGS"

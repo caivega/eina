@@ -34,6 +34,7 @@ struct _Eina_Test_Case
 
 static const Eina_Test_Case etc[] = {
    { "FixedPoint", eina_test_fp },
+   { "Inarray", eina_test_inarray },
    { "Array", eina_test_array },
    { "Binary Share", eina_test_binshare },
    { "String Share", eina_test_stringshare },
@@ -47,6 +48,7 @@ static const Eina_Test_Case etc[] = {
    { "Counter", eina_test_counter },
    { "Hash", eina_test_hash },
    { "List", eina_test_list },
+   { "CList", eina_test_clist },
    { "Iterator", eina_test_iterator },
    { "Accessor", eina_test_accessor },
    { "Module", eina_test_module },
@@ -59,10 +61,15 @@ static const Eina_Test_Case etc[] = {
    { "Matrix Sparse", eina_test_matrixsparse },
    { "Eina Tiler", eina_test_tiler },
    { "Eina Strbuf", eina_test_strbuf },
+   { "Eina Binbuf", eina_test_binbuf },
    { "String", eina_test_str },
    { "Unicode String", eina_test_ustr },
    { "QuadTree", eina_test_quadtree },
    { "Sched", eina_test_sched },
+   { "Simple Xml Parser", eina_test_simple_xml_parser},
+   { "Value", eina_test_value },
+   // Disabling Eina_Model test
+   //   { "Model", eina_test_model },
    { NULL, NULL }
 };
 
@@ -132,6 +139,8 @@ static void _mempool_init(void)
 static void _mempool_shutdown(void)
 {
    eina_module_list_free(_modules);
+   if (_modules)
+     eina_array_free(_modules);
    /* TODO delete the list */
    eina_shutdown();
 }

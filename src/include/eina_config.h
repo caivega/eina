@@ -19,6 +19,15 @@
 #ifndef EINA_CONFIG_H_
 #define EINA_CONFIG_H_
 
+#ifdef EINA_HAVE_EXOTIC_H
+# undef EINA_HAVE_EXOTIC_H
+#endif
+
+
+#ifdef EINA_HAVE_EXOTIC
+# include <Exotic.h>
+#endif
+
 #ifdef EINA_MAGIC_DEBUG
 # undef EINA_MAGIC_DEBUG
 #endif
@@ -44,9 +53,34 @@
 #endif
 #define EINA_HAVE_STDINT_H
 
+#ifdef EINA_HAVE_THREADS
+# undef EINA_HAVE_THREADS
+#endif
+#define EINA_HAVE_THREADS
+
+#ifdef EINA_HAVE_DEBUG_THREADS
+# undef EINA_HAVE_DEBUG_THREADS
+#endif
+
+
 #ifdef EINA_SIZEOF_WCHAR_T
 # undef EINA_SIZEOF_WCHAR_T
 #endif
 #define EINA_SIZEOF_WCHAR_T 4
+
+#ifdef EINA_HAVE_ON_OFF_THREADS
+# undef EINA_HAVE_ON_OFF_THREADS
+#endif
+
+
+#ifdef EINA_CONFIGURE_HAVE_DIRENT_H
+# undef EINA_CONFIGURE_HAVE_DIRENT_H
+#endif
+#define EINA_HAVE_DIRENT_H
+
+#ifdef EINA_CONFIGURE_ENABLE_LOG
+# undef EINA_CONFIGURE_ENABLE_LOG
+#endif
+#define EINA_ENABLE_LOG
 
 #endif /* EINA_CONFIG_H_ */

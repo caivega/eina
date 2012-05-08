@@ -35,14 +35,14 @@ struct _Eina_Benchmark_Case
 };
 
 static const Eina_Benchmark_Case etc[] = {
-   /* { "Hash", eina_bench_hash }, */
+   { "Hash", eina_bench_hash },
    /* { "Array vs List vs Inlist", eina_bench_array }, */
    /* { "Stringshare", eina_bench_stringshare }, */
    /* { "Convert", eina_bench_convert }, */
    /* { "Sort", eina_bench_sort }, */
    /* { "Mempool", eina_bench_mempool }, */
    /* { "Rectangle_Pool", eina_bench_rectangle_pool }, */
-   { "Render Loop", eina_bench_quadtree },
+   // { "Render Loop", eina_bench_quadtree },
    { NULL, NULL }
 };
 
@@ -73,7 +73,6 @@ int
 main(int argc, char **argv)
 {
    Eina_Benchmark *test;
-   Eina_Array *ea;
    unsigned int i;
 
    if (argc != 2)
@@ -91,7 +90,7 @@ main(int argc, char **argv)
 
         etc[i].build(test);
 
-        ea = eina_benchmark_run(test);
+        eina_benchmark_run(test);
 
         eina_benchmark_free(test);
      }

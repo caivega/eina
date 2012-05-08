@@ -22,16 +22,32 @@
 
 #include <stdio.h>
 
-#ifdef EFL_HAVE_POSIX_THREADS
-# include <pthread.h>
-#endif
-
 #ifdef EFL_HAVE_WIN32_THREADS
 # define WIN32_LEAN_AND_MEAN
 # include <windows.h>
 # undef WIN32_LEAN_AND_MEAN
 #endif
 
+#ifdef EFL_HAVE_THREADS
+# ifdef HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+# endif
+# ifdef HAVE_UNISTD_H
+#  include <unistd.h>
+# endif
+#endif
+
+#ifdef HAVE_MCHECK_H
+# ifdef HAVE_MTRACE
+#  define MT 1
+# endif
+#endif
+
+#ifdef MT
+#include <mcheck.h>
+#endif
+
+#include "eina_lock.h"
 #include "eina_config.h"
 #include "eina_private.h"
 #include "eina_types.h"
@@ -50,6 +66,12 @@
 #include "eina_magic.h"
 #include "eina_rectangle.h"
 #include "eina_safety_checks.h"
+#include "eina_inlist.h"
+#include "eina_inarray.h"
+#include "eina_value.h"
+/* no model for now
+#include "eina_model.h"
+ */
 
 /*============================================================================*
 *                                  Local                                     *
@@ -77,24 +99,30 @@ static int _eina_log_dom = -1;
 #endif
 #define DBG(...) EINA_LOG_DOM_DBG(_eina_log_dom, __VA_ARGS__)
 
-Eina_Bool _threads_activated = EINA_FALSE;
+EAPI Eina_Bool _eina_threads_activated = EINA_FALSE;
+EAPI Eina_Error EINA_ERROR_NOT_MAIN_LOOP = 0;
+
+static const char EINA_ERROR_NOT_MAIN_LOOP_STR[] = "Main loop thread check failed.";
 
 #ifdef EFL_HAVE_THREADS
-# ifdef EFL_HAVE_POSIX_THREADS
-static pthread_mutex_t _mutex = PTHREAD_MUTEX_INITIALIZER;
-#  define LOCK() if(_threads_activated) pthread_mutex_lock(&_mutex)
-#  define UNLOCK() if(_threads_activated) pthread_mutex_unlock(&_mutex)
-#  define UNLOCK_FORCE() pthread_mutex_unlock(&_mutex)
-# else /* EFL_HAVE_WIN32_THREADS */
-static HANDLE _mutex = NULL;
-#  define LOCK() if(_threads_activated) WaitForSingleObject(_mutex, INFINITE)
-#  define UNLOCK() if(_threads_activated) ReleaseMutex(_mutex)
-#  define UNLOCK_FORCE() ReleaseMutex(_mutex)
+# ifdef _WIN32
+EAPI DWORD _eina_main_loop;
+# else
+EAPI pthread_t _eina_main_loop;
 # endif
-#else
-# define LOCK() do {} while (0)
-# define UNLOCK() do {} while (0)
-# define UNLOCK_FORCE() do {} while (0)
+static pid_t _eina_pid;
+#endif
+
+#ifdef MT
+static int _mt_enabled = 0;
+#endif
+
+#ifdef EFL_HAVE_THREADS
+EAPI int _eina_threads_debug = 0;
+# if !defined(_WIN32_WCE) && !defined(_WIN32)
+EAPI pthread_mutex_t _eina_tracking_lock;
+EAPI Eina_Inlist *_eina_tracking = NULL;
+# endif
 #endif
 
 /* place module init/shutdown functions here to avoid other modules
@@ -108,6 +136,7 @@ static HANDLE _mutex = NULL;
    S(magic_string);
    S(iterator);
    S(accessor);
+   S(inarray);
    S(array);
    S(module);
    S(mempool);
@@ -123,6 +152,13 @@ static HANDLE _mutex = NULL;
    S(strbuf);
    S(ustrbuf);
    S(quadtree);
+   S(simple_xml);
+   S(file);
+   S(prefix);
+   S(value);
+/* no model for now
+   S(model);
+ */
 #undef S
 
 struct eina_desc_setup
@@ -135,17 +171,18 @@ struct eina_desc_setup
 static const struct eina_desc_setup _eina_desc_setup[] = {
 #define S(x) {# x, eina_ ## x ## _init, eina_ ## x ## _shutdown}
    /* log is a special case as it needs printf */
+   S(stringshare),
    S(error),
    S(safety_checks),
    S(magic_string),
    S(iterator),
    S(accessor),
+   S(inarray),
    S(array),
    S(module),
    S(mempool),
    S(list),
    S(binshare),
-   S(stringshare),
    S(ustringshare),
    S(matrixsparse),
    S(convert),
@@ -154,7 +191,14 @@ static const struct eina_desc_setup _eina_desc_setup[] = {
    S(rectangle),
    S(strbuf),
    S(ustrbuf),
-   S(quadtree)
+   S(quadtree),
+   S(simple_xml),
+   S(file),
+   S(prefix),
+   S(value),
+/* no model for now
+   S(model)
+ */
 #undef S
 };
 static const size_t _eina_desc_setup_len = sizeof(_eina_desc_setup) /
@@ -188,33 +232,11 @@ _eina_shutdown_from_desc(const struct eina_desc_setup *itr)
 *============================================================================*/
 
 /**
- * @addtogroup Eina_Main_Group Main
- *
- * @brief These functions provide general initialisation and shut down
- * functions.
- *
- * @{
- */
-
-/**
  * @var eina_version
  * @brief Eina version (defined at configuration time)
  */
 EAPI Eina_Version *eina_version = &_version;
 
-/**
- * @brief Initialize the Eina library.
- *
- * @return 1 or greater on success, 0 on error.
- *
- * This function sets up all the eina modules. It returns 0 on
- * failure (that is, when one of the module fails to initialize),
- * otherwise it returns the number of times it has already been
- * called.
- *
- * When Eina is not used anymore, call eina_shutdown() to shut down
- * the Eina library.
- */
 EAPI int
 eina_init(void)
 {
@@ -222,6 +244,14 @@ eina_init(void)
 
    if (EINA_LIKELY(_eina_main_count > 0))
       return ++_eina_main_count;
+
+#ifdef MT
+   if ((getenv("EINA_MTRACE")) && (getenv("MALLOC_TRACE")))
+     {
+        _mt_enabled = 1;
+        mtrace();
+     }
+#endif
 
    if (!eina_log_init())
      {
@@ -237,6 +267,25 @@ eina_init(void)
         return 0;
      }
 
+   EINA_ERROR_NOT_MAIN_LOOP = eina_error_msg_static_register(
+         EINA_ERROR_NOT_MAIN_LOOP_STR);
+
+#ifdef EFL_HAVE_THREADS
+# ifdef _WIN32
+   _eina_main_loop = GetCurrentThreadId();
+# else
+   _eina_main_loop = pthread_self();
+# endif
+   _eina_pid = getpid();
+#endif
+
+#ifdef EINA_HAVE_DEBUG_THREADS
+   pthread_mutex_init(&_eina_tracking_lock, NULL);
+
+   if (getenv("EINA_DEBUG_THREADS"))
+     _eina_threads_debug = atoi(getenv("EINA_DEBUG_THREADS"));
+#endif
+
    itr = _eina_desc_setup;
    itr_end = itr + _eina_desc_setup_len;
    for (; itr < itr_end; itr++)
@@ -249,76 +298,55 @@ eina_init(void)
           }
      }
 
+   eina_cpu_count_internal();
+
    _eina_main_count = 1;
    return 1;
 }
 
-/**
- * @brief Shut down the Eina library.
- *
- * @return 0 when all the modules is completely shut down, 1 or
- * greater otherwise.
- *
- * This function shuts down the Eina library. It returns 0 when it has
- * been called the same number of times than eina_init(). In that case
- * it shut down all the Eina modules.
- *
- * Once this function succeeds (that is, @c 0 is returned), you must
- * not call any of the Eina function anymore. You must call
- * eina_init() again to use the Eina functions again.
- */
 EAPI int
 eina_shutdown(void)
 {
    _eina_main_count--;
    if (EINA_UNLIKELY(_eina_main_count == 0))
-             _eina_shutdown_from_desc(_eina_desc_setup + _eina_desc_setup_len);
+     {
+        _eina_shutdown_from_desc(_eina_desc_setup + _eina_desc_setup_len);
+
+#ifdef EINA_HAVE_DEBUG_THREADS
+	pthread_mutex_destroy(&_eina_tracking_lock);
+#endif
+#ifdef MT
+        if (_mt_enabled)
+          {
+             muntrace();
+             _mt_enabled = 0;
+          }
+#endif
+     }
 
    return _eina_main_count;
 }
 
 
-/**
- * @brief Initialize the mutexes of the Eina library.
- *
- * @return 1 or greater on success, 0 on error.
- *
- * This function sets up all the mutexes in all eina modules. It returns 0 on
- * failure (that is, when one of the module fails to initialize),
- * otherwise it returns the number of times it has already been
- * called.
- *
- * When the mutexes are not used anymore, call eina_threads_shutdown() to shut down
- * the mutexes.
- */
 EAPI int
 eina_threads_init(void)
 {
 #ifdef EFL_HAVE_THREADS
    int ret;
 
-# ifdef EFL_HAVE_WIN32_THREADS
-   if (!_mutex)
-      _mutex = CreateMutex(NULL, FALSE, NULL);
+#ifdef EINA_HAVE_DEBUG_THREADS
+   assert(pthread_equal(_eina_main_loop, pthread_self()));
+#endif
 
-   if (!_mutex)
-      return 0;
-
-# endif
-
-   LOCK();
    ++_eina_main_thread_count;
    ret = _eina_main_thread_count;
 
    if(_eina_main_thread_count > 1)
-     {
-        UNLOCK();
-        return ret;
-     }
+     return ret;
 
    eina_share_common_threads_init();
    eina_log_threads_init();
-   _threads_activated = EINA_TRUE;
+   _eina_threads_activated = EINA_TRUE;
 
    return ret;
 #else
@@ -326,50 +354,95 @@ eina_threads_init(void)
 #endif
 }
 
-/**
- * @brief Shut down mutexes in the Eina library.
- *
- * @return 0 when all mutexes are completely shut down, 1 or
- * greater otherwise.
- *
- * This function shuts down the mutexes in the Eina library. It returns 0 when it has
- * been called the same number of times than eina_threads_init(). In that case
- * it shut down all the mutexes.
- *
- * Once this function succeeds (that is, @c 0 is returned), you must
- * not call any of the Eina function in a thread anymore. You must call
- * eina_threads_init() again to use the Eina functions in a thread again.
- */
 EAPI int
 eina_threads_shutdown(void)
 {
 #ifdef EFL_HAVE_THREADS
    int ret;
 
-   LOCK();
+#ifdef EINA_HAVE_DEBUG_THREADS
+   const Eina_Lock *lk;
+
+   assert(pthread_equal(_eina_main_loop, pthread_self()));
+   assert(_eina_main_thread_count > 0);
+#endif
+
    ret = --_eina_main_thread_count;
    if(_eina_main_thread_count > 0)
+     return ret;
+
+#ifdef EINA_HAVE_DEBUG_THREADS
+   pthread_mutex_lock(&_eina_tracking_lock);
+   if (_eina_tracking)
      {
-        UNLOCK();
-        return ret;
+       fprintf(stderr, "*************************\n");
+       fprintf(stderr, "* The IMPOSSIBLE HAPPEN *\n");
+       fprintf(stderr, "* LOCK STILL TAKEN :    *\n");
+       fprintf(stderr, "*************************\n");
+       EINA_INLIST_FOREACH(_eina_tracking, lk)
+	 {
+            fprintf(stderr, "=======\n");
+            eina_lock_debug(lk);
+	 }
+       fprintf(stderr, "*************************\n");
+       abort();
      }
+   pthread_mutex_unlock(&_eina_tracking_lock);
+#endif
 
    eina_share_common_threads_shutdown();
    eina_log_threads_shutdown();
 
-   _threads_activated = EINA_FALSE;
-
-   UNLOCK_FORCE();
-
-# ifdef EFL_HAVE_WIN32_THREADS
-   if (_mutex)
-      CloseHandle(_mutex);
-
-# endif
+   _eina_threads_activated = EINA_FALSE;
 
    return ret;
 #else
    return 0;
+#endif
+}
+
+EAPI Eina_Bool
+eina_main_loop_is(void)
+{
+#ifdef EFL_HAVE_THREADS
+   pid_t pid = getpid();
+
+# ifdef _WIN32
+   if (pid != _eina_pid)
+     {
+        _eina_pid = pid;
+        _eina_main_loop = GetCurrentThreadId();
+        return EINA_TRUE;
+     }
+   if (_eina_main_loop == GetCurrentThreadId())
+     return EINA_TRUE;
+# else
+   if (pid != _eina_pid)
+     {
+        /* This is in case of a fork, but don't like the solution */
+        _eina_pid = pid;
+        _eina_main_loop = pthread_self();
+        return EINA_TRUE;
+     }
+
+   if (pthread_equal(_eina_main_loop, pthread_self()))
+     return EINA_TRUE;
+# endif
+#endif
+   return EINA_FALSE;
+}
+
+/** The purpose of this API should not be documented, it is used only by the one who know what they are doing. */
+EAPI void
+eina_main_loop_define(void)
+{
+#ifdef EFL_HAVE_THREADS
+   _eina_pid = getpid();
+# ifdef _WIN32
+   _eina_main_loop = GetCurrentThreadId();
+# else
+   _eina_main_loop = pthread_self();
+# endif
 #endif
 }
 

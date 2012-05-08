@@ -26,7 +26,9 @@
  */
 
 /**
- * Checks whenever the given level should be printed out.
+ * @brief Checks whenever the given level should be printed out.
+ *
+ * @param level The level to print
  *
  * This is useful to enable certain blocks of code just when given
  * level is to be used.
@@ -49,11 +51,14 @@
 static inline Eina_Bool
 eina_log_level_check(int level)
 {
-   return eina_log_level_get() <= level;
+   return eina_log_level_get() >= level;
 }
 
 /**
- * Checks whenever the given level should be printed out.
+ * @brief Checks whenever the given level should be printed out.
+ *
+ * @param domain The domain to check
+ * @param level The level to print
  *
  * This is useful to enable certain blocks of code just when given
  * level is to be used.
@@ -81,7 +86,7 @@ eina_log_domain_level_check(int domain, int level)
    int dom_level = eina_log_domain_registered_level_get(domain);
    if (EINA_UNLIKELY(dom_level == EINA_LOG_LEVEL_UNKNOWN))
      return EINA_FALSE;
-   return dom_level <= level;
+   return dom_level >= level;
 }
 
 /**
