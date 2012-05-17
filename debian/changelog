@@ -1,3 +1,11 @@
+eina (1.2.0-2) unstable; urgency=low
+
+  * cherry-pick upstream commits 71195/71196 to fix FTBFS (Closes: #672985)
+     - 03_eina_value_dont_assume_signed_char: fix FTBFS on ARM, PPC, s390
+     - 04_eina_value_unsigned_to_unsigned_long_va_arg: fix FTBFS on ia64
+
+ -- Albin Tonnerre <lutin@debian.org>  Thu, 17 May 2012 12:37:44 +0200
+
 eina (1.2.0-1) unstable; urgency=low
 
   * New upstream release (Closes: #671237)
