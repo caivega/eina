@@ -1,0 +1,62 @@
+From bb063c0b6d3f99e1287e0fbf95a8a8629f2b638a Mon Sep 17 00:00:00 2001
+From: cedric <cedric@7cbeb6ba-43b4-40fd-8cce-4c39aea84d33>
+Date: Thu, 17 May 2012 09:59:46 +0000
+Subject: [PATCH 2/2] eina: avoid wrong implicit conversion from unsigned to
+ unsigned long in Eina_Value tests
+
+There is no automatic promotion of unsigned to unsigned long when using va_arg,
+which means it is illegal to pass an 'unsigned' value and then use it as an
+unsigned long in eina_arg_vset. Doing so yields incorrect results on some
+architectures like itanium
+
+Patch by  Albin 'Lutin' Tonnerre <albin.tonnerre@gmail.com>
+
+
+
+git-svn-id: http://svn.enlightenment.org/svn/e/trunk/eina@71196 7cbeb6ba-43b4-40fd-8cce-4c39aea84d33
+---
+diff --git a/src/tests/eina_test_value.c b/src/tests/eina_test_value.c
+index d369208..68ef5ec 100644
+--- a/src/tests/eina_test_value.c
++++ b/src/tests/eina_test_value.c
+@@ -99,9 +99,9 @@ START_TEST(eina_value_test_simple)
+    eina_value_flush(value);
+ 
+    fail_unless(eina_value_setup(value, EINA_VALUE_TYPE_ULONG));
+-   fail_unless(eina_value_set(value, 3000000001U));
++   fail_unless(eina_value_set(value, 3000000001UL));
+    fail_unless(eina_value_get(value, &ul));
+-   fail_unless(ul == 3000000001U);
++   fail_unless(ul == 3000000001UL);
+    eina_value_flush(value);
+ 
+    fail_unless(eina_value_setup(value, EINA_VALUE_TYPE_UINT64));
+@@ -540,10 +540,10 @@ START_TEST(eina_value_test_pvariant)
+    eina_value_flush(value);
+ 
+    fail_unless(eina_value_setup(value, EINA_VALUE_TYPE_ULONG));
+-   in_ul = 3000000001U;
++   in_ul = 3000000001UL;
+    fail_unless(eina_value_pset(value, &in_ul));
+    fail_unless(eina_value_pget(value, &ul));
+-   fail_unless(ul == 3000000001U);
++   fail_unless(ul == 3000000001UL);
+    eina_value_flush(value);
+ 
+    fail_unless(eina_value_setup(value, EINA_VALUE_TYPE_UINT64));
+@@ -713,10 +713,10 @@ START_TEST(eina_value_test_to_string)
+    eina_value_flush(value);
+ 
+    fail_unless(eina_value_setup(value, EINA_VALUE_TYPE_ULONG));
+-   in_ul = 3000000001U;
++   in_ul = 3000000001UL;
+    fail_unless(eina_value_pset(value, &in_ul));
+    fail_unless(eina_value_pget(value, &ul));
+-   fail_unless(ul == 3000000001U);
++   fail_unless(ul == 3000000001UL);
+    snprintf(buf, sizeof(buf), "%lu", in_ul);
+    out = eina_value_to_string(value);
+    fail_unless(out != NULL);
+-- 
+1.7.10
+
