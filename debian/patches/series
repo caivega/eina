@@ -1,4 +1,3 @@
 01_restore-eina_abi.diff
 02_eina_test_rbtree_timeout.diff
-03_eina_value_dont_assume_signed_char.diff
 04_eina_value_unsigned_to_unsigned_long_va_arg.diff
