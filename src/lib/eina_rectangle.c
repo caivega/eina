@@ -275,7 +275,7 @@ eina_rectangle_init(void)
 
    _eina_rectangle_alloc_mp = eina_mempool_add
          (choice, "rectangle-alloc", NULL,
-         sizeof(Eina_Rectangle_Alloc) + sizeof(Eina_Rectangle), 1024);
+         sizeof(Eina_Rectangle_Alloc) + sizeof(Eina_Rectangle), 64);
    if (!_eina_rectangle_alloc_mp)
      {
         ERR("Mempool for rectangle cannot be allocated in rectangle init.");
@@ -283,7 +283,7 @@ eina_rectangle_init(void)
      }
 
    _eina_rectangle_mp = eina_mempool_add
-         (choice, "rectangle", NULL, sizeof(Eina_Rectangle), 256);
+         (choice, "rectangle", NULL, sizeof(Eina_Rectangle), 32);
    if (!_eina_rectangle_mp)
      {
         ERR("Mempool for rectangle cannot be allocated in rectangle init.");
@@ -360,6 +360,9 @@ EAPI Eina_Rectangle_Pool *
 eina_rectangle_pool_new(int w, int h)
 {
    Eina_Rectangle_Pool *new;
+
+   if ((w <= 0) || (h <= 0))
+      return NULL;
 
    new = malloc(sizeof (Eina_Rectangle_Pool));
    if (!new)

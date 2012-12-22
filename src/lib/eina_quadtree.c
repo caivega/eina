@@ -875,6 +875,8 @@ eina_quadtree_increase(Eina_QuadTree_Item *object)
 {
    size_t tmp;
 
+   EINA_MAGIC_CHECK_QUADTREE_ITEM(object);
+
    tmp = object->quad->index++;
    if (object->index == tmp)
       return;
@@ -913,9 +915,9 @@ eina_quadtree_init(void)
       choice = tmp;
 
    _eina_quadtree_items_mp = eina_mempool_add(choice, "QuadTree Item", NULL,
-                                              sizeof (Eina_QuadTree_Item), 320);
+                                              sizeof (Eina_QuadTree_Item), 32);
    eina_quadtree_root_mp = eina_mempool_add(choice, "QuadTree Root", NULL,
-                                            sizeof (Eina_QuadTree_Root), 32);
+                                            sizeof (Eina_QuadTree_Root), 8);
 
    return EINA_TRUE;
 }

@@ -19,6 +19,7 @@
 #ifndef EINA_LOG_H_
 #define EINA_LOG_H_
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <sys/types.h>
@@ -631,8 +632,8 @@ EAPI void               eina_log_abort_on_critical_level_set(int critical_level)
  * @brief Get level that triggers abort if abort-on-critical is set.
  *
  * @return critical level equal or smaller than value will trigger
- *        program abortion if eina_log_abort_on_critical_get() returns
- *        #EINA_TRUE.
+ *        program abortion if eina_log_abort_on_critical_get()
+ *        returns #EINA_TRUE.
  *
  * @see eina_log_abort_on_critical_level_set()
  * @see eina_log_abort_on_critical_get()
@@ -682,8 +683,8 @@ EAPI int                eina_log_domain_level_get(const char *domain_name) EINA_
  *        eina_log_domain_level_get(), but relies on domain being
  *        present.
  *
- * @return level to use to limit eina_log_print() for given domain. On
- *         error EINA_LOG_LEVEL_UNKNOWN is returned.
+ * @return #EINA_TRUE if level should be printed, #EINA_FALSE if not.
+ *         (domain's level is greater or equal @a level).
  */
 EAPI int                eina_log_domain_registered_level_get(int domain) EINA_WARN_UNUSED_RESULT;
 
@@ -889,6 +890,21 @@ EAPI void eina_log_print_cb_file(const Eina_Log_Domain *d,
                                  const char            *fmt,
                                  void                  *data,
                                  va_list                args);
+
+/**
+ * Configure console color of given file.
+ *
+ * @param fp file to configure console color (usually stderr or stdout).
+ * @param color a VT color code such as #EINA_COLOR_RED or #EINA_COLOR_RESET.
+ *
+ * @note if color is disabled, nothing is done. See
+ *       eina_log_color_disable_get()
+ * @note on windows, both @a fp and @a color is converted automatically.
+ *
+ * @since 1.7
+ */
+EAPI void eina_log_console_color_set(FILE *fp,
+                                     const char *color) EINA_ARG_NONNULL(1, 2);
 
 #include "eina_inline_log.x"
 

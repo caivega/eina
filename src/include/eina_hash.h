@@ -298,19 +298,19 @@ struct _Eina_Hash_Tuple
 typedef unsigned int (*Eina_Key_Length)(const void *key);
 /**
  * @def EINA_KEY_LENGTH
- * @param Function The function used to hash calculation.
+ * @param Function The function used to calculate length of hash key.
  */
 #define EINA_KEY_LENGTH(Function) ((Eina_Key_Length)Function)
 typedef int          (*Eina_Key_Cmp)(const void *key1, int key1_length, const void *key2, int key2_length);
 /**
  * @def EINA_KEY_CMP
- * @param Function The function used to hash calculation.
+ * @param Function The function used to compare hash key.
  */
 #define EINA_KEY_CMP(Function)    ((Eina_Key_Cmp)Function)
 typedef int          (*Eina_Key_Hash)(const void *key, int key_length);
 /**
  * @def EINA_KEY_HASH
- * @param Function The function used to hash calculation.
+ * @param Function The function used to hash key.
  */
 #define EINA_KEY_HASH(Function)   ((Eina_Key_Hash)Function)
 typedef Eina_Bool    (*Eina_Hash_Foreach)(const Eina_Hash *hash, const void *key, void *data, void *fdata);
@@ -329,8 +329,8 @@ typedef Eina_Bool    (*Eina_Hash_Foreach)(const Eina_Hash *hash, const void *key
  * @return The new hash table.
  *
  * This function creates a new hash table using user-defined callbacks
- * to manage the hash table. On failure, @c NULL is returned and
- * #EINA_ERROR_OUT_OF_MEMORY is set. If @p key_cmp_cb or @p key_hash_cb
+ * to manage the hash table. On failure, @c NULL is returned
+ * and #EINA_ERROR_OUT_OF_MEMORY is set. If @p key_cmp_cb or @p key_hash_cb
  * are @c NULL, @c NULL is returned. If @p buckets_power_size is
  * smaller or equal than 2, or if it is greater or equal than 17,
  * @c NULL is returned.
@@ -357,9 +357,13 @@ EAPI Eina_Hash *eina_hash_new(Eina_Key_Length key_length_cb,
  * @param hash The given hash table
  * @param data_free_cb The function called on each value when the hash
  * table is freed, or when an item is deleted from it. @c NULL can be passed as
- * callback.
+ * callback to remove an existing callback.
+ *
+ * The argument received by @p data_free_cb will be that data of the item being
+ * removed.
+ *
  * @since 1.1
- * See @ref eina_hash_new.
+ * @see eina_hash_new.
  */
 EAPI void eina_hash_free_cb_set(Eina_Hash *hash, Eina_Free_Cb data_free_cb) EINA_ARG_NONNULL(1);
 
@@ -561,8 +565,8 @@ EAPI Eina_Bool eina_hash_direct_add(Eina_Hash  *hash,
  * This function removes the entry identified by @p key or @p data
  * from @p hash. If a free function was given to the
  * callback on creation, it will be called for the data being
- * deleted. If @p hash is @c NULL, the functions returns immediately
- * #EINA_FALSE. If @p key is @c NULL, then @p data is used to find the a
+ * deleted. If @p hash is @c NULL, the functions returns immediately #EINA_FALSE.
+ * If @p key is @c NULL, then @p data is used to find the a
  * match to remove, otherwise @p key is used and @p data is not
  * required and can be @c NULL. This function returns #EINA_FALSE if
  * an error occurred, #EINA_TRUE otherwise.
@@ -636,7 +640,7 @@ EAPI void *eina_hash_set(Eina_Hash  *hash,
  * @param hash    The given hash table.
  * @param old_key The current key associated with the data
  * @param new_key The new key to associate data with
- * @return EINA_FALSE in any case but success, EINA_TRUE on success.
+ * @return #EINA_FALSE in any case but success, #EINA_TRUE on success.
  *
  * This function allows for the move of data from one key to another,
  * but does not call the Eina_Free_Cb associated with the hash table
@@ -691,7 +695,7 @@ EAPI void      eina_hash_free_buckets(Eina_Hash *hash) EINA_ARG_NONNULL(1);
  * @return The number of entries in the hash table.
  *
  * This function returns the number of entries in @p hash, or 0 on
- * error. If @p hash is @c NULL, 0 is returned.
+ * error. If @p hash is @c NULL, @c 0 is returned.
  */
 EAPI int       eina_hash_population(const Eina_Hash *hash) EINA_ARG_NONNULL(1);
 
@@ -778,8 +782,8 @@ EAPI Eina_Bool eina_hash_direct_add_by_hash(Eina_Hash  *hash,
  * callback on creation, it will be called for the data being
  * deleted. Do not forget to count '\\0' for string when setting the
  * value of @p key_length. If @p hash or @p key are @c NULL, the
- * functions returns immediately #EINA_FALSE. This function returns
- * #EINA_FALSE if an error occurred, #EINA_TRUE otherwise.
+ * functions returns immediately #EINA_FALSE. This function
+ * returns #EINA_FALSE if an error occurred, #EINA_TRUE otherwise.
  *
  * @note if you don't have the key_hash, use eina_hash_del_by_key() instead.
  * @note if you don't have the key, use eina_hash_del_by_data() instead.
@@ -804,8 +808,8 @@ EAPI Eina_Bool eina_hash_del_by_key_hash(Eina_Hash  *hash,
  * using functiond provided to has creation function. If a free
  * function was given to the callback on creation, it will be called
  * for the data being deleted. If @p hash or @p key are @c NULL, the
- * functions returns immediately #EINA_FALSE. This function returns
- * #EINA_FALSE if an error occurred, #EINA_TRUE otherwise.
+ * functions returns immediately #EINA_FALSE. This function
+ * returns #EINA_FALSE if an error occurred, #EINA_TRUE otherwise.
  *
  * @note if you already have the key_hash, use eina_hash_del_by_key_hash()
  * instead.
@@ -854,8 +858,8 @@ EAPI Eina_Bool eina_hash_del_by_data(Eina_Hash  *hash,
  * This function removes the entry identified by @p key and
  * @p key_hash, or @p data, from @p hash. If a free function was given to
  * the  callback on creation, it will be called for the data being
- * deleted. If @p hash is @c NULL, the functions returns immediately
- * #EINA_FALSE. If @p key is @c NULL, then @p key_length and @p key_hash
+ * deleted. If @p hash is @c NULL, the functions returns immediately #EINA_FALSE.
+ * If @p key is @c NULL, then @p key_length and @p key_hash
  * are ignored and @p data is used to find a match to remove,
  * otherwise @p key and @p key_hash are used and @p data is not
  * required and can be @c NULL. Do not forget to count '\\0' for
@@ -926,8 +930,8 @@ EAPI void *eina_hash_modify_by_hash(Eina_Hash  *hash,
  * valid iterator that will always return false on
  * eina_iterator_next(), thus keeping API sane.
  *
- * If the memory can not be allocated, NULL is returned and
- * #EINA_ERROR_OUT_OF_MEMORY is set. Otherwise, a valid iterator is
+ * If the memory can not be allocated, NULL is returned
+ * and #EINA_ERROR_OUT_OF_MEMORY is set. Otherwise, a valid iterator is
  * returned.
  *
  * @warning if the hash structure changes then the iterator becomes
@@ -947,8 +951,8 @@ EAPI Eina_Iterator *eina_hash_iterator_key_new(const Eina_Hash *hash) EINA_MALLO
  * valid iterator that will always return false on
  * eina_iterator_next(), thus keeping API sane.
  *
- * If the memory can not be allocated, @c NULL is returned and
- * #EINA_ERROR_OUT_OF_MEMORY is set. Otherwise, a valid iterator is
+ * If the memory can not be allocated, @c NULL is returned
+ * and #EINA_ERROR_OUT_OF_MEMORY is set. Otherwise, a valid iterator is
  * returned.
  *
  * @warning if the hash structure changes then the iterator becomes
@@ -968,8 +972,8 @@ EAPI Eina_Iterator *eina_hash_iterator_data_new(const Eina_Hash *hash) EINA_MALL
  * valid iterator that will always return false on
  * eina_iterator_next(), thus keeping API sane.
  *
- * If the memory can not be allocated, NULL is returned and
- * #EINA_ERROR_OUT_OF_MEMORY is set. Otherwise, a valid iterator is
+ * If the memory can not be allocated, @c NULL is returned
+ * and #EINA_ERROR_OUT_OF_MEMORY is set. Otherwise, a valid iterator is
  * returned.
  *
  * @note iterator data will provide values as Eina_Hash_Tuple that should not
@@ -990,9 +994,9 @@ EAPI Eina_Iterator *eina_hash_iterator_tuple_new(const Eina_Hash *hash) EINA_MAL
  *
  * This function goes through every entry in the hash table @p hash and calls
  * the function @p func on each member. The function should @b not modify the
- * hash table contents if it returns 1. @b If the hash table contents are
+ * hash table contents if it returns @c 1. @b If the hash table contents are
  * modified by this function or the function wishes to stop processing it must
- * return 0, otherwise return 1 to keep processing.
+ * return @c 0, otherwise return @c 1 to keep processing.
  *
  * Example:
  * @code
