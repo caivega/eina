@@ -1,0 +1,28 @@
+diff --git a/Makefile.am b/Makefile.am
+index 5ff1896..37fc624 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -81,9 +81,7 @@ lcov-report:
+ 	@echo "Coverage Report at $(top_builddir)/coverage/html"
+ 
+ check-local:
+-	@$(MAKE) lcov-reset
+ 	@./src/tests/eina_suite
+-	@$(MAKE) lcov-report
+ 
+ else
+ 
+diff --git a/Makefile.in b/Makefile.in
+index d8c899d..8a91dec 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -939,9 +939,7 @@ install-doc:
+ @EFL_ENABLE_TESTS_TRUE@	@echo "Coverage Report at $(top_builddir)/coverage/html"
+ 
+ @EFL_ENABLE_TESTS_TRUE@check-local:
+-@EFL_ENABLE_TESTS_TRUE@	@$(MAKE) lcov-reset
+ @EFL_ENABLE_TESTS_TRUE@	@./src/tests/eina_suite
+-@EFL_ENABLE_TESTS_TRUE@	@$(MAKE) lcov-report
+ 
+ @EFL_ENABLE_TESTS_FALSE@lcov-reset:
+ @EFL_ENABLE_TESTS_FALSE@	@echo "reconfigure with --enable-tests"
