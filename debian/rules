@@ -16,4 +16,8 @@ install/libeina-doc::
 
 DEB_CONFIGURE_EXTRA_FLAGS := --disable-magic-debug \
                              --enable-tests \
-                             --enable-mempool-chained-pool=static
+                             --enable-mempool-chained-pool=static \
+                             --disable-cpu-mmx \
+                             --disable-cpu-sse \
+                             --disable-cpu-sse2 \
+                             --disable-cpu-altivec
