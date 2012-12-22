@@ -14,8 +14,6 @@ check-stamp: build-arch
 install/libeina-doc::
 	$(MAKE) doc
 
-DEB_CONFIGURE_EXTRA_FLAGS := --disable-rpath \
-                             --disable-magic-debug \
-                             --enable-posix-threads \
+DEB_CONFIGURE_EXTRA_FLAGS := --disable-magic-debug \
                              --enable-tests \
                              --enable-mempool-chained-pool=static
