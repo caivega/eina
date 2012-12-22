@@ -119,7 +119,7 @@
 /* Define to 1 if you have a valid <dirent.h> header file. */
 #undef HAVE_DIRENT_H
 
-/* Define to 1 if you have the `dirfd' function or macro. */
+/* Define to 1 if you have the `dirfd' function. */
 #undef HAVE_DIRFD
 
 /* Define to 1 if you have the `dladdr' function. */
@@ -134,7 +134,7 @@
 /* Set to 1 if Escape package is installed */
 #undef HAVE_ESCAPE
 
-/* Set to 1 if evil package is installed */
+/* Set to 1 if Evil package is installed */
 #undef HAVE_EVIL
 
 /* Define to 1 if you have the <execinfo.h> header file. */
@@ -146,17 +146,17 @@
 /* Define to 1 if you have Exotic. */
 #undef HAVE_EXOTIC_H
 
+/* Define to 1 if you have the `fnmatch' function. */
+#undef HAVE_FNMATCH
+
 /* Define to 1 if you have the `fpathconf' function. */
 #undef HAVE_FPATHCONF
 
 /* Define to 1 if you have the `fstatat' function. */
 #undef HAVE_FSTATAT
 
-/* Set to 1 if iconv library is installed */
+/* Define to 1 if you have the `iconv' function. */
 #undef HAVE_ICONV
-
-/* Define to 1 if you have the <iconv.h> header file. */
-#undef HAVE_ICONV_H
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -184,6 +184,9 @@
 
 /* Define to 1 if you have the `openat' function. */
 #undef HAVE_OPENAT
+
+/* Define to 1 if you have the `setxattr' function. */
+#undef HAVE_SETXATTR
 
 /* Define to 1 if you have the `shm_open' function. */
 #undef HAVE_SHM_OPEN
@@ -366,6 +369,9 @@
 #ifndef __cplusplus
 #undef inline
 #endif
+
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+#undef size_t
 
 
 #endif /* EFL_CONFIG_H__ */

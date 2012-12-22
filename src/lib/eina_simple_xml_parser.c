@@ -159,6 +159,28 @@ _eina_simple_xml_tag_end_find(const char *itr, const char *itr_end)
    return NULL;
 }
 
+static inline const char *
+_eina_simple_xml_tag_comment_end_find(const char *itr, const char *itr_end)
+{
+   for (; itr < itr_end; itr++)
+     if ((*itr == '-') &&
+         ((itr + 1 < itr_end) && (*(itr + 1) == '-')) &&
+         ((itr + 2 < itr_end) && (*(itr + 2) == '>')))
+       return itr + 2;
+   return NULL;
+}
+
+static inline const char *
+_eina_simple_xml_tag_cdata_end_find(const char *itr, const char *itr_end)
+{
+   for (; itr < itr_end; itr++)
+     if ((*itr == ']') &&
+         ((itr + 1 < itr_end) && (*(itr + 1) == ']')) &&
+         ((itr + 2 < itr_end) && (*(itr + 2) == '>')))
+       return itr + 2;
+   return NULL;
+}
+
 /**
  * @endcond
  */
@@ -203,7 +225,7 @@ eina_simple_xml_init(void)
 
    _eina_simple_xml_tag_mp = eina_mempool_add
          (choice, "simple_xml_tag", NULL,
-          sizeof(Eina_Simple_XML_Node_Tag), 320);
+          sizeof(Eina_Simple_XML_Node_Tag), 32);
    if (!_eina_simple_xml_tag_mp)
      {
         ERR("Mempool for simple_xml_tag cannot be allocated in init.");
@@ -212,7 +234,7 @@ eina_simple_xml_init(void)
 
    _eina_simple_xml_attribute_mp = eina_mempool_add
          (choice, "simple_xml_attribute", NULL,
-          sizeof(Eina_Simple_XML_Attribute), 80);
+          sizeof(Eina_Simple_XML_Attribute), 8);
    if (!_eina_simple_xml_attribute_mp)
      {
         ERR("Mempool for simple_xml_attribute cannot be allocated in init.");
@@ -342,21 +364,17 @@ eina_simple_xml_parse(const char *buf, unsigned buflen, Eina_Bool strip, Eina_Si
                        toff = 0;
                     }
 
-                  p = _eina_simple_xml_tag_end_find(itr + 1 + toff, itr_end);
-                  if (p)
-                    {
-                       if (type == EINA_SIMPLE_XML_CDATA)
-                         {
-                            /* must end with ]]> */
-                            while ((p) && (memcmp(p - 2, "]]>", 3)))
-                              p = _eina_simple_xml_tag_end_find(p + 1, itr_end);
-                         }
+                  if (type == EINA_SIMPLE_XML_CDATA)
+                    p = _eina_simple_xml_tag_cdata_end_find(itr + 1 + toff, itr_end);
+                  else if (type == EINA_SIMPLE_XML_COMMENT)
+                    p = _eina_simple_xml_tag_comment_end_find(itr + 1 + toff, itr_end);
+                  else
+                    p = _eina_simple_xml_tag_end_find(itr + 1 + toff, itr_end);
 
-                       if ((p) && (*p == '<'))
-                         {
-                            type = EINA_SIMPLE_XML_ERROR;
-                            toff = 0;
-                         }
+                  if ((p) && (*p == '<'))
+                    {
+                       type = EINA_SIMPLE_XML_ERROR;
+                       toff = 0;
                     }
 
                   if (p)
@@ -567,6 +585,9 @@ eina_simple_xml_attribute_new(Eina_Simple_XML_Node_Tag *parent, const char *key,
 EAPI void
 eina_simple_xml_attribute_free(Eina_Simple_XML_Attribute *attr)
 {
+   if (!attr)
+     return;
+
    EINA_MAGIC_CHECK_ATTRIBUTE(attr);
 
    if (attr->parent)
@@ -651,6 +672,9 @@ _eina_simple_xml_node_tag_free(Eina_Simple_XML_Node_Tag *tag)
 EAPI void
 eina_simple_xml_node_tag_free(Eina_Simple_XML_Node_Tag *tag)
 {
+   if (!tag)
+     return;
+
    EINA_MAGIC_CHECK_TAG(&tag->base);
    if (tag->base.type != EINA_SIMPLE_XML_NODE_TAG)
      {
@@ -663,9 +687,11 @@ eina_simple_xml_node_tag_free(Eina_Simple_XML_Node_Tag *tag)
 static Eina_Simple_XML_Node_Data *
 _eina_simple_xml_node_data_new(Eina_Simple_XML_Node_Tag *parent, Eina_Simple_XML_Node_Type type, const char *content, unsigned length)
 {
-   Eina_Simple_XML_Node_Data *n = malloc(sizeof(*n) + length + 1);
+   Eina_Simple_XML_Node_Data *n;
 
    if (!content) return NULL;
+
+   n = malloc(sizeof(*n) + length + 1);
 
    if (!n)
      {
@@ -698,6 +724,9 @@ eina_simple_xml_node_data_new(Eina_Simple_XML_Node_Tag *parent, const char *cont
 EAPI void
 eina_simple_xml_node_data_free(Eina_Simple_XML_Node_Data *node)
 {
+   if (!node)
+     return;
+
    EINA_MAGIC_CHECK_DATA(&node->base);
    if (node->base.type != EINA_SIMPLE_XML_NODE_DATA)
      {
@@ -717,6 +746,9 @@ eina_simple_xml_node_cdata_new(Eina_Simple_XML_Node_Tag *parent, const char *con
 EAPI void
 eina_simple_xml_node_cdata_free(Eina_Simple_XML_Node_Data *node)
 {
+   if (!node)
+     return;
+
    EINA_MAGIC_CHECK_DATA(&node->base);
    if (node->base.type != EINA_SIMPLE_XML_NODE_CDATA)
      {
@@ -736,6 +768,9 @@ eina_simple_xml_node_processing_new(Eina_Simple_XML_Node_Tag *parent, const char
 EAPI void
 eina_simple_xml_node_processing_free(Eina_Simple_XML_Node_Data *node)
 {
+   if (!node)
+     return;
+
    EINA_MAGIC_CHECK_DATA(&node->base);
    if (node->base.type != EINA_SIMPLE_XML_NODE_PROCESSING)
      {
@@ -755,6 +790,9 @@ eina_simple_xml_node_doctype_new(Eina_Simple_XML_Node_Tag *parent, const char *c
 EAPI void
 eina_simple_xml_node_doctype_free(Eina_Simple_XML_Node_Data *node)
 {
+   if (!node)
+     return;
+
    EINA_MAGIC_CHECK_DATA(&node->base);
    if (node->base.type != EINA_SIMPLE_XML_NODE_DOCTYPE)
      {
@@ -774,6 +812,9 @@ eina_simple_xml_node_comment_new(Eina_Simple_XML_Node_Tag *parent, const char *c
 EAPI void
 eina_simple_xml_node_comment_free(Eina_Simple_XML_Node_Data *node)
 {
+   if (!node)
+     return;
+
    EINA_MAGIC_CHECK_DATA(&node->base);
    if (node->base.type != EINA_SIMPLE_XML_NODE_COMMENT)
      {

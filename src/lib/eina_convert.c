@@ -113,9 +113,8 @@ static const char EINA_ERROR_CONVERT_OUTRUN_STRING_LENGTH_STR[] =
  * eina_init().
  *
  * This function sets up the error module of Eina and registers the
- * errors #EINA_ERROR_CONVERT_0X_NOT_FOUND,
- * #EINA_ERROR_CONVERT_P_NOT_FOUND and
- * #EINA_ERROR_CONVERT_OUTRUN_STRING_LENGTH.
+ * errors #EINA_ERROR_CONVERT_0X_NOT_FOUND, #EINA_ERROR_CONVERT_P_NOT_FOUND
+ * and #EINA_ERROR_CONVERT_OUTRUN_STRING_LENGTH.
  *
  * @see eina_init()
  */
@@ -466,7 +465,7 @@ eina_convert_atofp(const char *src, int length, Eina_F32p32 *fp)
       return EINA_FALSE;
 
    if (!fp)
-      return EINA_TRUE;
+      return EINA_FALSE;
 
    e += 32;
 

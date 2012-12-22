@@ -254,3 +254,139 @@
 2012-04-19  Cedric Bail
 
 	* Make it possible to force the number of detected CPU on a system.
+
+2012-04-26 Carsten Haitzler (The Rasterman)
+
+        1.2.0 release
+
+2012-04-26  Cedric Bail
+
+	* Add backtrace support Eina_Log.
+
+2012-04-30  Jérôme Pinot
+
+	* Add missing files in the tarballs.
+
+2012-05-06  Cedric Bail
+
+	* Fix a rounding issue near 1.0 for eina_f32p32_cos and eina_f32p32_sin.
+
+2012-05-08  Cedric Bail
+
+	* Add eina_file_map_lines to iterate on lines of a mapped file.
+
+2012-05-17  Albin Tonnerre
+
+	* Fix portability issue of Eina_Value on ARM and PPC.
+	* Fix portability issue of Eina_Value test on Itanium.
+
+2012-05-23  Carsten Haitzler (The Rasterman)
+
+        * Fix global_faulty faulty flag in eina_file to be set to 0
+        initially rather than be random memory garbage.
+
+2012-05-29  Vincent Torri
+
+        * remove --disable-posix-threads and --disable-win32-threads
+	from configure options, and detect automatically the threading
+	support.
+	Fix bug in the XML parser when a tag was in a comment or a
+	cdata
+
+2012-06-08  Mike Blumenkrantz
+
+        * Fixed eina_str_split_full() to behave properly and be much faster
+
+2012-06-17  Carsten Haitzler (The Rasterman)
+
+        * Add env var EINA_MEMPOOL_PASS to force mempool to try use
+        passthrough to malloc for debgging purposes and memory footrpint
+        comparisons at runtime.
+
+2012-07-01  Vincent Torri
+
+        * Remove --enable-coverage from configure options,
+
+2012-07-04  Vincent Torri
+
+        * Implement eina_file_map_lines() on Windows.
+
+2012-07-05  Raphael Kubo da Costa
+
+	* Handle NULL in all eina_*_free function.
+
+2012-08-01 Carsten Haitzler (The Rasterman)
+
+        * Modify eina_prefix to deal with debian's fun new
+        multiarch... if you are a shared library.
+
+2012-08-01 Gustavo Sverzut Barbieri (k-s)
+
+	* added eina_log_console_color_set() for cross platform console
+	color set.
+
+2012-08-14  Lucas De Marchi
+
+        * Add EINA_SENTINEL macro to protect variadic functions
+
+2012-08-30  Carsten Haitzler (The Rasterman)
+
+        1.7.0 release
+
+2012-09-12 Patryk Kaczmarek <patryk.k@samsung.com>
+
+        * Add EINA_SAFETY checks for proper function arguments.
+        * Add check if given arguments (distance and coordinates) in eina_tiler
+        and eina_rectangle are not below zero
+        * Documentation for eina list specified and eina stringshare fixed
+
+2012-09-27  Carsten Haitzler (The Rasterman)
+
+        * Fix return value of eina_mmap_safety_enabled_set() and
+        ensure future eina_mmap_safety_enabled_get() return right value
+        on success.
+
+2012-10-19  Patryk Kaczmarek
+
+	* eina_stringshare_add_length return NULL when func args are wrong.
+
+2012-10-20  Cedric Bail
+
+	1.7.1 release
+
+2012-11-23 Luis Felipe Strano Moraes
+
+        1.7.2 release
+
+2012-11-29  Vincent Torri
+
+        * Do not use -pthread anymore, but instead pass _REENTRANT to the
+	preprocessor and -lpthread to the linker.
+	* On Solaris OS, -mt is passed by default and same flags than
+	linux must be passed.
+
+2012-12-07  Cedric Bail
+
+	* Don't leak fd after exec.
+
+2012-12-07  Luis Felipe Strano Moraes
+
+	* 1.7.3 release
+
+2012-12-12  Nicolas Aguirre
+
+	* Fix define EINA_UNUSED for win32 builds
+
+2012-12-13  Lucas De Marchi
+
+    * Fix EINA_INLIST_FOREACH_SAFE macro
+
+2012-12-17 Vincent Torri
+
+	* Add XML output to doc
+	* Add installation rule for doc
+
+2012-12-21  Luis Felipe Strano Moraes
+
+	* 1.7.4 release
+

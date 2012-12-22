@@ -1,3 +1,61 @@
+Eina 1.7.4
+
+Changes since Eina 1.7.3:
+
+    * Fix EINA_INLIST_FOREACH_SAFE macro
+    * Add XML output to doc
+    * Add installation rule for doc
+    * Fix build for Windows platforms.
+
+Changes since Eina 1.7.2:
+-------------------------
+
+    * Fix Solaris build.
+    * Don't leak fd after exec.
+
+Changes since Eina 1.7.1:
+-------------------------
+
+No changes, just updating to keep in sync with last release.
+
+Changes since Eina 1.7.0:
+-------------------------
+
+Fixes:
+    * Fix return value of eina_mmap_safety_enabled_set() and future
+    eina_mmap_safety_enabled_get() returns after success
+    * Fix eina_stringshare_add_length() to return NULL when wrong.
+    * Add EINA_SAFETY checks are wrong.
+
+Changes since Eina 1.2.0:
+-------------------------
+
+Additions:
+    * Add backtrace support to Eina_Log, use EINA_LOG_BACKTRACE to enable it.
+    * Add an helper to iterate over line in a mapped file.
+    * Add EINA_SENTINEL to protect variadic functions
+    * Add EINA_SAFETY checks for proper function arguments.
+    * Add check if given arguments (distance and coordinates) in eina_tiler
+    and eina_rectangle are not below zero
+
+Fixes:
+    * Add missing files in the tarball.
+    * Rounding issue with eina_f32p32_cos and eina_f32p32_sin when getting close to 1.0.
+    * Portability issue with Eina_Value when char are not signed by default (case on ARM
+    and PPC).
+    * Portability issue with Eina_Value test suite when unsigned where not promoted to
+    unsigned long (case on Itanium).
+    * Fix issue in the XML parser when a tag was in a comment or a CDATA.
+    * Implement eina_file_map_lines() on Windows.
+    * Handle NULL in all eina_*_free function.
+    * eina_log_console_color_set()
+    * Documentation for eina list specified and eina stringshare fixed.
+    * eina_convert_atofp wrong return value if fp is NULL.
+
+Removal:
+    * configure options: --disable-posix-threads, --disable-win32-threads,
+      --enable-coverage
+
 Eina 1.2.0
 
 Changes since Eina 1.1.0:

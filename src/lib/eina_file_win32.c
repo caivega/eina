@@ -91,6 +91,7 @@ void *alloca (size_t);
 #define MAP_FAILED ((void *)-1)
 
 typedef struct _Eina_File_Iterator        Eina_File_Iterator;
+typedef struct _Eina_Lines_Iterator       Eina_Lines_Iterator;
 typedef struct _Eina_File_Direct_Iterator Eina_File_Direct_Iterator;
 typedef struct _Eina_File_Map             Eina_File_Map;
 
@@ -104,6 +105,19 @@ struct _Eina_File_Iterator
    Eina_Bool       is_last : 1;
 
    char            dir[1];
+};
+
+struct _Eina_Lines_Iterator
+{
+   Eina_Iterator iterator;
+
+   Eina_File *fp;
+   const char *map;
+   const char *end;
+
+   int boundary;
+
+   Eina_File_Line current;
 };
 
 struct _Eina_File_Direct_Iterator
@@ -158,19 +172,6 @@ static Eina_Lock _eina_file_lock_cache;
 
 static int _eina_file_log_dom = -1;
 
-static void
-_eina_file_win32_backslash_change(char *dir)
-{
-   char *tmp;
-
-   tmp = dir;
-   while (*tmp)
-     {
-        if (*tmp == '/') *tmp = '\\';
-        tmp++;
-     }
-}
-
 static Eina_Bool
 _eina_file_win32_is_dir(const char *dir)
 {
@@ -214,7 +215,6 @@ _eina_file_win32_dir_new(const char *dir)
 
    memcpy(new_dir, dir, length);
    memcpy(new_dir + length, "\\*.*", 5);
-   _eina_file_win32_backslash_change(new_dir);
 
    return new_dir;
 }
@@ -493,10 +493,23 @@ _eina_file_map_key_hash(const unsigned long int *key, int key_length __UNUSED__)
 static char *
 _eina_file_win32_escape(const char *path, size_t *length)
 {
-   char *result = strdup(path ? path : "");
-   char *p = result;
-   char *q = result;
+   char *result;
+   char *p;
+   char *q;
    size_t len;
+
+   result = strdup(path ? path : "");
+   if (!result)
+     return NULL;
+
+   p = result;
+   while (*p)
+     {
+       if (*p == '\\') *p = '/';
+       p++;
+     }
+   p = result;
+   q = result;
 
    if (!result)
      return NULL;
@@ -507,7 +520,7 @@ _eina_file_win32_escape(const char *path, size_t *length)
    while ((p = strchr(p, '/')))
      {
         // remove double `/'
-        if (p[1] == '/')
+	if (p[1] == '/')
           {
              memmove(p, p + 1, --len - (p - result));
              result[len] = '\0';
@@ -559,6 +572,90 @@ _eina_file_win32_escape(const char *path, size_t *length)
      *length = len;
 
    return result;
+}
+
+/* search '\r' and '\n' by preserving cache locality and page locality
+   in doing a search inside 4K boundary.
+ */
+static inline const char *
+_eina_fine_eol(const char *start, int boundary, const char *end)
+{
+   const char *cr;
+   const char *lf;
+   unsigned long long chunk;
+
+   while (start < end)
+     {
+        chunk = start + boundary < end ? boundary : end - start;
+        cr = memchr(start, '\r', chunk);
+        lf = memchr(start, '\n', chunk);
+        if (cr)
+          {
+             if (lf && lf < cr)
+               return lf + 1;
+             return cr + 1;
+          }
+        else if (lf)
+           return lf + 1;
+
+        start += chunk;
+        boundary = 4096;
+     }
+
+   return end;
+}
+
+static Eina_Bool
+_eina_file_map_lines_iterator_next(Eina_Lines_Iterator *it, void **data)
+{
+   const char *eol;
+   unsigned char match;
+
+   if (it->current.end >= it->end)
+     return EINA_FALSE;
+
+   match = *it->current.end;
+   while ((*it->current.end == '\n' || *it->current.end == '\r')
+          && it->current.end < it->end)
+     {
+        if (match == *it->current.end)
+          it->current.index++;
+        it->current.end++;
+     }
+   it->current.index++;
+
+   if (it->current.end == it->end)
+     return EINA_FALSE;
+
+   eol = _eina_fine_eol(it->current.end,
+                        it->boundary,
+                        it->end);
+   it->boundary = (uintptr_t) eol & 0x3FF;
+   if (it->boundary == 0) it->boundary = 4096;
+
+   it->current.start = it->current.end;
+
+   it->current.end = eol;
+   it->current.length = eol - it->current.start - 1;
+
+   *data = &it->current;
+   return EINA_TRUE;
+}
+
+static Eina_File *
+_eina_file_map_lines_iterator_container(Eina_Lines_Iterator *it)
+{
+   return it->fp;
+}
+
+static void
+_eina_file_map_lines_iterator_free(Eina_Lines_Iterator *it)
+{
+   eina_file_map_free(it->fp, (void*) it->map);
+   eina_file_close(it->fp);
+
+   EINA_MAGIC_SET(&it->iterator, 0);
+   free(it);
 }
 
 
@@ -632,7 +729,6 @@ eina_file_path_sanitize(const char *path)
    if (!path) return NULL;
 
    len = strlen(path);
-   if (len < 3) return NULL;
 
    if (!evil_path_is_absolute(path))
      {
@@ -642,20 +738,15 @@ eina_file_path_sanitize(const char *path)
         if (l > 0)
           {
              char *cwd;
-             DWORD l2;
+             char *tmp;
 
              cwd = alloca(sizeof(char) * (l + 1));
-             l2 = GetCurrentDirectory(l + 1, cwd);
-             if (l2 == l)
-               {
-                  char *tmp;
-
-                  len += l + 2;
-                  tmp = alloca(sizeof (char) * len);
-                  snprintf(tmp, len, "%s/%s", cwd, path);
-                  tmp[len - 1] = '\0';
-                  result = tmp;
-               }
+             GetCurrentDirectory(l + 1, cwd);
+             len += l + 2;
+             tmp = alloca(sizeof (char) * len);
+             snprintf(tmp, len, "%s\\%s", cwd, path);
+             tmp[len - 1] = '\0';
+             result = tmp;
           }
      }
 
@@ -741,17 +832,28 @@ eina_file_split(char *path)
    if (!ea)
       return NULL;
 
-   for (current = strchr(path, '\\');
-        current;
-        path = current + 1, current = strchr(path, '\\'))
+   current = path;
+   while (*current)
      {
-        length = current - path;
+        if ((*current == '\\') || (*current == '/'))
+          {
+             if (((*current == '\\') && (current[1] == '\\')) ||
+                 ((*current == '/') && (current[1] == '/')))
+               {
+                  *current = '\0';
+                  goto next_char;
+               }
 
-        if (length <= 0)
-           continue;
+             length = current - path;
+             if (length <= 0)
+               goto next_char;
 
-        eina_array_push(ea, path);
-        *current = '\0';
+             eina_array_push(ea, path);
+             *current = '\0';
+             path = current + 1;
+          }
+     next_char:
+        current++;
      }
 
    if (*path != '\0')
@@ -793,11 +895,10 @@ eina_file_ls(const char *dir)
      goto free_it;
 
    memcpy(it->dir, dir, length + 1);
-   if (dir[length - 1] != '\\')
+   if ((dir[length - 1] != '\\') && (dir[length - 1] != '/'))
       it->length = length;
    else
       it->length = length - 1;
-   _eina_file_win32_backslash_change(it->dir);
 
    it->iterator.version = EINA_ITERATOR_VERSION;
    it->iterator.next = FUNC_ITERATOR_NEXT(_eina_file_win32_ls_iterator_next);
@@ -846,17 +947,15 @@ eina_file_direct_ls(const char *dir)
 
    memcpy(it->dir, dir, length + 1);
    it->length = length;
-   _eina_file_win32_backslash_change(it->dir);
 
    memcpy(it->info.path, dir, length);
-   if (dir[length - 1] == '\\')
+   if ((dir[length - 1] == '\\') || (dir[length - 1] == '/'))
       it->info.name_start = length;
    else
      {
         it->info.path[length] = '\\';
         it->info.name_start = length + 1;
      }
-   _eina_file_win32_backslash_change(it->info.path);
 
    it->iterator.version = EINA_ITERATOR_VERSION;
    it->iterator.next = FUNC_ITERATOR_NEXT(_eina_file_win32_direct_ls_iterator_next);
@@ -935,13 +1034,14 @@ eina_file_open(const char *path, Eina_Bool shared)
 
    if (!file)
      {
-        n = malloc(sizeof (Eina_File) + strlen(filename) + 1);
+        n = malloc(sizeof(Eina_File) + strlen(filename) + 1);
         if (!n)
           {
              eina_lock_release(&_eina_file_lock_cache);
              goto close_fm;
           }
 
+        memset(n, 0, sizeof(Eina_File));
         n->filename = (char*) (n + 1);
         strcpy((char*) n->filename, filename);
         n->map = eina_hash_new(EINA_KEY_LENGTH(_eina_file_map_key_length),
@@ -951,14 +1051,11 @@ eina_file_open(const char *path, Eina_Bool shared)
                                3);
         n->rmap = eina_hash_pointer_new(NULL);
         n->global_map = MAP_FAILED;
-        n->global_refcount = 0;
         n->length = length.QuadPart;
         n->mtime = mtime.QuadPart;
-        n->refcount = 0;
         n->handle = handle;
         n->fm = fm;
         n->shared = shared;
-        n->delete_me = EINA_FALSE;
         eina_lock_new(&n->lock);
         eina_hash_direct_add(_eina_file_cache, n->filename, n);
      }
@@ -1062,6 +1159,47 @@ eina_file_map_all(Eina_File *file, Eina_File_Populate rule __UNUSED__)
 
    eina_lock_release(&file->lock);
    return NULL;
+}
+
+EAPI Eina_Iterator *
+eina_file_map_lines(Eina_File *file)
+{
+   Eina_Lines_Iterator *it;
+
+   EINA_SAFETY_ON_NULL_RETURN_VAL(file, NULL);
+
+   if (file->length == 0) return NULL;
+
+   it = calloc(1, sizeof (Eina_Lines_Iterator));
+   if (!it) return NULL;
+
+   EINA_MAGIC_SET(&it->iterator, EINA_MAGIC_ITERATOR);
+
+   it->map = eina_file_map_all(file, EINA_FILE_SEQUENTIAL);
+   if (!it->map)
+     {
+        free(it);
+        return NULL;
+     }
+
+   eina_lock_take(&file->lock);
+   file->refcount++;
+   eina_lock_release(&file->lock);
+
+   it->fp = file;
+   it->boundary = 4096;
+   it->current.start = it->map;
+   it->current.end = it->current.start;
+   it->current.index = 0;
+   it->current.length = 0;
+   it->end = it->map + it->fp->length;
+
+   it->iterator.version = EINA_ITERATOR_VERSION;
+   it->iterator.next = FUNC_ITERATOR_NEXT(_eina_file_map_lines_iterator_next);
+   it->iterator.get_container = FUNC_ITERATOR_GET_CONTAINER(_eina_file_map_lines_iterator_container);
+   it->iterator.free = FUNC_ITERATOR_FREE(_eina_file_map_lines_iterator_free);
+
+   return &it->iterator;
 }
 
 EAPI void *
