@@ -112,6 +112,7 @@ libeina.so.1 libeina1 #MINVER#
  eina_file_map_all@Base 1.2.0
  eina_file_map_faulted@Base 1.2.0
  eina_file_map_free@Base 1.2.0
+ eina_file_map_lines@Base 1.7.4
  eina_file_map_new@Base 1.2.0
  eina_file_mtime_get@Base 1.2.0
  eina_file_open@Base 1.2.0
@@ -246,6 +247,7 @@ libeina.so.1 libeina1 #MINVER#
  eina_log_abort_on_critical_set@Base 1.0.0~beta
  eina_log_color_disable_get@Base 1.0.0~beta
  eina_log_color_disable_set@Base 1.0.0~beta
+ eina_log_console_color_set@Base 1.7.4
  eina_log_domain_level_get@Base 1.0.0~beta
  eina_log_domain_level_set@Base 1.0.0~beta
  eina_log_domain_register@Base 1.0.0~beta
