@@ -16,7 +16,7 @@ diff --git a/src/lib/Makefile.in b/src/lib/Makefile.in
 index 0547713..1498003 100644
 --- a/src/lib/Makefile.in
 +++ b/src/lib/Makefile.in
-@@ -111,7 +111,7 @@ am__libeina_la_SOURCES_DIST = eina_accessor.c eina_array.c \
+@@ -113,7 +113,7 @@ am__libeina_la_SOURCES_DIST = eina_accessor.c eina_array.c \
  	eina_sched.c eina_share_common.c eina_simple_xml_parser.c \
  	eina_str.c eina_strbuf.c eina_strbuf_common.c \
  	eina_stringshare.c eina_tiler.c eina_unicode.c eina_ustrbuf.c \
@@ -25,16 +25,16 @@ index 0547713..1498003 100644
  	eina_file_win32.c eina_file.c \
  	$(top_srcdir)/src/modules/mp/buddy/eina_buddy.c \
  	$(top_srcdir)/src/modules/mp/chained_pool/eina_chained_mempool.c \
-@@ -152,7 +152,7 @@ am__objects_10 = libeina_la-eina_accessor.lo libeina_la-eina_array.lo \
- 	libeina_la-eina_stringshare.lo libeina_la-eina_tiler.lo \
- 	libeina_la-eina_unicode.lo libeina_la-eina_ustrbuf.lo \
- 	libeina_la-eina_ustringshare.lo libeina_la-eina_value.lo \
--	libeina_la-eina_xattr.lo $(am__objects_1) $(am__objects_2) \
-+	libeina_la-eina_xattr.lo libeina_la-eina_abi.lo $(am__objects_1) $(am__objects_2) \
+@@ -148,7 +148,7 @@ am__objects_10 = eina_accessor.lo eina_array.lo eina_benchmark.lo \
+ 	eina_simple_xml_parser.lo eina_str.lo eina_strbuf.lo \
+ 	eina_strbuf_common.lo eina_stringshare.lo eina_tiler.lo \
+ 	eina_unicode.lo eina_ustrbuf.lo eina_ustringshare.lo \
+-	eina_value.lo eina_xattr.lo $(am__objects_1) $(am__objects_2) \
++	eina_value.lo eina_xattr.lo eina_abi.lo $(am__objects_1) $(am__objects_2) \
  	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
  	$(am__objects_6) $(am__objects_7) $(am__objects_8) \
  	$(am__objects_9)
-@@ -393,7 +393,7 @@ base_sources = eina_accessor.c eina_array.c eina_benchmark.c \
+@@ -380,7 +380,7 @@ base_sources = eina_accessor.c eina_array.c eina_benchmark.c \
  	eina_simple_xml_parser.c eina_str.c eina_strbuf.c \
  	eina_strbuf_common.c eina_stringshare.c eina_tiler.c \
  	eina_unicode.c eina_ustrbuf.c eina_ustringshare.c eina_value.c \
@@ -43,29 +43,14 @@ index 0547713..1498003 100644
  	$(am__append_4) $(am__append_5) $(am__append_6) \
  	$(am__append_7) $(am__append_8) $(am__append_9)
  EXTRA_DIST = \
-@@ -535,6 +535,7 @@ distclean-compile:
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_ustringshare.Plo@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_value.Plo@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_xattr.Plo@am__quote@
-+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libeina_la-eina_abi.Plo@am__quote@
+@@ -521,6 +521,7 @@ distclean-compile:
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eina_ustringshare.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eina_value.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eina_xattr.Plo@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/eina_abi.Plo@am__quote@
  
  .c.o:
  @am__fastdepCC_TRUE@	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-@@ -896,6 +897,14 @@ libeina_la-eina_xattr.lo: eina_xattr.c
- @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
- @am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -c -o libeina_la-eina_xattr.lo `test -f 'eina_xattr.c' || echo '$(srcdir)/'`eina_xattr.c
- 
-+libeina_la-eina_abi.lo: eina_abi.c
-+@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -MT libeina_la-eina_abi.lo -MD -MP -MF $(DEPDIR)/libeina_la-eina_abi.Tpo -c -o libeina_la-eina_abi.lo `test -f 'eina_abi.c' || echo '$(srcdir)/'`eina_abi.c
-+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libeina_la-eina_abi.Tpo $(DEPDIR)/libeina_la-eina_abi.Plo
-+@am__fastdepCC_FALSE@	$(AM_V_CC) @AM_BACKSLASH@
-+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='eina_abi.c' object='libeina_la-eina_abi.lo' libtool=yes @AMDEPBACKSLASH@
-+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-+@am__fastdepCC_FALSE@	$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -c -o libeina_la-eina_abi.lo `test -f 'eina_abi.c' || echo '$(srcdir)/'`eina_abi.c
-+
- libeina_la-eina_file_win32.lo: eina_file_win32.c
- @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libeina_la_CFLAGS) $(CFLAGS) -MT libeina_la-eina_file_win32.lo -MD -MP -MF $(DEPDIR)/libeina_la-eina_file_win32.Tpo -c -o libeina_la-eina_file_win32.lo `test -f 'eina_file_win32.c' || echo '$(srcdir)/'`eina_file_win32.c
- @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libeina_la-eina_file_win32.Tpo $(DEPDIR)/libeina_la-eina_file_win32.Plo
 diff --git a/src/lib/eina_abi.c b/src/lib/eina_abi.c
 new file mode 100644
 index 0000000..0155a99
