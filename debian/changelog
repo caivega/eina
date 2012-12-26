@@ -1,8 +1,15 @@
-eina (1.7.4-1) UNRELEASED; urgency=low
+eina (1.7.4-1) experimental; urgency=low
 
   * New upstream release
+  * patches/01_restore-eina_abi: refresh to follow upstream changes
+  * drop patches/03_eina_value_dont_assume_signed_char, merged upstream
+  * drop patches/04_eina_value_unsigned_to_unsigned_long_va_arg, merged upstream
+  * debian/rules: remove now non-existing configure options
+  * debian/rules: disable all cpu-specific compilation options
+  * debian/libeina1.symbols: update with symbols from the new release
+  * Add a new patch to allow running the testsuite without enabling coverage
 
- -- Albin Tonnerre <lutin@debian.org>  Sat, 22 Dec 2012 15:13:39 +0100
+ -- Albin Tonnerre <lutin@debian.org>  Wed, 26 Dec 2012 14:15:13 +0100
 
 eina (1.2.0-2) unstable; urgency=low
 
