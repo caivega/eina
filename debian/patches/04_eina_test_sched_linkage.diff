@@ -1,0 +1,26 @@
+diff --git a/src/tests/Makefile.am b/src/tests/Makefile.am
+index cc37476..f6e7f6b 100644
+--- a/src/tests/Makefile.am
++++ b/src/tests/Makefile.am
+@@ -70,7 +70,7 @@ eina_test_simple_xml_parser.c \
+ eina_test_value.c
+ # eina_test_model.c
+ 
+-eina_suite_LDADD = @CHECK_LIBS@ $(top_builddir)/src/lib/libeina.la @EINA_LIBS@ -lm
++eina_suite_LDADD = @CHECK_LIBS@ $(top_builddir)/src/lib/libeina.la @EINA_LIBS@ @EFL_PTHREAD_LIBS@ -lm
+ 
+ cxx_compile_test_SOURCES = cxx_compile_test.cxx
+ cxx_compile_test_LDADD = $(top_builddir)/src/lib/libeina.la @EINA_LIBS@
+diff --git a/src/tests/Makefile.in b/src/tests/Makefile.in
+index 262461a..ff94fab 100644
+--- a/src/tests/Makefile.in
++++ b/src/tests/Makefile.in
+@@ -471,7 +471,7 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/lib -I$(top_srcdir)/src/include \
+ @EFL_ENABLE_TESTS_TRUE@eina_test_value.c
+ 
+ # eina_test_model.c
+-@EFL_ENABLE_TESTS_TRUE@eina_suite_LDADD = @CHECK_LIBS@ $(top_builddir)/src/lib/libeina.la @EINA_LIBS@ -lm
++@EFL_ENABLE_TESTS_TRUE@eina_suite_LDADD = @CHECK_LIBS@ $(top_builddir)/src/lib/libeina.la @EINA_LIBS@ @EFL_PTHREAD_LIBS@ -lm
+ @EFL_ENABLE_TESTS_TRUE@cxx_compile_test_SOURCES = cxx_compile_test.cxx
+ @EFL_ENABLE_TESTS_TRUE@cxx_compile_test_LDADD = $(top_builddir)/src/lib/libeina.la @EINA_LIBS@
+ @EFL_ENABLE_TESTS_TRUE@module_dummydir = $(libdir)/eina/test
