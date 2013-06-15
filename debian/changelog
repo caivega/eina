@@ -1,3 +1,10 @@
+eina (1.7.4-2) unstable; urgency=low
+
+  * Upload to unstable
+  * patches/04_eina_test_sched_linkage: fix missing link with pthread
+
+ -- Albin Tonnerre <lutin@debian.org>  Sat, 15 Jun 2013 15:45:51 +0200
+
 eina (1.7.4-1) experimental; urgency=low
 
   * New upstream release
