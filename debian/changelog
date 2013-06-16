@@ -1,8 +1,10 @@
-eina (1.7.7-1) UNRELEASED; urgency=low
+eina (1.7.7-1) unstable; urgency=low
 
   * New upstream release
+  * debian/libeina1.symbols: update with symbols from the new version
+  * debian/control: update URI in the VCS-* fields
 
- -- Albin Tonnerre <lutin@debian.org>  Sun, 16 Jun 2013 13:35:59 +0200
+ -- Albin Tonnerre <lutin@debian.org>  Sun, 16 Jun 2013 14:34:48 +0200
 
 eina (1.7.4-2) unstable; urgency=low
 
