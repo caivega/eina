@@ -1,7 +1,32 @@
-Eina 1.7.4
+Eina 1.7.7
+
+Changes since Eina 1.7.6:
+-------------------------
+
+No changes, just updating to keep in sync with last release.
+
+
+Changes since Eina 1.7.5:
+-------------------------
+
+Improvements:
+    * Honor tile size in Eina_Tiler.
+
+Fixes:
+    * Prevent denial of service on Eina_Hash function.
+    * Fix map leak in Eina_File infrastructure.
+    * Fix portability issue on 64bits system for Eina_CList.
+    * Fix magic failure in eina_value_array_count when array has not been allocated
+
+Changes since Eina 1.7.4:
+-------------------------
+
+No changes, just updating to keep in sync with last release.
 
 Changes since Eina 1.7.3:
+-------------------------
 
+Fixes:
     * Fix EINA_INLIST_FOREACH_SAFE macro
     * Add XML output to doc
     * Add installation rule for doc
@@ -26,6 +51,8 @@ Fixes:
     eina_mmap_safety_enabled_get() returns after success
     * Fix eina_stringshare_add_length() to return NULL when wrong.
     * Add EINA_SAFETY checks are wrong.
+
+Eina 1.7.0
 
 Changes since Eina 1.2.0:
 -------------------------

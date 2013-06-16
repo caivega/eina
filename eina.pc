@@ -1,5 +1,5 @@
 PACKAGE_TARNAME=eina
-prefix=/home/lfelipe/e-release/release/local
+prefix=/home/antognolli/efl/1.7/git-release/local
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include
@@ -7,8 +7,8 @@ docdir=${prefix}/share/doc/${PACKAGE_TARNAME}
 
 Name: Eina
 Description: A Library that implements fast data types and miscellaneous tools
-Requires.private: 
-Version: 1.7.4
+Requires.private: valgrind 
+Version: 1.7.7
 Libs: -L${libdir} -leina -lpthread
 Libs.private: -lpthread  -ldl -ldl   -lrt -lm
 Cflags: -I${includedir}/eina-1 -I${includedir}/eina-1/eina

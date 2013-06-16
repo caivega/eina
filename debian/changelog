@@ -1,3 +1,9 @@
+eina (1.7.7-1) UNRELEASED; urgency=low
+
+  * New upstream release
+
+ -- Albin Tonnerre <lutin@debian.org>  Sun, 16 Jun 2013 13:35:59 +0200
+
 eina (1.7.4-2) unstable; urgency=low
 
   * Upload to unstable

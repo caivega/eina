@@ -3,7 +3,7 @@
 
 Summary: Data Type Library
 Name: eina
-Version: 1.7.4
+Version: 1.7.7
 Release: %{_rel}
 License: LGPLv2.1
 Group: System Environment/Libraries
