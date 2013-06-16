@@ -353,6 +353,7 @@ libeina.so.1 libeina1 #MINVER#
  eina_rectangle_pool_release@Base 1.0.0~beta
  eina_rectangle_pool_request@Base 1.0.0~beta
  eina_sched_prio_drop@Base 1.0.0~beta
+ eina_seed@Base 1.7.7
  eina_shutdown@Base 1.0.0~beta
  eina_simple_xml_attribute_free@Base 1.2.0
  eina_simple_xml_attribute_new@Base 1.2.0
