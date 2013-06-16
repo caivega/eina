@@ -390,3 +390,31 @@
 
 	* 1.7.4 release
 
+2013-01-04  Luis Felipe Strano Moraes
+
+	* 1.7.5 release
+
+2013-01-05  Joel Klinghed
+
+        * configure dirfd check fix
+
+2013-02-06  Cedric Bail
+
+	* counter measure denial of service on eina_hash function.
+	* fix map leak in Eina_File.
+
+2013-02-07  Cedric Bail
+
+	* honor tile size in Eina_Tiler.
+
+2013-02-16  Cedric Bail
+
+	* Fix portability issue on 64bits system for Eina_CList.
+
+2013-03-19  Mike Blumenkrantz
+
+        * Fix magic failure in eina_value_array_count when array has not been allocated
+
+2013-04-04  Rafael Antognolli
+
+        * 1.7.6 release

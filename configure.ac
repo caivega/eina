@@ -2,9 +2,8 @@
 ##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##--##
 m4_define([v_maj], [1])
 m4_define([v_min], [7])
-m4_define([v_mic], [4])
-m4_define([v_rev], m4_esyscmd([(svnversion "${SVN_REPO_PATH:-.}" | grep -v '\(export\|Unversioned directory\)' || echo 0) | awk -F : '{printf("%s\n", $1);}' | tr -d ' :MSP\n']))
-m4_if(v_rev, [0], [m4_define([v_rev], m4_esyscmd([git log 2> /dev/null | (grep -m1 git-svn-id || echo 0) | sed -e 's/.*@\([0-9]*\).*/\1/' | tr -d '\n']))])
+m4_define([v_mic], [7])
+m4_define([v_rev], m4_esyscmd([(git rev-list --count HEAD 2>/dev/null || echo 0) | tr -d '\n']))dnl
 ##--   When released, remove the dnl on the below line
 m4_undefine([v_rev])
 ##--   When doing snapshots - change soname. remove dnl on below line
@@ -292,7 +291,7 @@ EFL_CHECK_DOXYGEN([build_doc="yes"], [build_doc="no"])
 EFL_EINA_BUILD=""
 case "$host_os" in
    mingw*)
-      PKG_CHECK_EXISTS([evil >= 1.6.99])
+      PKG_CHECK_EXISTS([evil >= 1.7.7])
       AC_DEFINE([HAVE_EVIL], [1], [Set to 1 if Evil package is installed])
       requirements_pc_eina="${requirements_pc_eina} evil"
       EFL_EINA_BUILD="-DEFL_EINA_BUILD"
